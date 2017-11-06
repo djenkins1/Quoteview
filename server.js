@@ -42,6 +42,7 @@ function exponentNumber( queryObj, response )
     if ( queryObj.number == undefined )
     {
         console.log( "Problem, required number undefined" );
+        response.end();
         return;
     }
 
@@ -56,13 +57,28 @@ function exponentNumber( queryObj, response )
     response.end();  
 }
 
-urlHandler.registerObserver( "/hello.html" , [] , helloWorld, standardErrorCall );
-urlHandler.registerObserver( "/square.html" , [ { "name" : "number" , "type" : "float" , "required" : true } ], squareNumber, standardErrorCall );
-urlHandler.registerObserver( "/exponent.html" , [ { "name" : "number" , "type" : "float" , "required" : true } , { "name" : "exp" , "type" : "float" , "required" : false } ], exponentNumber, standardErrorCall );
+function handleNewUserForm( queryObj, response )
+{
+    response.writeHead(200, {'Content-Type': 'text/plain'});
+    if ( queryObj.username === undefined || queryObj.password === undefined )
+    {
+        console.log( "Problem, required parameters undefined" );
+        return;
+    }
+
+    response.write( "Username: " + queryObj.username + "\n" );
+    response.write( "Password: " + queryObj.password + "\n" );
+    response.end();
+}
+
+urlHandler.registerObserver( "GET", "/hello" , [] , helloWorld, standardErrorCall );
+urlHandler.registerObserver( "GET" , "/square" , [ { "name" : "number" , "type" : "float" , "required" : true } ], squareNumber, standardErrorCall );
+urlHandler.registerObserver( "GET" , "/exponent" , [ { "name" : "number" , "type" : "float" , "required" : true } , { "name" : "exp" , "type" : "float" , "required" : false } ], exponentNumber, standardErrorCall );
+urlHandler.registerObserver( "POST" , "/newUser" , [ urlHandler.createParameter( "username" , "string" , true ) , urlHandler.createParameter( "password" , "string" , true ) ], handleNewUserForm, standardErrorCall );
 
 http.createServer(function (request, response) 
 {
-    urlHandler.handleUrl( request.url, response );
+    urlHandler.handleUrl( request, response );
 }).listen(8081);
 
 // Console will print the message

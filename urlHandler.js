@@ -8,6 +8,7 @@ Info:
     As well as allowing type checking of said parameters.
 Object Types:
 observer object:
+    observer.type = string ,POST if handler is for post requests or GET if handler is for get requests
     observer.path = string ,the file path that the handler is meant to be for
     observer.callback = function ,called once the url parameters have been validated
     observer.onError = function ,called if any of the url parameters are invalid(i.e missing if required or wrong type)
@@ -19,7 +20,6 @@ parameterSchema object:
     parameterSchema.required = boolean ,true if must be in the url or false if optional
     TODO: any other validation required,i.e if number must be in specific range...
 
-TODO: post requests
 TODO: should be able to also specify min/max values or string lengths of values
 TODO: other types like email
 */
@@ -28,9 +28,26 @@ var http = require("http");
 var url = require('url');
 var validator = require('validator');
 var fs = require('fs'); 
+var qs = require('querystring');
 
 //holds a dictionary where the key is a path on the server and the value is an observer object
 var handlerObservers = {};
+
+/*
+function: createParameter
+info:
+    Creates a parameterSchema object with the given parameters as its attributes.
+parameters:
+    name, string, the name of the parameter that the parameterSchema is for
+    type, string, the type that the parameter with name is supposed to be
+    isRequired, boolean, whether the parameter is required(true) or optional(false)
+returns:
+    The newly created parameterSchema object
+*/
+function createParameter( name, type, isRequired )
+{
+    return { "name" : name , "type" : type , "required" : isRequired };
+}
 
 /*
 function: registerObserverObject
@@ -44,7 +61,7 @@ returns:
 exceptions:
     throws an exception if the observer object has no path attribute or it is undefined
 */
-registerObserverObject = function( observer )
+function registerObserverObject( observer )
 {
     if ( observer == undefined )
     {
@@ -79,9 +96,9 @@ parameters:
 returns:
     nothing 
 */
-registerObserver = function( path , params, callback, errorCall )
+function registerObserver( requestType, path , params, callback, errorCall )
 {
-    registerObserverObject( { "path" : path , "params" : params, "callback" : callback, "onError" : errorCall } );
+    registerObserverObject( { "type" : requestType , "path" : path , "params" : params, "callback" : callback, "onError" : errorCall } );
 }
 
 /*
@@ -96,7 +113,7 @@ returns:
     true if value is of type given.
     false otherwise.
 */
-checkType = function( value, type )
+function checkType( value, type )
 {
     if ( type == "string" )
     {
@@ -131,7 +148,7 @@ returns:
     Object containing attribute called errors that is a list of parameters that were invalid
         errors is an empty array if none of the parameters were invalid
 */
-checkParameters = function( parameterSchema, queryObj )
+function checkParameters( parameterSchema, queryObj )
 {
     var toReturn = { "errors" : [] };
     for ( var i = 0; i < parameterSchema.length; i++ )
@@ -165,7 +182,7 @@ parameters:
     path: string, the path to the file that is requested
     response: object, http response object
 */
-handleFile = function( path , response )
+function handleFile( path , response )
 {
     fs.readFile( path, function(err, data) 
     {
@@ -184,45 +201,138 @@ handleFile = function( path , response )
 }
 
 /*
-function: handleUrl
+function: validateAndCall
 info:
-    To be called whenever a request is to be handled.
-    Converts the urlStr given to its components and figures out which observer to notify.
+    This function validates the parameters within the request to the observer's specified parameters.
+    If the parameters are valid, this function calls the observer's callback function.
+    If the parameters are invalid, this function calls the observer's onError function.
 parameters:
-    urlStr, string, the url that was requested
-    response, object, http response object that is used to send back a response
+    observer: object, an observer object
+    requestParams: object, a dictionary of key value pairs that were the parameters/body of the request
+    response: object, an http response object
 returns:
     nothing
 */
-handleUrl = function( urlStr, response )
+function validateAndCall( observer, requestParams, response )
 {
-    var parsedUrl = url.parse( urlStr, true);
-    //console.log(q.host); //string of the hostname,i.e www.website.com
-    //console.log(q.pathname); //string of the path and file requested
-    //console.log(q.search); //string of the parameters within the url
-    //var qdata = q.query; //object with key value pairs representing the url parameters
-    //console.log(qdata.id); //returns 'february'
-    
+    var validatedObj = checkParameters( observer.params, requestParams );
+    //if the parameters were validated successfully,then call the callback function in the observer object
+    if ( validatedObj.errors.length == 0 )
+    {
+        observer.callback( requestParams, response );
+    }
+    else
+    {
+        //at least one of the parameters was invalid,call the onError function in the observer object
+        observer.onError( validatedObj.errors, requestParams, response );
+    }
+}
+
+/*
+function: handleGet
+info:
+    This function handles a get request.
+    Checks to see if there is an observer for the requested pathname.
+    If there is no observer,assume the request is for a file and output said file if it exists.
+parameters:
+    request: object, an http request object
+    response: object, an http response object
+    parsedUrl: object, the components of the url that was requested
+returns:
+    nothing
+*/
+function handleGet( request, response, parsedUrl )
+{
     //if there is a particular observer for the pathname specified in the request
     if ( handlerObservers[ parsedUrl.pathname ] )
     {
-        var validatedObj = checkParameters( handlerObservers[ parsedUrl.pathname ].params, parsedUrl.query );
-        //if the parameters were validated successfully,then call the callback function in the observer object
-        if ( validatedObj.errors.length == 0 )
-        {
-            handlerObservers[ parsedUrl.pathname ].callback( parsedUrl.query, response );
-        }
-        else
-        {
-            //at least one of the parameters was invalid,call the onError function in the observer object
-            handlerObservers[ parsedUrl.pathname ].onError( validatedObj.errors, parsedUrl.query, response );
-        }
+        return validateAndCall( handlerObservers[ parsedUrl.pathname ], parsedUrl.query, response );
     }
     else
     {
         //if there is no observer for the pathname given,then try to give a file back
         console.log( "No observer for path: " + parsedUrl.pathname );
         handleFile( "." + parsedUrl.pathname , response );
+    }
+}
+
+/*
+function: handlePost
+info:
+    This function handles a post request.
+    Checks to see if there is an observer for the requested pathname and that the observer is for type POST.
+    If there is no observer of type post for the url,then log to console and call handleGet function.
+    If the request body is too large(more than 10mb) then stop the request and output an error message.
+    Otherwise, call validateAndCall function
+parameters:
+    request: object, an http request object
+    response: object, an http response object
+    parsedUrl: object, the components of the url that was requested
+returns:
+    nothing
+*/
+function handlePost( request, response, parsedUrl )
+{
+    if ( handlerObservers[ parsedUrl.pathname ] == undefined || handlerObservers[ parsedUrl.pathname ].type !== "POST" )
+    {
+        console.log( "No observer for post request,trying get request" );
+        return handleGet( request, response, parsedUrl );
+    }
+
+    var requestBody = '';
+    request.on( 'data' , function(data) 
+    {
+        requestBody += data;
+        //if the body of the request is larger than 10mb then stop the request
+        if( requestBody.length > 1e7 ) 
+        {
+            response.writeHead(413, 'Request Entity Too Large', {'Content-Type': 'text/html'});
+            response.end('413: Request Entity Too Large');
+            return;
+        }
+    });
+
+    request.on( 'end', function() 
+    {
+        var formData = qs.parse(requestBody);
+        return validateAndCall( handlerObservers[ parsedUrl.pathname ], formData, response );
+    });
+}
+
+/*
+function: handleUrl
+info:
+    To be called whenever a request is to be handled.
+    Converts the request url given to its components and figures out which observer to notify.
+parameters:
+    request, object, http request object
+    response, object, http response object that is used to send back a response
+returns:
+    nothing
+*/
+function handleUrl( request, response )
+{
+    var parsedUrl = url.parse( request.url, true);
+    //console.log(q.host); //string of the hostname,i.e www.website.com
+    //console.log(q.pathname); //string of the path and file requested
+    //console.log(q.search); //string of the parameters within the url
+    //var qdata = q.query; //object with key value pairs representing the url parameters
+
+    //if the request method is get,then handle request using handleGet function
+    if(request.method === "GET") 
+    {
+        return handleGet( request, response, parsedUrl );
+    }
+    else if ( request.method === "POST" ) //the request method is post,use the handlePost function
+    {
+        return handlePost( request, response, parsedUrl );
+    }
+    else 
+    {
+        //the method is neither get nor post,output error message
+        response.writeHead(405, 'Method Not Supported', {'Content-Type': 'text/html'});
+        response.end('405: Method Not Supported');
+        return;
     }
 }
 
@@ -233,4 +343,4 @@ exports.registerObserverObject = registerObserverObject;
 exports.checkType = checkType;
 exports.registerObserver = registerObserver;
 exports.handleFile = handleFile;
-
+exports.createParameter = createParameter;
