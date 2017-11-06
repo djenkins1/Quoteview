@@ -25,11 +25,30 @@ var handlerObservers = {};
 //      parameterSchema.required = boolean ,true if must be in the url or false if optional
 //      TODO: any other validation required,i.e if number must be in specific range...
 
+/*
+function: registerObserverObject
+info:
+    Adds the observer object given to the dictionary of observers.
+    The key for the said observer is the path attribute within the object.
+parameters:
+    observer: object ,see observer object documentation
+returns:
+    nothing
+exceptions:
+    throws an exception if the observer object has no path attribute or it is undefined
+*/
 registerObserverObject = function( observer )
 {
+    if ( observer == undefined )
+    {
+        throw new Error( "Observer object undefined" );
+        return;
+    }
+
     if ( observer.path == undefined )
     {
         throw new Error( "Path for observer is undefined" );
+        return;
     }
 
     if ( handlerObservers[ observer.path ] )
@@ -40,12 +59,36 @@ registerObserverObject = function( observer )
     handlerObservers[ observer.path ] = observer;
 }
 
+/*
+function: registerObserver
+info:
+    Wrapper function for registerObserverObject.
+    This function wraps the parameters given into an object and then calls registerObserverObject with wrapped object.
+parameters:
+    path: string ,the file pathname that the observer is meant to listen to
+    params: array of objects, see parameterSchema object documentation
+    callback: function, the function to be called if the request url parameters are found to be valid
+    errorCall: function, the function to be called if the request url parameters are found to be invalid
+returns:
+    nothing 
+*/
 registerObserver = function( path , params, callback, errorCall )
 {
     registerObserverObject( { "path" : path , "params" : params, "callback" : callback, "onError" : errorCall } );
 }
 
-//return true if the value given is of type given or false otherwise
+/*
+function: checkType
+info:
+    This is a function that checks whether the given value can be converted to the type given.
+parameters:
+    value, anything, the value to check
+    type , string, a string representing the type that the value is supposed to be.
+returns:
+    boolean
+    true if value is of type given.
+    false otherwise.
+*/
 checkType = function( value, type )
 {
     if ( type == "string" )
@@ -70,15 +113,18 @@ checkType = function( value, type )
 }
 
 /*
-    function: checkParameters
-    parameters:
-        parameterSchema, list of objects with following attributes
-            name,the name of the required parameter
-            type,the type of the required parameter(i.e string,int,float)
-            required,true if must be in the url or false if optional
-        queryObj, object with keys being parameter names and values being the actual values       
-    returns:
-        Object containing attribute called error that is a list of parameters that were invalid
+function: checkParameters
+info:
+    Checks the url parameters provided to see if they match what is needed
+parameters:
+    parameterSchema, list of objects with following attributes
+        name,the name of the required parameter
+        type,the type of the required parameter(i.e string,int,float)
+        required,true if must be in the url or false if optional
+    queryObj, object with keys being parameter names and values being the actual values       
+returns:
+    Object containing attribute called errors that is a list of parameters that were invalid
+        errors is an empty array if none of the parameters were invalid
 */
 checkParameters = function( parameterSchema, queryObj )
 {
@@ -108,6 +154,17 @@ checkParameters = function( parameterSchema, queryObj )
     return toReturn;
 }
 
+/*
+function: handleUrl
+info:
+    To be called whenever a request is to be handled.
+    Converts the urlStr given to its components and figures out which observer to notify.
+parameters:
+    urlStr, string, the url that was requested
+    response, object, http response object that is used to send back a response
+returns:
+    nothing
+*/
 handleUrl = function( urlStr, response )
 {
     var q = url.parse( urlStr, true);
@@ -137,7 +194,6 @@ handleUrl = function( urlStr, response )
         console.log( "No observer for path: " + q.pathname );
         response.writeHead( 404, {'Content-Type': 'text/html'});
         response.end("404 Not Found");
-        return false;
     }
 }
 
