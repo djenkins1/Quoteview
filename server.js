@@ -2,6 +2,7 @@ var http = require("http");
 var url = require('url');
 var urlHandler = require('./urlHandler');
 
+//test function for no parameters
 function helloWorld( queryObj, response )
 {
     response.writeHead(200, {'Content-Type': 'text/plain'});
@@ -9,6 +10,7 @@ function helloWorld( queryObj, response )
     response.end();
 }
 
+//simple error function that displays whatever errors occurred
 function standardErrorCall( errorList, queryObj, response )
 {
     response.writeHead(200, {'Content-Type': 'text/plain'});
@@ -20,6 +22,7 @@ function standardErrorCall( errorList, queryObj, response )
     response.end();
 }
 
+//test function for required parameters of specific type
 function squareNumber( queryObj, response )
 {
     response.writeHead(200, {'Content-Type': 'text/plain'});
@@ -35,6 +38,7 @@ function squareNumber( queryObj, response )
     response.end();  
 }
 
+//test function for mix of required and optional parameters of specific type
 function exponentNumber( queryObj, response )
 {
     response.writeHead(200, {'Content-Type': 'text/plain'});
@@ -57,6 +61,7 @@ function exponentNumber( queryObj, response )
     response.end();  
 }
 
+//test function for handling a post request
 function handleNewUserForm( queryObj, response )
 {
     response.writeHead(200, {'Content-Type': 'text/plain'});
@@ -71,6 +76,15 @@ function handleNewUserForm( queryObj, response )
     response.end();
 }
 
+//redirects to the index.html file
+function redirectIndex( queryObj, response )
+{
+    urlHandler.redirectToUrl( response , "/index.html" );
+}
+
+//sets up a simple redirect to index.html when empty path is given
+urlHandler.registerObserver( "GET" , "/" , [] , redirectIndex, standardErrorCall );
+//setups the other observers to test various functionality
 urlHandler.registerObserver( "GET", "/hello" , [] , helloWorld, standardErrorCall );
 urlHandler.registerObserver( "GET" , "/square" , [ { "name" : "number" , "type" : "float" , "required" : true } ], squareNumber, standardErrorCall );
 urlHandler.registerObserver( "GET" , "/exponent" , [ { "name" : "number" , "type" : "float" , "required" : true } , { "name" : "exp" , "type" : "float" , "required" : false } ], exponentNumber, standardErrorCall );

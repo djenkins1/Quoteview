@@ -50,6 +50,23 @@ function createParameter( name, type, isRequired )
 }
 
 /*
+function: redirectToUrl
+info:
+    Sends back in the response to redirect to the url given.
+parameters:
+    response, object, an http response object
+    redirectTo, string, a url to redirect to
+returns:
+    nothing
+*/
+function redirectToUrl( response, redirectTo )
+{
+    console.log( "Redirecting to: " , redirectTo );
+    response.writeHead(302,  {Location: redirectTo } );
+    response.end();
+}
+
+/*
 function: registerObserverObject
 info:
     Adds the observer object given to the dictionary of observers.
@@ -344,3 +361,4 @@ exports.checkType = checkType;
 exports.registerObserver = registerObserver;
 exports.handleFile = handleFile;
 exports.createParameter = createParameter;
+exports.redirectToUrl = redirectToUrl;
