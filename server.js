@@ -1,6 +1,7 @@
 var http = require("http");
 var url = require('url');
 var urlHandler = require('./urlHandler');
+var execsql = require('execsql');
 
 //test function for no parameters
 function helloWorld( queryObj, response )
@@ -76,25 +77,83 @@ function handleNewUserForm( queryObj, response )
     response.end();
 }
 
+//returns all the quotes in the database
+function returnAllQuotes( queryObj , response )
+{
+    var dataAPI = require( "./dataAPI" );
+    dataAPI.getAllQuotes( function( results ) {
+        response.writeHead(200, {'Content-Type': 'text/json'});
+        response.write( JSON.stringify( results ) );
+        response.end();
+    });
+}
+
 //redirects to the index.html file
 function redirectIndex( queryObj, response )
 {
     urlHandler.redirectToUrl( response , "/index.html" );
 }
 
-//sets up a simple redirect to index.html when empty path is given
-urlHandler.registerObserver( "GET" , "/" , [] , redirectIndex, standardErrorCall );
-//setups the other observers to test various functionality
-urlHandler.registerObserver( "GET", "/hello" , [] , helloWorld, standardErrorCall );
-urlHandler.registerObserver( "GET" , "/square" , [ { "name" : "number" , "type" : "float" , "required" : true } ], squareNumber, standardErrorCall );
-urlHandler.registerObserver( "GET" , "/exponent" , [ { "name" : "number" , "type" : "float" , "required" : true } , { "name" : "exp" , "type" : "float" , "required" : false } ], exponentNumber, standardErrorCall );
-urlHandler.registerObserver( "POST" , "/newUser" , [ urlHandler.createParameter( "username" , "string" , true ) , urlHandler.createParameter( "password" , "string" , true ) ], handleNewUserForm, standardErrorCall );
-
-http.createServer(function (request, response) 
+//setups the observer handlers
+function setupHandlers()
 {
-    urlHandler.handleUrl( request, response );
-}).listen(8081);
+    //sets up a simple redirect to index.html when empty path is given
+    urlHandler.registerObserver( "GET" , "/" , [] , redirectIndex, standardErrorCall );
+    //setups the other observers to test various functionality
+    urlHandler.registerObserver( "GET", "/hello" , [] , helloWorld, standardErrorCall );
+    urlHandler.registerObserver( "GET" , "/square" , [ { "name" : "number" , "type" : "float" , "required" : true } ], squareNumber, standardErrorCall );
+    urlHandler.registerObserver( "GET" , "/exponent" , [ { "name" : "number" , "type" : "float" , "required" : true } , { "name" : "exp" , "type" : "float" , "required" : false } ], exponentNumber, standardErrorCall );
+    urlHandler.registerObserver( "POST" , "/newUser" , [ urlHandler.createParameter( "username" , "string" , true ) , urlHandler.createParameter( "password" , "string" , true ) ], handleNewUserForm, standardErrorCall );
+    //setup the observer for getting all quotes
+    urlHandler.registerObserver( "GET" , "/quotes" , [] , returnAllQuotes, standardErrorCall );
+}
 
-// Console will print the message
-console.log('Server running at http://127.0.0.1:8081/');
+//grab the command line arguments
+var myArgs = process.argv.slice(2);
+
+//if there were no arguments
+if ( myArgs.length == 0 )
+{
+    console.log( "You must enter a command option" );
+}
+else
+{
+    if ( myArgs[ 0 ] === "--server" )
+    {
+        setupHandlers();
+        http.createServer(function (request, response) 
+        {
+            urlHandler.handleUrl( request, response );
+        }).listen(8081);
+
+        // Console will print the message
+        console.log('Server running at http://127.0.0.1:8081/');
+    }
+    else if ( myArgs[ 0 ] === "--clean" )
+    {
+        //TODO: clean the database       
+        console.log( "Command not yet implemented: " , myArgs[ 0 ] );
+    }
+    else if ( myArgs[ 0 ] === "--setup" )
+    {
+        //setup the database
+        var dbConfig = {
+            host: 'localhost',
+            user: 'root',
+            password: ''
+        };
+        execsql.config(dbConfig).execFile( './quotes.sql', function(err, results)
+        {
+            if ( err ) throw err;
+            console.log(results);
+            execsql.end();
+        });
+    }
+    else
+    {
+        console.log( "Unknown command: ", myArgs[ 0 ] );
+    }
+}
+
+
 

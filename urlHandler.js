@@ -269,7 +269,7 @@ function handleGet( request, response, parsedUrl )
     {
         //if there is no observer for the pathname given,then try to give a file back
         console.log( "No observer for path: " + parsedUrl.pathname );
-        handleFile( "." + parsedUrl.pathname , response );
+        handleFile( "./public/" + parsedUrl.pathname , response );
     }
 }
 
@@ -362,3 +362,5 @@ exports.registerObserver = registerObserver;
 exports.handleFile = handleFile;
 exports.createParameter = createParameter;
 exports.redirectToUrl = redirectToUrl;
+
+
