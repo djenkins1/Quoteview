@@ -22,6 +22,7 @@ parameterSchema object:
 
 TODO: should be able to also specify min/max values or string lengths of values
 TODO: other types like email
+TODO: bug, need to spit out mime type when outputting files on the server,i.e css
 */
 
 var http = require("http");
