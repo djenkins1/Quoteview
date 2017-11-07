@@ -23,6 +23,15 @@ function standardErrorCall( errorList, queryObj, response )
     response.end();
 }
 
+//error function that responds with whatever errors occurred in a json format
+function jsonErrorCall( errorList ,queryObj, response )
+{
+    response.writeHead(200, {'Content-Type': 'text/json'});
+    var errorObj = { "error" : true , "errors" : errorList };
+    response.write( JSON.stringify( errorObj ) );
+    response.end();
+}
+
 //test function for required parameters of specific type
 function squareNumber( queryObj, response )
 {
@@ -77,7 +86,7 @@ function handleNewUserForm( queryObj, response )
     response.end();
 }
 
-//returns all the quotes in the database
+//responds with all the quotes in the database
 function returnAllQuotes( queryObj , response )
 {
     var dataAPI = require( "./dataAPI" );
@@ -85,6 +94,24 @@ function returnAllQuotes( queryObj , response )
         response.writeHead(200, {'Content-Type': 'text/json'});
         response.write( JSON.stringify( results ) );
         response.end();
+    });
+}
+
+//creates a quote with the parameters given and responds with json representation of the new quote
+function postQuote( queryObj , response )
+{
+    if ( queryObj.author == undefined || queryObj.body == undefined )
+    {
+        console.log( "Problem, required parameters undefined" );
+        return;
+    }
+
+    var dataAPI = require( "./dataAPI" );
+    dataAPI.createQuote( queryObj.author, queryObj.body, function( result ) {
+        response.writeHead(200, {'Content-Type': 'text/json'});
+        var resultObj = { "qid" : result.insertId , "author" : queryObj.author , "body" : queryObj.body };
+        response.write( JSON.stringify( resultObj ) );
+        response.end();        
     });
 }
 
@@ -105,7 +132,8 @@ function setupHandlers()
     urlHandler.registerObserver( "GET" , "/exponent" , [ { "name" : "number" , "type" : "float" , "required" : true } , { "name" : "exp" , "type" : "float" , "required" : false } ], exponentNumber, standardErrorCall );
     urlHandler.registerObserver( "POST" , "/newUser" , [ urlHandler.createParameter( "username" , "string" , true ) , urlHandler.createParameter( "password" , "string" , true ) ], handleNewUserForm, standardErrorCall );
     //setup the observer for getting all quotes
-    urlHandler.registerObserver( "GET" , "/quotes" , [] , returnAllQuotes, standardErrorCall );
+    urlHandler.registerObserver( "GET" , "/quotes" , [] , returnAllQuotes, jsonErrorCall );
+    urlHandler.registerObserver( "POST" , "/newQuote" , [ urlHandler.createParameter( "author" , "string" , true ) , urlHandler.createParameter( "body" , "string" , true ) ], postQuote, jsonErrorCall );
 }
 
 //grab the command line arguments
