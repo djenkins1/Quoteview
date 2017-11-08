@@ -120,7 +120,7 @@ function postQuote( queryObj , response )
 
     dataAPI.createQuote( queryObj.author, queryObj.body, function( result ) {
         response.writeHead(200, {'Content-Type': 'text/json'});
-        var resultObj = { "qid" : result.insertId , "author" : queryObj.author , "body" : queryObj.body };
+        var resultObj = { "qid" : result.insertId , "author" : queryObj.author , "body" : queryObj.body , "score" : 0 };
         response.write( JSON.stringify( resultObj ) );
         response.end();        
     });
