@@ -90,8 +90,85 @@ function createQuote( author, body, onFinish )
     });
 }
 
+/*
+function: upvoteQuote
+info:
+    Increments the score for the quote with qid given.
+    Calls onFinish function provided when the quote has been updated
+    Can use result.affectedRows to see if the update worked(i.e qid is valid id for a row in the quote table)
+parameters:
+    qid, string, the id of the quote to be updated.
+    onFinish, function, function to be called when the quote has been updated
+returns:
+    nothing
+*/
+function upvoteQuote( qid, onFinish )
+{
+    var conn = getDefaultConn();
+    conn.query("UPDATE QUOTE SET score=score+1 WHERE qid=?", [ qid ] , function (err, result, fields) 
+    {
+        if (err) throw err;
+
+        onFinish( result ); 
+    });
+}
+
+/*
+function: downvoteQuote
+info:
+    Decrements the score for the quote with qid given.
+    Calls onFinish function provided when the quote has been updated
+    Can use result.affectedRows to see if the update worked(i.e qid is valid id for a row in the quote table)
+parameters:
+    qid, string, the id of the quote to be updated.
+    onFinish, function, function to be called when the quote has been updated
+returns:
+    nothing
+*/
+function downvoteQuote( qid, onFinish )
+{
+    var conn = getDefaultConn();
+    conn.query("UPDATE QUOTE SET score=score-1 WHERE qid=?", [ qid ] , function (err, result, fields) 
+    {
+        if (err) throw err;
+
+        onFinish( result ); 
+    });
+}
+
+/*
+function: getQuoteById
+info:
+    This function calls the onFinish function with the database results on the quote that has the qid specified.
+paramters:
+    qid: string, the id of the quote
+    onFinish: function, the function to be called when the database query has finished
+returns:
+    nothing
+*/
+function getQuoteById( qid, onFinish )
+{
+    var conn = getDefaultConn();
+    conn.query("SELECT * FROM QUOTE WHERE qid=? LIMIT 1", [ qid ] , function (err, result, fields) 
+    {
+        if (err) throw err;
+
+        //send back exactly one row,or if no rows were in the result then send back empty object
+        var resultObj = {};
+        if ( result.length > 0 )
+        {
+            resultObj = result[ 0 ];
+        }
+
+        onFinish( resultObj ); 
+    });
+}
+
+
 //add the functions above to this module so that they are usable outside of the module
 exports.getAllQuotes = getAllQuotes;
 exports.createQuote = createQuote;
-
+exports.upvoteQuote = upvoteQuote;
+exports.downvoteQuote = downvoteQuote;
+exports.getQuoteById = getQuoteById;
 
