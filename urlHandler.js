@@ -22,7 +22,6 @@ parameterSchema object:
 
 TODO: should be able to also specify min/max values or string lengths of values
 TODO: other types like email
-TODO: bug, need to spit out mime type when outputting files on the server,i.e css
 TODO: maybe move over to mongo db for dataAPI
 */
 
@@ -31,6 +30,7 @@ var url = require('url');
 var validator = require('validator');
 var fs = require('fs'); 
 var qs = require('querystring');
+var mime = require('mime');
 
 //holds a dictionary where the key is a path on the server and the value is an observer object
 var handlerObservers = {};
@@ -205,6 +205,7 @@ function handleFile( path , response )
 {
     fs.readFile( path, function(err, data) 
     {
+        //if there was an error then assume the file does not exist and output 404 error
         if (err) 
         {
             response.writeHead(404, {'Content-Type': 'text/html'});
@@ -213,7 +214,8 @@ function handleFile( path , response )
             return;
         } 
 
-        response.writeHead(200, {'Content-Type': 'text/html'});
+        //otherwise,no error occured so output the file with the content-type being the correct mime type of the file
+        response.writeHead(200, {'Content-Type': mime.getType( path ) });
         response.write(data);
         response.end();
     });
