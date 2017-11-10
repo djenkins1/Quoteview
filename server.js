@@ -5,7 +5,7 @@ var execsql = require('execsql');
 var dataAPI = require( "./dataAPI" );
 
 //test function for no parameters
-function helloWorld( queryObj, response )
+function helloWorld( queryObj, response, sessionObj )
 {
     response.writeHead(200, {'Content-Type': 'text/plain'});
     response.write( "Hello World\n" );
@@ -13,7 +13,7 @@ function helloWorld( queryObj, response )
 }
 
 //simple error function that displays whatever errors occurred
-function standardErrorCall( errorList, queryObj, response )
+function standardErrorCall( errorList, queryObj, response, sessionObj )
 {
     response.writeHead(200, {'Content-Type': 'text/plain'});
     for ( var i = 0; i < errorList.length; i++ )
@@ -25,7 +25,7 @@ function standardErrorCall( errorList, queryObj, response )
 }
 
 //error function that responds with whatever errors occurred in a json format
-function outputErrorAsJson( errorList ,queryObj, response )
+function outputErrorAsJson( errorList ,queryObj, response, sessionObj )
 {
     response.writeHead( 400, {'Content-Type': 'text/json'});
     var errorObj = { "error" : true , "errors" : errorList };
@@ -34,7 +34,7 @@ function outputErrorAsJson( errorList ,queryObj, response )
 }
 
 //test function for required parameters of specific type
-function squareNumber( queryObj, response )
+function squareNumber( queryObj, response, sessionObj )
 {
     response.writeHead(200, {'Content-Type': 'text/plain'});
     //sanity test to make sure required parameter can not be undefined
@@ -51,7 +51,7 @@ function squareNumber( queryObj, response )
 }
 
 //test function for mix of required and optional parameters of specific type
-function exponentNumber( queryObj, response )
+function exponentNumber( queryObj, response, sessionObj )
 {
     response.writeHead(200, {'Content-Type': 'text/plain'});
     //sanity test to make sure required parameter can not be undefined
@@ -74,7 +74,7 @@ function exponentNumber( queryObj, response )
 }
 
 //test function for handling a post request
-function handleNewUserForm( queryObj, response )
+function handleNewUserForm( queryObj, response, sessionObj )
 {
     response.writeHead( 200, {'Content-Type': 'text/plain'});
     if ( queryObj.username === undefined || queryObj.password === undefined )
@@ -89,7 +89,7 @@ function handleNewUserForm( queryObj, response )
 }
 
 //responds with all the quotes in the database
-function returnAllQuotes( queryObj , response )
+function returnAllQuotes( queryObj , response, sessionObj )
 {
     dataAPI.getAllQuotes( function( results ) {
         response.writeHead(200, {'Content-Type': 'text/json'});
@@ -99,15 +99,32 @@ function returnAllQuotes( queryObj , response )
 }
 
 //sends back a 500 error
-function respondServerError( queryObj, response )
+function respondServerError( queryObj, response, sessionObj )
 {
     response.writeHead( 500, {'Content-Type': 'text/plain'});
     response.write( "500 Internal Server Error" );
     response.end();
 }
 
+//tests session handling
+function testSession( queryObj, response, sessionObj )
+{
+    if ( sessionObj.data.whale )
+    {
+        sessionObj.data.whale = "NO";
+    }
+    else
+    {
+        sessionObj.data.whale = "yes";
+    }
+
+    response.writeHead( 200, {'Content-Type': 'text/plain'});
+    response.write( "SESSION " + sessionObj.data.whale );
+    response.end();    
+}
+
 //creates a quote with the parameters given and responds with json representation of the new quote
-function postQuote( queryObj , response )
+function postQuote( queryObj , response, sessionObj )
 {
     //if either of the two required parameters is undefined then something is wrong with the urlHandler since it should have caught this
     //in this case,respond with a 500 error
@@ -127,7 +144,7 @@ function postQuote( queryObj , response )
 }
 
 //endpoint for upvoting a quote
-function postUpvoteQuote( queryObj, response )
+function postUpvoteQuote( queryObj, response, sessionObj )
 {
     //if the only required parameter is undefined then something is wrong with the urlHandler since it should have caught this
     //in this case,respond with a 500 error
@@ -157,7 +174,7 @@ function postUpvoteQuote( queryObj, response )
 }
 
 //endpoint for downvoting a quote
-function postDownvoteQuote( queryObj, response )
+function postDownvoteQuote( queryObj, response, sessionObj )
 {
     //if the only required parameter is undefined then something is wrong with the urlHandler since it should have caught this
     //in this case,respond with a 500 error
@@ -187,7 +204,7 @@ function postDownvoteQuote( queryObj, response )
 }
 
 //redirects to the index.html file
-function redirectIndex( queryObj, response )
+function redirectIndex( queryObj, response, sessionObj )
 {
     urlHandler.redirectToUrl( response , "/index.html" );
 }
@@ -198,11 +215,14 @@ function setupHandlers()
     //sets up a simple redirect to index.html when empty path is given
     urlHandler.registerObserver( "GET" , "/" , [] , redirectIndex, standardErrorCall );
     //setups the other observers to test various functionality
+    /*
     urlHandler.registerObserver( "GET", "/hello" , [] , helloWorld, standardErrorCall );
     urlHandler.registerObserver( "GET" , "/square" , [ { "name" : "number" , "type" : "float" , "required" : true } ], squareNumber, standardErrorCall );
     urlHandler.registerObserver( "GET" , "/exponent" , [ { "name" : "number" , "type" : "float" , "required" : true } , { "name" : "exp" , "type" : "float" , "required" : false } ], exponentNumber, standardErrorCall );
     urlHandler.registerObserver( "POST" , "/newUser" , [ urlHandler.createParameter( "username" , "string" , true ) , urlHandler.createParameter( "password" , "string" , true ) ], handleNewUserForm, standardErrorCall );
     urlHandler.registerObserver( "GET" , "/errorTest" , [] , respondServerError , standardErrorCall );
+    */
+    urlHandler.registerObserver( "GET" , "/sessionTest" , [] , testSession, standardErrorCall );
     //setup the observer for getting all quotes
     urlHandler.registerObserver( "GET" , "/quotes" , [] , returnAllQuotes, outputErrorAsJson );
     urlHandler.registerObserver( "POST" , "/newQuote" , [ urlHandler.createParameter( "author" , "string" , true ) , urlHandler.createParameter( "body" , "string" , true ) ], postQuote, outputErrorAsJson );

@@ -31,6 +31,7 @@ var validator = require('validator');
 var fs = require('fs'); 
 var qs = require('querystring');
 var mime = require('mime');
+var sessionCookie = require( "./sessionCookie" );
 
 //holds a dictionary where the key is a path on the server and the value is an observer object
 var handlerObservers = {};
@@ -234,13 +235,15 @@ parameters:
 returns:
     nothing
 */
-function validateAndCall( observer, requestParams, response )
+function validateAndCall( observer, requestParams, request, response )
 {
     var validatedObj = checkParameters( observer.params, requestParams );
     //if the parameters were validated successfully,then call the callback function in the observer object
     if ( validatedObj.errors.length == 0 )
     {
-        observer.callback( requestParams, response );
+        var sessionObj = sessionCookie.onEntry( request, response );
+        observer.callback( requestParams, response, sessionObj );
+        sessionCookie.onExit( request, response, sessionObj.key, sessionObj.data );
     }
     else
     {
@@ -267,7 +270,7 @@ function handleGet( request, response, parsedUrl )
     //if there is a particular observer for the pathname specified in the request
     if ( handlerObservers[ parsedUrl.pathname ] )
     {
-        return validateAndCall( handlerObservers[ parsedUrl.pathname ], parsedUrl.query, response );
+        return validateAndCall( handlerObservers[ parsedUrl.pathname ], parsedUrl.query, request, response );
     }
     else
     {
@@ -316,7 +319,7 @@ function handlePost( request, response, parsedUrl )
     request.on( 'end', function() 
     {
         var formData = qs.parse(requestBody);
-        return validateAndCall( handlerObservers[ parsedUrl.pathname ], formData, response );
+        return validateAndCall( handlerObservers[ parsedUrl.pathname ], formData, request, response );
     });
 }
 

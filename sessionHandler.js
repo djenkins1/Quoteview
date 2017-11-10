@@ -27,7 +27,7 @@ returns:
 */
 function pathFromSessionKey( key )
 {
-    return "./session" + key + ".json";
+    return "./session/" + key + ".json";
 }
 
 /*
@@ -49,8 +49,27 @@ function session_start()
         throw new Error( "SESSION ALREADY EXISTS: " + sessionKey );
     }
     
-    fs.writeFileSync( sessionFilePath, "" , 'utf-8' );
+    fs.writeFileSync( sessionFilePath, "{}" , 'utf-8' );
     return sessionKey;
+}
+
+/*
+function: session_exists
+info:
+    Can be used to check whether a session with the key given is valid.
+parameters:
+    sessionKey, string, the key identifying a session
+returns:
+    boolean, true if session with key exists or false otherwise
+*/
+function session_exists( sessionKey )
+{
+    if ( sessionKey == undefined )
+    {
+        return false;
+    }
+    var sessionFilePath = pathFromSessionKey( sessionKey );
+    return ( fs.existsSync( sessionFilePath  ) );
 }
 
 /*
@@ -104,4 +123,5 @@ exports.session_read = session_read;
 exports.session_destroy = session_destroy;
 exports.session_write = session_write;
 exports.session_start = session_start;
+exports.session_exists = session_exists;
 
