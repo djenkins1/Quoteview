@@ -82,6 +82,7 @@ parameters:
     onFinish, function, the function to be called when the quote has been inserted
 returns:
     nothing
+TODO: need to also insert the creatorId
 */
 function createQuote( author, body, onFinish )
 {
@@ -183,9 +184,9 @@ function createUser( username, password, onFinish )
     });
 }
 
-function verifyUserCredentials( username, password, onSuccess, onFailure )
+function verifyUserCredentials( username, password, onFinish )
 {
-
+    //TODO: call onFinish with result if user credentials check out/don't
 }
 
 //add the functions above to this module so that they are usable outside of the module
