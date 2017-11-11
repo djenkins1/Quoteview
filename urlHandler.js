@@ -238,10 +238,10 @@ returns:
 function validateAndCall( observer, requestParams, request, response )
 {
     var validatedObj = checkParameters( observer.params, requestParams );
+    var sessionObj = sessionCookie.onEntry( request, response );
     //if the parameters were validated successfully,then call the callback function in the observer object
     if ( validatedObj.errors.length == 0 )
     {
-        var sessionObj = sessionCookie.onEntry( request, response );
         observer.callback( requestParams, response, sessionObj, function( sessionData )
         {
             end( request, response, sessionData ); 

@@ -7,6 +7,10 @@ Info:
 */
 
 var mysql = require('mysql');
+var bcrypt = require('bcrypt');
+
+//how many rounds of hashing should be used
+const SALT_ROUNDS = 10;
 
 //global singleton of the mysql connection object
 var _conn = undefined;
@@ -164,6 +168,25 @@ function getQuoteById( qid, onFinish )
     });
 }
 
+function createUser( username, password, onFinish )
+{
+    var conn = getDefaultConn();
+    bcrypt.hash( password, SALT_ROUNDS, function(err, hash) 
+    {
+        // Store hash in your password DB.
+        conn.query("INSERT INTO USERS( username, password, role ) VALUES( ? , ? , 'user' )", [ username, hash ] , function (err, result, fields) 
+        {
+            if (err) throw err;
+
+            onFinish( result ); 
+        });
+    });
+}
+
+function verifyUserCredentials( username, password, onSuccess, onFailure )
+{
+
+}
 
 //add the functions above to this module so that they are usable outside of the module
 exports.getAllQuotes = getAllQuotes;
@@ -171,4 +194,6 @@ exports.createQuote = createQuote;
 exports.upvoteQuote = upvoteQuote;
 exports.downvoteQuote = downvoteQuote;
 exports.getQuoteById = getQuoteById;
+exports.createUser = createUser;
+exports.verifyUserCredentials = verifyUserCredentials;
 

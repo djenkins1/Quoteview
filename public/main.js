@@ -220,6 +220,25 @@ function handleNewQuoteForm( e )
     return false;
 }
 
+function handleNewUserForm( e )
+{
+    console.log( "HERE" );
+    $( "#newUserForm" ).submit();
+    e.preventDefault();
+    return false;
+}
+
+function changeModal( title, body, yesText, noText, onYes )
+{
+    $( "#basicModal .modal-title" ).text( title );
+    $( '#basicModal .modal-body' ).html( body );
+    $( "#basicModalYes" ).text( yesText  );
+    $( "#basicModalYes" ).off( "click" );
+    $( "#basicModalYes" ).on( "click" , onYes );
+    $( "#basicModalCancel" ).text( noText );
+    $( "#basicModal" ).modal();
+}
+
 $( document ).ready(
 function()
 {
@@ -238,17 +257,21 @@ function()
 
     $( "#newQuoteLink" ).on( "click" , function( e )
     {
-        $( "#basicModal .modal-title" ).text( "Add New Quote" );
         var modalBodyHTML = "<form action='/newQuote' id='newQuoteForm' method='post'>";
         modalBodyHTML += "<input size='41' type='text' name='author' placeholder='Author' /><br><br>";
         modalBodyHTML += "<textarea rows='8' cols='40' name='body' placeholder='Text'></textarea>";
         modalBodyHTML += "</form>";
-        $( '#basicModal .modal-body' ).html( modalBodyHTML );
-        $( "#basicModalYes" ).text( "Add" );
-        $( "#basicModalYes" ).off( "click" );
-        $( "#basicModalYes" ).on( "click" , handleNewQuoteForm );
-        $( "#basicModalCancel" ).text( "Cancel" );
-        $( "#basicModal" ).modal();
+        changeModal( "Add New Quote", modalBodyHTML, "Add" , "Cancel" , handleNewQuoteForm );
         e.preventDefault();
+    });
+
+    $( "#newUserLink" ).on( "click" , function( e )
+    {
+        var modalBodyHTML = "<form action='/newUser' id='newUserForm' method='post'>";
+        modalBodyHTML += "<input size='30' type='text' name='username' placeholder='Username' /><br><br>";
+        modalBodyHTML += "<input size='30' type='password' name='password' placeholder='Password' />";
+        modalBodyHTML += "</form>";
+        changeModal( "Sign Up", modalBodyHTML, "Sign Up" , "Cancel" , handleNewUserForm );
+        e.preventDefault();        
     });
 });

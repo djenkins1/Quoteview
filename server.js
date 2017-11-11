@@ -35,7 +35,7 @@ function squareNumber( queryObj, response, sessionObj, onFinish )
     if ( queryObj.number == undefined )
     {
         console.log( "Problem, required number undefined" );
-        respondServerError( queryObj, response );
+        respondServerError( queryObj, response, sessionObj, onFinish );
         return;
     }
 
@@ -52,7 +52,7 @@ function exponentNumber( queryObj, response, sessionObj, onFinish )
     if ( queryObj.number == undefined )
     {
         console.log( "Problem, required number undefined" );
-        respondServerError( queryObj, response );
+        respondServerError( queryObj, response, sessionObj, onFinish );
         return;
     }
 
@@ -111,6 +111,33 @@ function testDeleteSession( queryObj, response, sessionObj, onFinish )
     onFinish( sessionObj );
 }
 
+//creates the user and redirects to index
+function testCreateUser( queryObj, response, sessionObj, onFinish )
+{
+    //if either of the two required parameters are undefined then something went wrong with server code
+    if ( queryObj.username == undefined || queryObj.password == undefined )
+    {
+        console.log( "Problem, required parameters undefined" );
+        respondServerError( queryObj, response, sessionObj, onFinish );
+        return;
+    }
+
+    //if the current session already has a user logged in,then cannot create a new user
+    if ( sessionObj.data.user )
+    {
+        console.log( "Already logged in as userId: " , sessionObj.data.user );
+        redirectIndex( queryObj, response, sessionObj, onFinish );  
+        return;
+    }
+
+    //create a user and log in as them,then redirect to index
+    dataAPI.createUser( queryObj.username, queryObj.password, function( result ) 
+    {
+        sessionObj.data.user  = result.insertId;
+        redirectIndex( queryObj, response, sessionObj, onFinish );
+    });
+}
+
 //creates a quote with the parameters given and responds with json representation of the new quote
 function postQuote( queryObj , response, sessionObj, onFinish )
 {
@@ -119,7 +146,7 @@ function postQuote( queryObj , response, sessionObj, onFinish )
     if ( queryObj.author == undefined || queryObj.body == undefined )
     {
         console.log( "Problem, required parameters undefined" );
-        respondServerError( queryObj, response );
+        respondServerError( queryObj, response, sessionObj, onFinish );
         return;
     }
 
@@ -139,7 +166,7 @@ function postUpvoteQuote( queryObj, response, sessionObj, onFinish )
     if ( queryObj.qid == undefined )
     {
         console.log( "Problem, required parameters undefined" );
-        respondServerError( queryObj, response );
+        respondServerError( queryObj, response, sessionObj, onFinish );
         return;
     }
 
@@ -168,7 +195,7 @@ function postDownvoteQuote( queryObj, response, sessionObj, onFinish )
     if ( queryObj.qid == undefined )
     {
         console.log( "Problem, required parameters undefined" );
-        respondServerError( queryObj, response );
+        respondServerError( queryObj, response, sessionObj, onFinish );
         return;
     }
 
@@ -214,6 +241,7 @@ function setupHandlers()
     urlHandler.registerObserver( "POST" , "/newQuote" , [ urlHandler.createParameter( "author" , "string" , true ) , urlHandler.createParameter( "body" , "string" , true ) ], postQuote, outputErrorAsJson );
     urlHandler.registerObserver( "POST" , "/upvoteQuote" , [ urlHandler.createParameter( "qid" , "string" , true ) ], postUpvoteQuote, outputErrorAsJson );
     urlHandler.registerObserver( "POST" , "/downvoteQuote" , [ urlHandler.createParameter( "qid" , "string" , true ) ], postDownvoteQuote, outputErrorAsJson );
+    urlHandler.registerObserver( "POST" , "/newUser" , [ urlHandler.createParameter( "username" , "string" , true ) , urlHandler.createParameter( "password" , "string" , true ) ], testCreateUser , standardErrorCall );
 }
 
 //grab the command line arguments

@@ -2,12 +2,27 @@ CREATE DATABASE IF NOT EXISTS QUOTES;
 USE QUOTES;
 
 DROP TABLE IF EXISTS QUOTE;
+DROP TABLE IF EXISTS USERS;
+
+CREATE TABLE USERS
+(
+    userId   int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    username VARCHAR( 256 ) NOT NULL,
+    password VARCHAR( 256 ) NOT NULL,
+    role     VARCHAR( 64 ) NOT NULL,
+    UNIQUE( username )
+);
+
+
 CREATE TABLE QUOTE
 (
     qid      int PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    author  varchar( 256 ) NOT NULL,
-    body    text NOT NULL,
-    score   int NOT NULL
+    author   varchar( 256 ) NOT NULL,
+    body     text NOT NULL,
+    score    int NOT NULL,
+    creatorId int NOT NULL,
+    FOREIGN KEY (creatorId) REFERENCES USERS(userId)
+    ON DELETE CASCADE
 );
 
-INSERT INTO QUOTE( author, body, score ) VALUES( 'Dilan Jenkins' , 'Hello, World!' , 0 );
+
