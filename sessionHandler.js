@@ -27,7 +27,7 @@ returns:
 */
 function pathFromSessionKey( key )
 {
-    return "./session/" + key + ".json";
+    return "./session/" + encodeURIComponent( key ) + ".json";
 }
 
 /*

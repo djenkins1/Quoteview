@@ -4,16 +4,10 @@ var urlHandler = require('./urlHandler');
 var execsql = require('execsql');
 var dataAPI = require( "./dataAPI" );
 
-//test function for no parameters
-function helloWorld( queryObj, response, sessionObj )
-{
-    response.writeHead(200, {'Content-Type': 'text/plain'});
-    response.write( "Hello World\n" );
-    response.end();
-}
+//TODO: login and users
 
 //simple error function that displays whatever errors occurred
-function standardErrorCall( errorList, queryObj, response, sessionObj )
+function standardErrorCall( errorList, queryObj, response, sessionObj, onFinish )
 {
     response.writeHead(200, {'Content-Type': 'text/plain'});
     for ( var i = 0; i < errorList.length; i++ )
@@ -21,20 +15,20 @@ function standardErrorCall( errorList, queryObj, response, sessionObj )
         response.write( errorList[ i ].name + ": " + errorList[ i ].problem + "\n" );
     }
 
-    response.end();
+    onFinish( sessionObj );
 }
 
 //error function that responds with whatever errors occurred in a json format
-function outputErrorAsJson( errorList ,queryObj, response, sessionObj )
+function outputErrorAsJson( errorList ,queryObj, response, sessionObj, onFinish )
 {
     response.writeHead( 400, {'Content-Type': 'text/json'});
     var errorObj = { "error" : true , "errors" : errorList };
     response.write( JSON.stringify( errorObj ) );
-    response.end();
+    onFinish( sessionObj );
 }
 
 //test function for required parameters of specific type
-function squareNumber( queryObj, response, sessionObj )
+function squareNumber( queryObj, response, sessionObj, onFinish )
 {
     response.writeHead(200, {'Content-Type': 'text/plain'});
     //sanity test to make sure required parameter can not be undefined
@@ -47,11 +41,11 @@ function squareNumber( queryObj, response, sessionObj )
 
     var squared = Number( queryObj.number ) * Number( queryObj.number );
     response.write( queryObj.number + " squared is " + squared +  "\n" );  
-    response.end();  
+    onFinish( sessionObj ); 
 }
 
 //test function for mix of required and optional parameters of specific type
-function exponentNumber( queryObj, response, sessionObj )
+function exponentNumber( queryObj, response, sessionObj, onFinish )
 {
     response.writeHead(200, {'Content-Type': 'text/plain'});
     //sanity test to make sure required parameter can not be undefined
@@ -70,44 +64,29 @@ function exponentNumber( queryObj, response, sessionObj )
 
     var result = Math.pow( Number( queryObj.number ) , toPower );
     response.write( queryObj.number + " to the power of " + toPower + " is " + result +  "\n" );  
-    response.end();  
-}
-
-//test function for handling a post request
-function handleNewUserForm( queryObj, response, sessionObj )
-{
-    response.writeHead( 200, {'Content-Type': 'text/plain'});
-    if ( queryObj.username === undefined || queryObj.password === undefined )
-    {
-        console.log( "Problem, required parameters undefined" );
-        return;
-    }
-
-    response.write( "Username: " + queryObj.username + "\n" );
-    response.write( "Password: " + queryObj.password + "\n" );
-    response.end();
+    onFinish( sessionObj );
 }
 
 //responds with all the quotes in the database
-function returnAllQuotes( queryObj , response, sessionObj )
+function returnAllQuotes( queryObj , response, sessionObj, onFinish )
 {
     dataAPI.getAllQuotes( function( results ) {
         response.writeHead(200, {'Content-Type': 'text/json'});
         response.write( JSON.stringify( results ) );
-        response.end();
+        onFinish( sessionObj );
     });
 }
 
 //sends back a 500 error
-function respondServerError( queryObj, response, sessionObj )
+function respondServerError( queryObj, response, sessionObj, onFinish )
 {
     response.writeHead( 500, {'Content-Type': 'text/plain'});
     response.write( "500 Internal Server Error" );
-    response.end();
+    onFinish( sessionObj );
 }
 
 //tests session handling
-function testSession( queryObj, response, sessionObj )
+function testSession( queryObj, response, sessionObj, onFinish )
 {
     if ( sessionObj.data.whale )
     {
@@ -120,11 +99,11 @@ function testSession( queryObj, response, sessionObj )
 
     response.writeHead( 200, {'Content-Type': 'text/plain'});
     response.write( "SESSION " + sessionObj.data.whale );
-    response.end();    
+    onFinish( sessionObj );
 }
 
 //creates a quote with the parameters given and responds with json representation of the new quote
-function postQuote( queryObj , response, sessionObj )
+function postQuote( queryObj , response, sessionObj, onFinish )
 {
     //if either of the two required parameters is undefined then something is wrong with the urlHandler since it should have caught this
     //in this case,respond with a 500 error
@@ -139,12 +118,12 @@ function postQuote( queryObj , response, sessionObj )
         response.writeHead(200, {'Content-Type': 'text/json'});
         var resultObj = { "qid" : result.insertId , "author" : queryObj.author , "body" : queryObj.body , "score" : 0 };
         response.write( JSON.stringify( resultObj ) );
-        response.end();        
+        onFinish( sessionObj );     
     });
 }
 
 //endpoint for upvoting a quote
-function postUpvoteQuote( queryObj, response, sessionObj )
+function postUpvoteQuote( queryObj, response, sessionObj, onFinish )
 {
     //if the only required parameter is undefined then something is wrong with the urlHandler since it should have caught this
     //in this case,respond with a 500 error
@@ -167,14 +146,13 @@ function postUpvoteQuote( queryObj, response, sessionObj )
         {
             response.writeHead( 200, {'Content-Type': 'text/json'});
             response.write( JSON.stringify( result ) );
-            response.end();
-            return;          
+            onFinish( sessionObj );        
         });
     });    
 }
 
 //endpoint for downvoting a quote
-function postDownvoteQuote( queryObj, response, sessionObj )
+function postDownvoteQuote( queryObj, response, sessionObj, onFinish )
 {
     //if the only required parameter is undefined then something is wrong with the urlHandler since it should have caught this
     //in this case,respond with a 500 error
@@ -197,16 +175,15 @@ function postDownvoteQuote( queryObj, response, sessionObj )
         {
             response.writeHead( 200, {'Content-Type': 'text/json'});
             response.write( JSON.stringify( result ) );
-            response.end();
-            return;          
+            onFinish( sessionObj );       
         });
     });  
 }
 
 //redirects to the index.html file
-function redirectIndex( queryObj, response, sessionObj )
+function redirectIndex( queryObj, response, sessionObj, onFinish )
 {
-    urlHandler.redirectToUrl( response , "/index.html" );
+    urlHandler.redirectToUrl( response , "/index.html", sessionObj, onFinish );
 }
 
 //setups the observer handlers
@@ -219,7 +196,6 @@ function setupHandlers()
     urlHandler.registerObserver( "GET", "/hello" , [] , helloWorld, standardErrorCall );
     urlHandler.registerObserver( "GET" , "/square" , [ { "name" : "number" , "type" : "float" , "required" : true } ], squareNumber, standardErrorCall );
     urlHandler.registerObserver( "GET" , "/exponent" , [ { "name" : "number" , "type" : "float" , "required" : true } , { "name" : "exp" , "type" : "float" , "required" : false } ], exponentNumber, standardErrorCall );
-    urlHandler.registerObserver( "POST" , "/newUser" , [ urlHandler.createParameter( "username" , "string" , true ) , urlHandler.createParameter( "password" , "string" , true ) ], handleNewUserForm, standardErrorCall );
     urlHandler.registerObserver( "GET" , "/errorTest" , [] , respondServerError , standardErrorCall );
     */
     urlHandler.registerObserver( "GET" , "/sessionTest" , [] , testSession, standardErrorCall );

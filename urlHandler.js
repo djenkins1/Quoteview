@@ -62,11 +62,11 @@ parameters:
 returns:
     nothing
 */
-function redirectToUrl( response, redirectTo )
+function redirectToUrl( response, redirectTo, sessionObj, onFinish )
 {
     console.log( "Redirecting to: " , redirectTo );
     response.writeHead(302,  {Location: redirectTo } );
-    response.end();
+    onFinish( sessionObj );
 }
 
 /*
@@ -242,13 +242,19 @@ function validateAndCall( observer, requestParams, request, response )
     if ( validatedObj.errors.length == 0 )
     {
         var sessionObj = sessionCookie.onEntry( request, response );
-        observer.callback( requestParams, response, sessionObj );
-        sessionCookie.onExit( request, response, sessionObj.key, sessionObj.data );
+        observer.callback( requestParams, response, sessionObj, function( sessionData )
+        {
+            end( request, response, sessionData ); 
+        } );
+
     }
     else
     {
         //at least one of the parameters was invalid,call the onError function in the observer object
-        observer.onError( validatedObj.errors, requestParams, response );
+        observer.onError( validatedObj.errors, requestParams, response, sessionObj, function( sessionData )
+        {
+            end( request, response, sessionData ); 
+        } );
     }
 }
 
@@ -358,6 +364,26 @@ function handleUrl( request, response )
         response.end('405: Method Not Supported');
         return;
     }
+}
+
+/*
+function: end
+info:
+    This function is called when an observer is done handling a request.
+    It updates the session and ends the response.
+parameters:
+    request, object, an http request object
+    response, object, an http response object
+    sessionObj, object, an object with attributes:
+        key, string, the session token
+        data, object, the data for the session
+returns:
+    nothing
+*/
+function end( request, response, sessionObj )
+{
+    sessionCookie.onExit( request, response, sessionObj.key, sessionObj.data );
+    response.end();
 }
 
 //add the functions above to this module so that they are usable outside of the module
