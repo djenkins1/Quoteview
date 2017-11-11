@@ -382,7 +382,13 @@ returns:
 */
 function end( request, response, sessionObj )
 {
-    sessionCookie.onExit( request, response, sessionObj.key, sessionObj.data );
+    var shouldDelete = false;
+    if ( sessionObj.deleted )
+    {
+        shouldDelete = true;
+    }
+
+    sessionCookie.onExit( request, response, sessionObj.key, sessionObj.data, shouldDelete );
     response.end();
 }
 

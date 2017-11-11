@@ -44,22 +44,18 @@ parameters:
     request, object, an http request object
     response, object, an http response object
     sessionToken, string, a key for a session
-        if undefined then the session is deleted
     sessionData, object, the data for the session that is to be written out
+    shouldDelete, boolean, whether the session should be deleted(true) or not(anything not true)
+returns:
+    nothing
 */
-function onExit( request, response, sessionToken, sessionData )
+function onExit( request, response, sessionToken, sessionData, shouldDelete )
 {
-    /*
-    //TODO: cannot write out to response if it has ended,but async database calls cause problems
-    if ( sessionToken == undefined )
+    if ( shouldDelete )
     {
-        session.session_destroy( sesionToken );
-        var cookieObj = new Cookies( request, response );
-        //if set is called with only one parameter than it deletes the cookie
-        cookieObj.set( SESSION_NAME );
+        session.session_destroy( sessionToken );
         return;
     }
-    */
 
     if ( !session.session_exists( sessionToken ) )
     {

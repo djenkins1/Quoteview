@@ -102,6 +102,15 @@ function testSession( queryObj, response, sessionObj, onFinish )
     onFinish( sessionObj );
 }
 
+//test that a session gets deleted correctly
+function testDeleteSession( queryObj, response, sessionObj, onFinish )
+{
+    sessionObj.deleted = true;
+    response.writeHead( 200, {'Content-Type': 'text/plain'});
+    response.write( "DELETING SESSION" );
+    onFinish( sessionObj );
+}
+
 //creates a quote with the parameters given and responds with json representation of the new quote
 function postQuote( queryObj , response, sessionObj, onFinish )
 {
@@ -199,6 +208,7 @@ function setupHandlers()
     urlHandler.registerObserver( "GET" , "/errorTest" , [] , respondServerError , standardErrorCall );
     */
     urlHandler.registerObserver( "GET" , "/sessionTest" , [] , testSession, standardErrorCall );
+    urlHandler.registerObserver( "GET" , "/sessionDelete" , [] , testDeleteSession, standardErrorCall );
     //setup the observer for getting all quotes
     urlHandler.registerObserver( "GET" , "/quotes" , [] , returnAllQuotes, outputErrorAsJson );
     urlHandler.registerObserver( "POST" , "/newQuote" , [ urlHandler.createParameter( "author" , "string" , true ) , urlHandler.createParameter( "body" , "string" , true ) ], postQuote, outputErrorAsJson );
