@@ -79,15 +79,15 @@ info:
 parameters:
     author, string, the author of the quote
     body, string, the text of the quote
+    creatorId, int, id of a user who created the quote on the site
     onFinish, function, the function to be called when the quote has been inserted
 returns:
     nothing
-TODO: need to also insert the creatorId
 */
-function createQuote( author, body, onFinish )
+function createQuote( author, body, creatorId, onFinish )
 {
     var conn = getDefaultConn();
-    conn.query("INSERT INTO QUOTE( author, body, score ) VALUES( ? , ? , 0 )", [ author, body ] , function (err, result, fields) 
+    conn.query("INSERT INTO QUOTE( author, body, score, creatorId ) VALUES( ? , ? , 0 , ? )", [ author, body, creatorId ] , function (err, result, fields) 
     {
         if (err) throw err;
 
@@ -169,6 +169,17 @@ function getQuoteById( qid, onFinish )
     });
 }
 
+/*
+function: createUser
+info:
+    This function uses the database to create a row in the users table.
+parameters:
+    username, string, the username for the new user
+    password, string, the password for the new user
+    onFinish, function, the function to be called when the user has been created
+returns:
+    nothing
+*/
 function createUser( username, password, onFinish )
 {
     var conn = getDefaultConn();
@@ -184,10 +195,72 @@ function createUser( username, password, onFinish )
     });
 }
 
+/*
+function: getUserData
+info:
+    This function gets the data in the row in the users table that is identified by the userId given.
+parameters:
+    userId, int, the id of the user
+    onFinish, function, the function to be called for results to be passed on when the database query is done
+returns:
+    nothing
+*/
+function getUserData( userId, onFinish )
+{
+    var conn = getDefaultConn();
+    conn.query("SELECT * FROM users WHERE userId=? LIMIT 1", [ userId ] , function (err, result, fields) 
+    {
+        if (err) throw err;
+
+        //send back exactly one row,or if no rows were in the result then send back empty object
+        var resultObj = {};
+        if ( result.length > 0 )
+        {
+            resultObj = result[ 0 ];
+        }
+
+        onFinish( resultObj ); 
+    });
+}
+
+/*
+function: verifyUserCredentials
+info:
+    This function queries the database to see if the username and password match
+*/
 function verifyUserCredentials( username, password, onFinish )
 {
-    //TODO: call onFinish with result if user credentials check out/don't
+    var conn = getDefaultConn();
+    conn.query("SELECT * FROM users WHERE username=? LIMIT 1", [ username ] , function (err, result, fields) 
+    {
+        if (err) throw err;
+
+        //send back exactly one row,or if no rows were in the result then send back empty object
+        var resultObj = {};
+        if ( result.length > 0 )
+        {
+            resultObj = result[ 0 ];
+        }
+
+        if ( resultObj.password )
+        {
+            // Load hash from your password DB.
+            bcrypt.compare( password, resultObj.password, function(err, res) 
+            {
+                if ( err ) throw err;
+
+                resultObj.password = undefined;
+                onFinish( res, resultObj );
+            });
+        }
+        else
+        {
+            onFinish( false, resultObj ); 
+        }
+    });
 }
+
+
 
 //add the functions above to this module so that they are usable outside of the module
 exports.getAllQuotes = getAllQuotes;
@@ -197,4 +270,5 @@ exports.downvoteQuote = downvoteQuote;
 exports.getQuoteById = getQuoteById;
 exports.createUser = createUser;
 exports.verifyUserCredentials = verifyUserCredentials;
+exports.getUserData = getUserData;
 

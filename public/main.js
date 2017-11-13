@@ -243,7 +243,8 @@ $( document ).ready(
 function()
 {
     //TODO: rate limit upvote/downvote of quotes so that can only vote once per second
-    //TODO: user login/password and creator field for quotes
+    //TODO: show creator of a quote on the quote somewhere
+    //TODO: if a user is logged in should show there username in the navbar(?) or somewhere
 
     $.get( "/quotes" , function( data, status )
     {
@@ -255,6 +256,7 @@ function()
         }
     });
 
+    //TODO: handle not logged in, maybe use endpoint /userData
     $( "#newQuoteLink" ).on( "click" , function( e )
     {
         var modalBodyHTML = "<form action='/newQuote' id='newQuoteForm' method='post'>";
@@ -265,11 +267,13 @@ function()
         e.preventDefault();
     });
 
+    //TODO: post should not cause redirect, use json response to change page view
     $( "#newUserLink" ).on( "click" , function( e )
     {
-        var modalBodyHTML = "<form action='/newUser' id='newUserForm' method='post'>";
+        var modalBodyHTML = "<form action='/login' id='newUserForm' method='post'>";
         modalBodyHTML += "<input size='30' type='text' name='username' placeholder='Username' /><br><br>";
         modalBodyHTML += "<input size='30' type='password' name='password' placeholder='Password' />";
+        //TODO: toggle between sign up(/newUser) and login(/login)
         modalBodyHTML += "</form>";
         changeModal( "Sign Up", modalBodyHTML, "Sign Up" , "Cancel" , handleNewUserForm );
         e.preventDefault();        
