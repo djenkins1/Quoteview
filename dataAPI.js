@@ -196,6 +196,34 @@ function createUser( username, password, onFinish )
 }
 
 /*
+function: isUsernameTaken
+info:
+    This function calls onFinish with the results of whether the username given already exists.
+parameters:
+    username, string, the username to check
+    onFinish, function, the function called when the database query is finished
+returns:
+    nothing
+*/
+function isUsernameTaken( username, onFinish )
+{
+    var conn = getDefaultConn();
+    conn.query("SELECT * FROM users WHERE username=? LIMIT 1", [ username ] , function (err, result, fields) 
+    {
+        if (err) throw err;
+
+        var alreadyExists = false;
+        //if there were any users in the result then the username already exists
+        if ( result.length > 0 )
+        {
+            alreadyExists = true;
+        }
+
+        onFinish( alreadyExists ); 
+    });
+}
+
+/*
 function: getUserData
 info:
     This function gets the data in the row in the users table that is identified by the userId given.
@@ -271,4 +299,5 @@ exports.getQuoteById = getQuoteById;
 exports.createUser = createUser;
 exports.verifyUserCredentials = verifyUserCredentials;
 exports.getUserData = getUserData;
+exports.isUsernameTaken = isUsernameTaken;
 

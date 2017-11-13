@@ -22,7 +22,7 @@ function standardErrorCall( errorList, queryObj, response, sessionObj, onFinish 
 //error function that responds with whatever errors occurred in a json format
 function outputErrorAsJson( errorList ,queryObj, response, sessionObj, onFinish )
 {
-    response.writeHead( 400, {'Content-Type': 'text/json'});
+    response.writeHead( 200, {'Content-Type': 'text/json'});
     var errorObj = { "error" : true , "errors" : errorList };
     response.write( JSON.stringify( errorObj ) );
     onFinish( sessionObj );
@@ -150,14 +150,24 @@ function testCreateUser( queryObj, response, sessionObj, onFinish )
         return;
     }
 
-    //create a user and log in as them,then redirect to index
-    dataAPI.createUser( queryObj.username, queryObj.password, function( result ) 
+    dataAPI.isUsernameTaken( queryObj.username , function( result )
     {
-        sessionObj.data.user = result.insertId;
-        response.writeHead(200, {'Content-Type': 'text/json'});
-        var userObj = { "userId" : result.insertId , "username" : queryObj.username, "role" : "user" };
-        response.write( JSON.stringify( userObj ) );
-        onFinish( sessionObj ); 
+        if ( result )
+        {
+            var errorList = [ { "name" : "user" , "problem" : "already taken" } ];
+            outputErrorAsJson( errorList, queryObj, response, sessionObj, onFinish );
+            return;
+        }
+
+        //create a user and log in as them,then redirect to index
+        dataAPI.createUser( queryObj.username, queryObj.password, function( result ) 
+        {
+            sessionObj.data.user = result.insertId;
+            response.writeHead(200, {'Content-Type': 'text/json'});
+            var userObj = { "userId" : result.insertId , "username" : queryObj.username, "role" : "user" };
+            response.write( JSON.stringify( userObj ) );
+            onFinish( sessionObj ); 
+        });
     });
 }
 

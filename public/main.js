@@ -204,15 +204,25 @@ function handleAddQuote( data, status )
     updateQuotesView( allQuotes, quotesByScore );
 }
 
-function handleNewQuoteForm( e )
+function getFormData( formId )
 {
-    var dataObj = {};
-    $( "#newQuoteForm" ).children().each(
+    var toReturn = {};
+    $( formId ).children().each(
     function()
     {
-        var key = $( this ).attr( "name" );
-        dataObj[ key ] = $( this ).val();
+        if ( $( this ).attr( "name" ) )
+        {
+            var key = $( this ).attr( "name" );
+            toReturn[ key ] = $( this ).val();
+        }
     });
+
+    return toReturn;
+}
+
+function handleNewQuoteForm( e )
+{
+    var dataObj = getFormData( "#newQuoteForm" );
     $.post( $( "#newQuoteForm" ).attr( "action" ) , dataObj , handleAddQuote );
     $( "#basicModalCancel" ).click();
 
@@ -222,32 +232,30 @@ function handleNewQuoteForm( e )
 
 function handleNewUserForm( e )
 {
-    if ( $( "#newUserForm" ).attr( "action" ) === "/login" )
+    var formData = getFormData( "#newUserForm" );
+    $.post( $( "#newUserForm" ).attr( "action" ), formData , function( data, status )
     {
-        //TODO: send username and password,wait for response and if response is good treat as logged in and call nowLoggedIn with response
-    }
-    else
-    {
-        //TODO: send username and password to server to see if valid choices
-        //TODO: if valid,send to server to create the new user and call nowLoggedIn with response
-        var formData = {};
-        $( "#newUserForm" ).children().each(
-        function()
+        //{ userId: 5, username: "Maxride", role: "user" }
+        if ( data.error || data.errors )
         {
-            if ( $( this ).attr( "name" ) )
+            //TODO: need to show the user the problem
+            console.log( data.errors );
+            if ( $( "#newUserForm" ).attr( "action" ) === "/login" )
             {
-                var key = $( this ).attr( "name" );
-                formData[ key ] = $( this ).val();
+
             }
-        });
+            else
+            {
 
-        $.post( $( "#newUserForm" ).attr( "action" ), formData , function( data, status )
+            }
+        }
+        else
         {
-            //{ userId: 5, username: "Maxride", role: "user" }
-            console.log( data );
-        });
-    }
-
+            nowLoggedIn( data );
+            $( "#basicModalCancel").click();
+        }
+    });
+    
     e.preventDefault();
     return false;
 }
@@ -272,11 +280,16 @@ function changeModal( title, body, yesText, noText, onYes )
 $( document ).ready(
 function()
 {
-    //TODO: rate limit upvote/downvote of quotes so that can only vote once per second
+    //TODO: if a user is already logged in should show their username in the navbar(?) or somewhere
+    //          if a user logs in through form then show their username in the navbar or somewhere
+    //FUTURE:
     //TODO: show creator of a quote on the quote somewhere
-    //TODO: if a user is logged in should show there username in the navbar(?) or somewhere
+    //          problem, need to get username from creatorId
     //TODO: pagination on quotes by using after field
     //TODO: scrolling down on page should get another page of quotes
+    //TODO: rate limit upvote/downvote of quotes so that can only vote once per second
+    //TODO: should only be able to upvote/downvote quotes if logged in
+    //TODO: should not be able to upvote/downvote own posts
 
     $.get( "/quotes" , function( data, status )
     {
