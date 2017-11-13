@@ -21,7 +21,7 @@ parameterSchema object:
     TODO: any other validation required,i.e if number must be in specific range...
 
 TODO: should be able to also specify min/max values or string lengths of values
-TODO: other types like email
+TODO: other types like email,password
 TODO: maybe move over to mongo db for dataAPI
 */
 

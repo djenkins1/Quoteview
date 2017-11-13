@@ -5,6 +5,7 @@ var execsql = require('execsql');
 var dataAPI = require( "./dataAPI" );
 
 //TODO: login and users
+//TODO: duplicate usernames needs to be handled
 
 //simple error function that displays whatever errors occurred
 function standardErrorCall( errorList, queryObj, response, sessionObj, onFinish )
@@ -144,18 +145,19 @@ function testCreateUser( queryObj, response, sessionObj, onFinish )
     //if the current session already has a user logged in,then cannot create a new user
     if ( sessionObj.data.user )
     {
-        //TODO: real endpoint should not redirect but send back json
-        console.log( "Already logged in as userId: " , sessionObj.data.user );
-        redirectIndex( queryObj, response, sessionObj, onFinish );  
+        var errorList = [ { "name" : "user" , "problem" : "already logged in" } ];
+        outputErrorAsJson( errorList, queryObj, response, sessionObj, onFinish );
         return;
     }
 
     //create a user and log in as them,then redirect to index
     dataAPI.createUser( queryObj.username, queryObj.password, function( result ) 
     {
-        //TODO: real endpoint should not redirect but send back json
-        sessionObj.data.user  = result.insertId;
-        redirectIndex( queryObj, response, sessionObj, onFinish );
+        sessionObj.data.user = result.insertId;
+        response.writeHead(200, {'Content-Type': 'text/json'});
+        var userObj = { "userId" : result.insertId , "username" : queryObj.username, "role" : "user" };
+        response.write( JSON.stringify( userObj ) );
+        onFinish( sessionObj ); 
     });
 }
 
@@ -192,6 +194,7 @@ function loginUser( queryObj, response, sessionObj, onFinish )
             return;
         }
 
+        response.writeHead(200, {'Content-Type': 'text/json'});
         sessionObj.data.user = resultObj.userId;
         response.write( JSON.stringify( resultObj ) );
         onFinish( sessionObj );         

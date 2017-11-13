@@ -222,10 +222,40 @@ function handleNewQuoteForm( e )
 
 function handleNewUserForm( e )
 {
-    console.log( "HERE" );
-    $( "#newUserForm" ).submit();
+    if ( $( "#newUserForm" ).attr( "action" ) === "/login" )
+    {
+        //TODO: send username and password,wait for response and if response is good treat as logged in and call nowLoggedIn with response
+    }
+    else
+    {
+        //TODO: send username and password to server to see if valid choices
+        //TODO: if valid,send to server to create the new user and call nowLoggedIn with response
+        var formData = {};
+        $( "#newUserForm" ).children().each(
+        function()
+        {
+            if ( $( this ).attr( "name" ) )
+            {
+                var key = $( this ).attr( "name" );
+                formData[ key ] = $( this ).val();
+            }
+        });
+
+        $.post( $( "#newUserForm" ).attr( "action" ), formData , function( data, status )
+        {
+            //{ userId: 5, username: "Maxride", role: "user" }
+            console.log( data );
+        });
+    }
+
     e.preventDefault();
     return false;
+}
+
+function nowLoggedIn( userData )
+{
+    console.log( "Now logged in:", userData );
+    $( "#newQuoteLink" ).removeClass( "disabled" );
 }
 
 function changeModal( title, body, yesText, noText, onYes )
@@ -245,6 +275,8 @@ function()
     //TODO: rate limit upvote/downvote of quotes so that can only vote once per second
     //TODO: show creator of a quote on the quote somewhere
     //TODO: if a user is logged in should show there username in the navbar(?) or somewhere
+    //TODO: pagination on quotes by using after field
+    //TODO: scrolling down on page should get another page of quotes
 
     $.get( "/quotes" , function( data, status )
     {
@@ -256,15 +288,45 @@ function()
         }
     });
 
+    //toggles between the signup and login forms
+    $( document.body ).on( "click" , "#toggleSignForm", function( e )
+    {
+        var toggledText = "Login";
+        var formAction = "/newUser";
+        var formTitle = "Sign Up";
+        if ( $( this ).text() === "Login" )
+        {
+            toggledText = "Sign Up";
+            formAction = "/login";
+            formTitle = "Login";
+        }
+
+        $( "#newUserForm" ).attr( "action" , formAction );  
+        $( this ).text( toggledText );
+        console.log( formTitle );
+        $( "#basicModal .modal-title" ).text( formTitle );
+        $( "#basicModalYes" ).text( formTitle  );
+
+        e.preventDefault();
+        return false;
+    });
+
     //TODO: handle not logged in, maybe use endpoint /userData
     $( "#newQuoteLink" ).on( "click" , function( e )
     {
+        if ( $( this ).hasClass( "disabled" ) )
+        {
+            e.preventDefault();
+            return false;
+        }
+
         var modalBodyHTML = "<form action='/newQuote' id='newQuoteForm' method='post'>";
         modalBodyHTML += "<input size='41' type='text' name='author' placeholder='Author' /><br><br>";
         modalBodyHTML += "<textarea rows='8' cols='40' name='body' placeholder='Text'></textarea>";
         modalBodyHTML += "</form>";
         changeModal( "Add New Quote", modalBodyHTML, "Add" , "Cancel" , handleNewQuoteForm );
         e.preventDefault();
+        return false;
     });
 
     //TODO: post should not cause redirect, use json response to change page view
@@ -272,10 +334,11 @@ function()
     {
         var modalBodyHTML = "<form action='/login' id='newUserForm' method='post'>";
         modalBodyHTML += "<input size='30' type='text' name='username' placeholder='Username' /><br><br>";
-        modalBodyHTML += "<input size='30' type='password' name='password' placeholder='Password' />";
+        modalBodyHTML += "<input size='30' type='password' name='password' placeholder='Password' /><br><br>";
+        modalBodyHTML += "<a href='#' id='toggleSignForm'>Sign Up</a>";
         //TODO: toggle between sign up(/newUser) and login(/login)
         modalBodyHTML += "</form>";
-        changeModal( "Sign Up", modalBodyHTML, "Sign Up" , "Cancel" , handleNewUserForm );
+        changeModal( "Login", modalBodyHTML, "Login" , "Cancel" , handleNewUserForm );
         e.preventDefault();        
     });
 });
