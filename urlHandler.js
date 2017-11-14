@@ -47,9 +47,19 @@ parameters:
 returns:
     The newly created parameterSchema object
 */
-function createParameter( name, type, isRequired )
+function createParameter( name, type, isRequired, minSize, maxSize )
 {
-    return { "name" : name , "type" : type , "required" : isRequired };
+    if ( minSize == undefined )
+    {
+        minSize = 0;
+    }
+    
+    if ( maxSize == undefined )
+    {
+        maxSize = 100;
+    }
+
+    return { "name" : name , "type" : type , "required" : isRequired, "min" : minSize , "max" : maxSize };
 }
 
 /*
@@ -155,6 +165,34 @@ function checkType( value, type )
 }
 
 /*
+function: checkLength
+info:
+    This function checks to see if the size of the value is within the bounds of the given size.
+parameters:
+    value, ANY, the value to be checked
+    type, string, what type the value is
+    minSize, int, the minimum size/value that the value can be
+    maxSize, int, the maximum size/value that the value can be
+returns:
+    true if the value is within the bounds given or false otherwise
+*/
+function checkLength( value, type, minSize, maxSize )
+{
+    if ( type == "string" )
+    {
+        return ( value.length >= minSize && value.length <= maxSize );
+    }
+
+    if ( type == "int" || type == "float" )
+    {
+        return ( value >= minSize && value <= maxSize );
+    }
+
+    console.log( "checkLength: " + value + " fell through for type " + type );
+    return false;
+}
+
+/*
 function: checkParameters
 info:
     Checks the url parameters provided to see if they match what is needed
@@ -186,6 +224,14 @@ function checkParameters( parameterSchema, queryObj )
         if ( queryObj[ schemaObj.name ] != undefined && !checkType( queryObj[ schemaObj.name ] , schemaObj.type ) )
         {
             var objError = { "name" : schemaObj.name , "problem" : "wrong type" };
+            toReturn.errors.push( objError );
+            continue;
+        }
+
+        //if the query parameter given does not match the size given,then add to error
+        if ( queryObj[ schemaObj.name ] != undefined && !checkLength( queryObj[ schemaObj.name ] , schemaObj.type, schemaObj.min , schemaObj.max ) )
+        {
+            var objError = { "name" : schemaObj.name , "problem" : "invalid length,must be at least " + schemaObj.min + " and at most " + schemaObj.max };
             toReturn.errors.push( objError );
             continue;
         }

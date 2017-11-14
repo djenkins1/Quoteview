@@ -103,6 +103,16 @@ function testSession( queryObj, response, sessionObj, onFinish )
     onFinish( sessionObj );
 }
 
+//logout the user and invalidate the session
+function logoutUser( queryObj, response, sessionObj, onFinish )
+{
+    sessionObj.deleted = true;
+    response.writeHead( 200, {'Content-Type': 'text/json'});
+    var resultObj = { "status" : "logged out" };
+    response.write( JSON.stringify( resultObj ) );
+    onFinish( sessionObj );    
+}
+
 //test that a session gets deleted correctly
 function testDeleteSession( queryObj, response, sessionObj, onFinish )
 {
@@ -325,12 +335,13 @@ function setupHandlers()
     urlHandler.registerObserver( "GET" , "/sessionDelete" , [] , testDeleteSession, standardErrorCall );
     //setup the observer for getting all quotes
     urlHandler.registerObserver( "GET" , "/quotes" , [] , returnAllQuotes, outputErrorAsJson );
-    urlHandler.registerObserver( "POST" , "/newQuote" , [ urlHandler.createParameter( "author" , "string" , true ) , urlHandler.createParameter( "body" , "string" , true ) ], postQuote, outputErrorAsJson );
-    urlHandler.registerObserver( "POST" , "/upvoteQuote" , [ urlHandler.createParameter( "qid" , "string" , true ) ], postUpvoteQuote, outputErrorAsJson );
-    urlHandler.registerObserver( "POST" , "/downvoteQuote" , [ urlHandler.createParameter( "qid" , "string" , true ) ], postDownvoteQuote, outputErrorAsJson );
-    urlHandler.registerObserver( "POST" , "/newUser" , [ urlHandler.createParameter( "username" , "string" , true ) , urlHandler.createParameter( "password" , "string" , true ) ], testCreateUser , standardErrorCall );
-    urlHandler.registerObserver( "POST" , "/login" , [ urlHandler.createParameter( "username" , "string" , true ) , urlHandler.createParameter( "password" , "string" , true ) ],  loginUser, outputErrorAsJson );
+    urlHandler.registerObserver( "POST" , "/newQuote" , [ urlHandler.createParameter( "author" , "string" , true, 5, 60 ) , urlHandler.createParameter( "body" , "string" , true, 5, 3000 ) ], postQuote, outputErrorAsJson );
+    urlHandler.registerObserver( "POST" , "/upvoteQuote" , [ urlHandler.createParameter( "qid" , "string" , true , 0 , 999999 ) ], postUpvoteQuote, outputErrorAsJson );
+    urlHandler.registerObserver( "POST" , "/downvoteQuote" , [ urlHandler.createParameter( "qid" , "string" , true , 0, 999999 ) ], postDownvoteQuote, outputErrorAsJson );
+    urlHandler.registerObserver( "POST" , "/newUser" , [ urlHandler.createParameter( "username" , "string" , true, 5, 100 ) , urlHandler.createParameter( "password" , "string" , true, 5, 100 ) ], testCreateUser , outputErrorAsJson );
+    urlHandler.registerObserver( "POST" , "/login" , [ urlHandler.createParameter( "username" , "string" , true, 5, 100 ) , urlHandler.createParameter( "password" , "string" , true, 5, 100 ) ],  loginUser, outputErrorAsJson );
     urlHandler.registerObserver( "GET" , "/userData" , [] , loggedInAs, outputErrorAsJson );
+    urlHandler.registerObserver( "GET" , "/logout" , [] , logoutUser , outputErrorAsJson );
 }
 
 //grab the command line arguments

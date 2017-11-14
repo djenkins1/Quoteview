@@ -198,6 +198,10 @@ function handleAddQuote( data, status )
         return;
     }
 
+    if ( quotesByScore.length == 0 )
+    {
+        $( "#quoteList" ).html("");
+    }
     allQuotes[ data.qid ] = data;
     insertQuoteByScore( allQuotes, quotesByScore, data.qid );
     createAndAppendQuoteDiv( data );
@@ -238,15 +242,13 @@ function handleNewUserForm( e )
         //{ userId: 5, username: "Maxride", role: "user" }
         if ( data.error || data.errors )
         {
-            //TODO: need to show the user the problem
-            console.log( data.errors );
-            if ( $( "#newUserForm" ).attr( "action" ) === "/login" )
+            $( "#loginAlertBox" ).html("");
+            for ( var i = 0; i < data.errors.length; i++ )
             {
-
-            }
-            else
-            {
-
+                var alertDiv = $( "<div />" );
+                alertDiv.addClass( "alert" ).addClass( "alert-danger" );
+                alertDiv.text( data.errors[ i ].name + ":" + data.errors[ i ].problem );
+                $( "#loginAlertBox" ).append( alertDiv );
             }
         }
         else
@@ -262,8 +264,28 @@ function handleNewUserForm( e )
 
 function nowLoggedIn( userData )
 {
-    console.log( "Now logged in:", userData );
     $( "#newQuoteLink" ).removeClass( "disabled" );
+    $( "#newUserLink" ).remove();
+    var helloUserElement = $( "<span />" );
+    helloUserElement.text( "Hello, " + userData.username );
+    helloUserElement.addClass( "navbar-text" );
+    helloUserElement.css( "color" , "white" );
+    $( "#navbarLinks" ).prepend( helloUserElement );
+    var logoutLink = $( "<a />" );
+    logoutLink.addClass( "nav-item" ).addClass( "nav-link" );
+    logoutLink.text( "Logout" );
+    logoutLink.attr( "href" , "/logout" );
+    logoutLink.on( "click" , function( e )
+    {
+        $.get( $( this ).attr( "href" ) , function( data, status )
+        {
+            console.log( data );
+            //TODO: the user is now logged out,reload the page
+        });
+        e.preventDefault();
+        return false;
+    });
+    $( "#navbarLinks" ).append( logoutLink );
 }
 
 function changeModal( title, body, yesText, noText, onYes )
@@ -280,8 +302,6 @@ function changeModal( title, body, yesText, noText, onYes )
 $( document ).ready(
 function()
 {
-    //TODO: if a user is already logged in should show their username in the navbar(?) or somewhere
-    //          if a user logs in through form then show their username in the navbar or somewhere
     //FUTURE:
     //TODO: show creator of a quote on the quote somewhere
     //          problem, need to get username from creatorId
@@ -291,8 +311,23 @@ function()
     //TODO: should only be able to upvote/downvote quotes if logged in
     //TODO: should not be able to upvote/downvote own posts
 
+    //send a request to the server to see if currently logged in
+    $.get( "/userData", function( data, status )
+    {
+        if ( data.username )
+        {
+            nowLoggedIn( data );
+        }
+    });
+
+    //send a request to the server for the quotes and display the results on the page
     $.get( "/quotes" , function( data, status )
     {
+        if ( data.length == 0 )
+        {
+            $( "#quoteList" ).text( "There are currently no quotes." );        
+        }
+
         for ( var i = 0; i < data.length; i++ )
         {
             allQuotes[ data[ i ].qid ] = data[ i ];
@@ -300,6 +335,8 @@ function()
             createAndAppendQuoteDiv( data[ i ] );
         }
     });
+
+
 
     //toggles between the signup and login forms
     $( document.body ).on( "click" , "#toggleSignForm", function( e )
@@ -351,6 +388,7 @@ function()
         modalBodyHTML += "<a href='#' id='toggleSignForm'>Sign Up</a>";
         //TODO: toggle between sign up(/newUser) and login(/login)
         modalBodyHTML += "</form>";
+        modalBodyHTML += "<div id='loginAlertBox'></div>";
         changeModal( "Login", modalBodyHTML, "Login" , "Cancel" , handleNewUserForm );
         e.preventDefault();        
     });
