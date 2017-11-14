@@ -336,8 +336,8 @@ function setupHandlers()
     //setup the observer for getting all quotes
     urlHandler.registerObserver( "GET" , "/quotes" , [] , returnAllQuotes, outputErrorAsJson );
     urlHandler.registerObserver( "POST" , "/newQuote" , [ urlHandler.createParameter( "author" , "string" , true, 5, 60 ) , urlHandler.createParameter( "body" , "string" , true, 5, 3000 ) ], postQuote, outputErrorAsJson );
-    urlHandler.registerObserver( "POST" , "/upvoteQuote" , [ urlHandler.createParameter( "qid" , "string" , true , 0 , 999999 ) ], postUpvoteQuote, outputErrorAsJson );
-    urlHandler.registerObserver( "POST" , "/downvoteQuote" , [ urlHandler.createParameter( "qid" , "string" , true , 0, 999999 ) ], postDownvoteQuote, outputErrorAsJson );
+    urlHandler.registerObserver( "POST" , "/upvoteQuote" , [ urlHandler.createParameter( "qid" , "string" , true , 1 , 256 ) ], postUpvoteQuote, outputErrorAsJson );
+    urlHandler.registerObserver( "POST" , "/downvoteQuote" , [ urlHandler.createParameter( "qid" , "string" , true , 1, 256 ) ], postDownvoteQuote, outputErrorAsJson );
     urlHandler.registerObserver( "POST" , "/newUser" , [ urlHandler.createParameter( "username" , "string" , true, 5, 100 ) , urlHandler.createParameter( "password" , "string" , true, 5, 100 ) ], testCreateUser , outputErrorAsJson );
     urlHandler.registerObserver( "POST" , "/login" , [ urlHandler.createParameter( "username" , "string" , true, 5, 100 ) , urlHandler.createParameter( "password" , "string" , true, 5, 100 ) ],  loginUser, outputErrorAsJson );
     urlHandler.registerObserver( "GET" , "/userData" , [] , loggedInAs, outputErrorAsJson );
@@ -367,23 +367,53 @@ else
     }
     else if ( myArgs[ 0 ] === "--clean" )
     {
-        //TODO: clean the database       
-        console.log( "Command not yet implemented: " , myArgs[ 0 ] );
+        //TODO: clean the database  
+        var mongoClient = require('mongodb').MongoClient; 
+        var url = "mongodb://localhost:27017/quotes";
+        mongoClient.connect(url, function(err, db) 
+        {     
+            db.collection("quote").drop(function(err, delOK) 
+            {
+                if (err) throw err;
+
+                if (delOK) 
+                    console.log("Quote Collection deleted");
+
+                db.collection("user").drop(function(err2, delOK2) 
+                {
+                    if (err2) throw err;
+
+                    if (delOK2) 
+                        console.log("User Collection deleted");
+
+                    db.close();
+                });
+            });
+        });
     }
     else if ( myArgs[ 0 ] === "--setup" )
     {
-        //setup the database
-        var dbConfig = {
-            host: 'localhost',
-            user: 'root',
-            password: ''
-        };
-        execsql.config(dbConfig).execFile( './quotes.sql', function(err, results)
+        var mongoClient = require('mongodb').MongoClient; 
+        var url = "mongodb://localhost:27017/quotes";
+        mongoClient.connect(url, function(err, db) 
         {
-            if ( err ) throw err;
-            console.log(results);
-            execsql.end();
+            if (err) throw err;
+
+            console.log("Database created!");
+            db.createCollection("user", function(err, res) 
+            {
+                if (err) throw err;
+                console.log("User table created!");
+
+                db.createCollection( "quote", function(err, res) 
+                {
+                    if (err) throw err;
+                    console.log("Quote table created!");
+                    db.close();
+                });
+            });
         });
+        
     }
     else
     {

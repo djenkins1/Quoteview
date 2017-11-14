@@ -6,11 +6,15 @@ Info:
     It is used as an API for accessing the quotes database.
 */
 
-var mysql = require('mysql');
+//var mysql = require('mysql');
 var bcrypt = require('bcrypt');
 
 //how many rounds of hashing should be used
 const SALT_ROUNDS = 10;
+
+const QUOTE_TABLE = "quote";
+
+const USER_TABLE = "user";
 
 //global singleton of the mysql connection object
 var _conn = undefined;
@@ -18,35 +22,32 @@ var _conn = undefined;
 /*
 function: getDefaultConn
 info:
-    Creates a mysql connection object and connects to it.
+    Creates a mongo db connection object and connects to it.
     Stores that connection object as global singleton for future function calls.
 parameters:
-    none
+    onFinish, function, the function to be called when the mongo db connects
 returns:
-    a mysql connection object
+    nothing
 */
 //creates a mysql connection object,connects to it and returns it
-function getDefaultConn()
+function getDefaultConn( onFinish )
 {
     if ( _conn )
     {
-        return _conn;
+        onFinish( _conn );
+        return;
     }
 
-    _conn = mysql.createConnection(
-    {
-        host: "localhost",
-        user: "root",
-        password: "",
-        database: "QUOTES"
-    });
-
-    _conn.connect( function(err) 
+    var mongoClient = require('mongodb').MongoClient; 
+    var url = "mongodb://localhost:27017/quotes";
+    mongoClient.connect(url, function(err, db) 
     {
         if (err) throw err;
-    });
 
-    return _conn;
+        _conn = db;
+        onFinish( _conn );
+        
+    });
 }
 
 /*
@@ -61,13 +62,24 @@ returns:
 */
 function getAllQuotes( onFinish )
 {
-    var conn = getDefaultConn();
+    getDefaultConn( function( db )
+    {
+        db.collection( QUOTE_TABLE ).find({}).toArray( function(err, results ) 
+        {
+            if (err) throw err;
+            
+            onFinish( results );
+        
+        });
+    });
+    /*
     conn.query("SELECT * FROM QUOTE ORDER BY SCORE DESC", function (err, result, fields) 
     {
         if (err) throw err;
 
         onFinish( result ); 
     });
+    */
 }
 
 /*
@@ -86,12 +98,66 @@ returns:
 */
 function createQuote( author, body, creatorId, onFinish )
 {
+    getDefaultConn( function( db )
+    {
+        var toInsert = { "author" : author, "body" : body, "creatorId" : creatorId, "score" : 0 };
+        db.collection( QUOTE_TABLE ).insertOne( toInsert, function(err, result ) 
+        {
+            if (err) throw err;
+            var passedObj = { "insertId" : result.insertedId };
+            onFinish( passedObj );
+        
+        });
+    });
+    /*
     var conn = getDefaultConn();
     conn.query("INSERT INTO QUOTE( author, body, score, creatorId ) VALUES( ? , ? , 0 , ? )", [ author, body, creatorId ] , function (err, result, fields) 
     {
         if (err) throw err;
 
         onFinish( result ); 
+    });
+    */
+}
+
+/*
+function: _updateQuoteScore
+info:
+    This is a helper function for increment/decrement of a quote's score.
+parameters:
+    qid, string, the id of the quote
+    increment, boolean, true for incrementing a value by 1 or false for decrementing by 1
+    onFinish, function, the function called when the update has finished
+returns:
+    nothing
+*/
+function _updateQuoteScore( qid, increment, onFinish )
+{
+    var valueIncrement = 1;
+    if ( !increment )
+    {
+        valueIncrement = -1;
+    }
+
+    var myQuery = { "_id" : qid };
+    var newValues = { $inc: { "score" : valueIncrement } };
+    getDefaultConn( function( db )
+    {
+        db.collection( QUOTE_TABLE ).updateOne( myQuery, newValues, function(err, resultObj ) 
+        {
+            if (err) throw err;
+
+            var passedObj = { "affectedRows" : resultObj.result.nModified };
+            onFinish( passedObj );
+        });
+    });
+}
+
+function closeConnection()
+{
+    getDefaultConn( function( db ) 
+    {
+        db.close();
     });
 }
 
@@ -109,6 +175,8 @@ returns:
 */
 function upvoteQuote( qid, onFinish )
 {
+    _updateQuoteScore( qid, true, onFinish );
+    /*
     var conn = getDefaultConn();
     conn.query("UPDATE QUOTE SET score=score+1 WHERE qid=?", [ qid ] , function (err, result, fields) 
     {
@@ -116,6 +184,7 @@ function upvoteQuote( qid, onFinish )
 
         onFinish( result ); 
     });
+    */
 }
 
 /*
@@ -132,6 +201,8 @@ returns:
 */
 function downvoteQuote( qid, onFinish )
 {
+    _updateQuoteScore( qid, false, onFinish );
+    /*
     var conn = getDefaultConn();
     conn.query("UPDATE QUOTE SET score=score-1 WHERE qid=?", [ qid ] , function (err, result, fields) 
     {
@@ -139,6 +210,7 @@ function downvoteQuote( qid, onFinish )
 
         onFinish( result ); 
     });
+    */
 }
 
 /*
@@ -153,6 +225,17 @@ returns:
 */
 function getQuoteById( qid, onFinish )
 {
+    getDefaultConn( function( db )
+    {
+        db.collection( QUOTE_TABLE ).findOne({ "_id" : qid }).toArray( function(err, result ) 
+        {
+            if (err) throw err;
+            
+            onFinish( result );
+        
+        });
+    });
+    /*
     var conn = getDefaultConn();
     conn.query("SELECT * FROM QUOTE WHERE qid=? LIMIT 1", [ qid ] , function (err, result, fields) 
     {
@@ -167,6 +250,7 @@ function getQuoteById( qid, onFinish )
 
         onFinish( resultObj ); 
     });
+    */
 }
 
 /*
@@ -182,6 +266,22 @@ returns:
 */
 function createUser( username, password, onFinish )
 {
+    bcrypt.hash( password, SALT_ROUNDS, function(err, hash) 
+    {
+        getDefaultConn( function( db )
+        {
+            var toInsert = { "username" : username, "password" : hash, "role" : "user" };
+            db.collection( USER_TABLE ).insertOne( toInsert, function(err, result ) 
+            {
+                if (err) throw err;
+
+                var passedObj = { "insertId" : result.insertedId };
+                onFinish( passedObj );
+            
+            });
+        });
+    });
+    /*
     var conn = getDefaultConn();
     bcrypt.hash( password, SALT_ROUNDS, function(err, hash) 
     {
@@ -193,6 +293,7 @@ function createUser( username, password, onFinish )
             onFinish( result ); 
         });
     });
+    */
 }
 
 /*
@@ -207,6 +308,7 @@ returns:
 */
 function isUsernameTaken( username, onFinish )
 {
+    //TODO: mongodb
     var conn = getDefaultConn();
     conn.query("SELECT * FROM users WHERE username=? LIMIT 1", [ username ] , function (err, result, fields) 
     {
@@ -235,6 +337,7 @@ returns:
 */
 function getUserData( userId, onFinish )
 {
+    //TODO: mongodb
     var conn = getDefaultConn();
     conn.query("SELECT * FROM users WHERE userId=? LIMIT 1", [ userId ] , function (err, result, fields) 
     {
@@ -258,6 +361,7 @@ info:
 */
 function verifyUserCredentials( username, password, onFinish )
 {
+    //TODO: mongodb
     var conn = getDefaultConn();
     conn.query("SELECT * FROM users WHERE username=? LIMIT 1", [ username ] , function (err, result, fields) 
     {
@@ -300,4 +404,5 @@ exports.createUser = createUser;
 exports.verifyUserCredentials = verifyUserCredentials;
 exports.getUserData = getUserData;
 exports.isUsernameTaken = isUsernameTaken;
+exports.closeConnection = closeConnection;
 
