@@ -303,6 +303,7 @@ $( document ).ready(
 function()
 {
     //FUTURE:
+    //TODO: usernames should be lowercase when put into database
     //TODO: show creator of a quote on the quote somewhere
     //          problem, need to get username from creatorId
     //TODO: pagination on quotes by using after field
