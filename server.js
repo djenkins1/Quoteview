@@ -271,7 +271,7 @@ function postUpvoteQuote( queryObj, response, sessionObj, onFinish )
     {
         if ( result.affectedRows == 0 )
         {
-            outputErrorAsJson( {"error": true , "errors": [{"name":"qid","problem":"invalid quote" }]}, queryObj, response );
+            outputErrorAsJson( {"error": true , "errors": [{"name":"qid","problem":"invalid quote" }]}, queryObj, response, sessionObj, onFinish );
             return;         
         }
 

@@ -9,6 +9,8 @@ Info:
 //var mysql = require('mysql');
 var bcrypt = require('bcrypt');
 
+var ObjectId = require('mongodb').ObjectID;
+
 //how many rounds of hashing should be used
 const SALT_ROUNDS = 10;
 
@@ -67,7 +69,10 @@ function getAllQuotes( onFinish )
         db.collection( QUOTE_TABLE ).find({}).toArray( function(err, results ) 
         {
             if (err) throw err;
-            
+            for ( var i = 0; i < results.length; i++ )
+            {
+                results[ i ].qid = results[ i ]._id;
+            }
             onFinish( results );
         
         });
@@ -98,9 +103,15 @@ returns:
 */
 function createQuote( author, body, creatorId, onFinish )
 {
+    var creatorIdObj = creatorId;
+    if ( typeof creatorId === "string" )
+    {
+        creatorIdObj = ObjectId( creatorId );
+    }
+
     getDefaultConn( function( db )
     {
-        var toInsert = { "author" : author, "body" : body, "creatorId" : creatorId, "score" : 0 };
+        var toInsert = { "author" : author, "body" : body, "creatorId" : creatorIdObj, "score" : 0 };
         db.collection( QUOTE_TABLE ).insertOne( toInsert, function(err, result ) 
         {
             if (err) throw err;
@@ -140,6 +151,11 @@ function _updateQuoteScore( qid, increment, onFinish )
     }
 
     var myQuery = { "_id" : qid };
+    if ( typeof qid === "string" )
+    {
+        myQuery._id = ObjectId( qid );
+    }
+
     var newValues = { $inc: { "score" : valueIncrement } };
     getDefaultConn( function( db )
     {
@@ -225,12 +241,23 @@ returns:
 */
 function getQuoteById( qid, onFinish )
 {
+    var myQuery = { "_id" : qid };
+    if ( typeof qid === "string" )
+    {
+        myQuery._id = ObjectId( qid );
+    }
+
     getDefaultConn( function( db )
     {
-        db.collection( QUOTE_TABLE ).findOne({ "_id" : qid }).toArray( function(err, result ) 
+        db.collection( QUOTE_TABLE ).findOne( myQuery, function(err, result ) 
         {
             if (err) throw err;
-            
+
+            if ( result )
+            {
+                result.qid = result._id;
+            }
+
             onFinish( result );
         
         });
@@ -308,7 +335,21 @@ returns:
 */
 function isUsernameTaken( username, onFinish )
 {
-    //TODO: mongodb
+    getDefaultConn( function( db )
+    {
+        db.collection( USER_TABLE ).findOne( { "username" : username } , function( err, result ) 
+        {
+            if ( err ) throw err;
+
+            var isTaken = false;
+            if ( result && result.username )
+            {
+                isTaken = true;
+            }
+            onFinish( isTaken );
+        });
+    });
+    /*
     var conn = getDefaultConn();
     conn.query("SELECT * FROM users WHERE username=? LIMIT 1", [ username ] , function (err, result, fields) 
     {
@@ -323,6 +364,7 @@ function isUsernameTaken( username, onFinish )
 
         onFinish( alreadyExists ); 
     });
+    */
 }
 
 /*
@@ -337,7 +379,23 @@ returns:
 */
 function getUserData( userId, onFinish )
 {
-    //TODO: mongodb
+    var myQuery = { "_id" : userId };
+    if ( typeof userId === "string" )
+    {
+        myQuery._id = ObjectId( userId );
+    }
+
+    getDefaultConn( function( db )
+    {
+        db.collection( USER_TABLE ).findOne( myQuery , function( err, result ) 
+        {
+            if ( err ) throw err;
+
+            result.userId = result._id;
+            onFinish( result );
+        });
+    });
+    /*
     var conn = getDefaultConn();
     conn.query("SELECT * FROM users WHERE userId=? LIMIT 1", [ userId ] , function (err, result, fields) 
     {
@@ -352,6 +410,7 @@ function getUserData( userId, onFinish )
 
         onFinish( resultObj ); 
     });
+    */
 }
 
 /*
@@ -361,7 +420,31 @@ info:
 */
 function verifyUserCredentials( username, password, onFinish )
 {
-    //TODO: mongodb
+    getDefaultConn( function( db )
+    {
+        db.collection( USER_TABLE ).findOne( { "username" : username }, function( err, result )
+        {
+            if ( err ) throw err;
+
+            if ( result && result.password )
+            {
+                // Load hash from your password DB.
+                bcrypt.compare( password, result.password, function(err, res) 
+                {
+                    if ( err ) throw err;
+
+                    result.password = undefined;
+                    result.userId = result._id;
+                    onFinish( res, result );
+                });                
+            }
+            else
+            {
+                onFinish( false, {} );
+            }
+        });
+    });
+    /*
     var conn = getDefaultConn();
     conn.query("SELECT * FROM users WHERE username=? LIMIT 1", [ username ] , function (err, result, fields) 
     {
@@ -390,6 +473,7 @@ function verifyUserCredentials( username, password, onFinish )
             onFinish( false, resultObj ); 
         }
     });
+    */
 }
 
 
