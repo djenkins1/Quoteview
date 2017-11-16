@@ -476,6 +476,66 @@ function verifyUserCredentials( username, password, onFinish )
     */
 }
 
+/*
+function: cleanDatabase
+info:
+    This function clears out all collections that are in the database.
+parameters:
+    onFinish, function, the function to be called once the database has been cleared
+returns:
+    nothing
+*/
+function cleanDatabase( onFinish )
+{
+    getDefaultConn( function( db )
+    {
+        db.collection( QUOTE_TABLE ).drop(function(err, delOK) 
+        {
+            if (err) throw err;
+
+            if (delOK) 
+                console.log("Quote Collection deleted");
+
+            db.collection( USER_TABLE ).drop(function(err2, delOK2) 
+            {
+                if (err2) throw err;
+
+                if (delOK2) 
+                    console.log("User Collection deleted");
+
+                onFinish();
+            });
+        });
+    });    
+}
+
+/*
+function: setupDatabase
+info:
+    This function creates the database and sets up each of the collections if they do not exist.
+parameters:
+    onFinish, function, the function that is called when the database has been setup
+returns:
+    nothing
+*/
+function setupDatabase( onFinish )
+{
+    getDefaultConn( function( db )
+    {
+        db.createCollection( USER_TABLE, function(err, res) 
+        {
+            if (err) throw err;
+            console.log("User table created!");
+
+            db.createCollection( QUOTE_TABLE , function(err, res) 
+            {
+                if (err) throw err;
+                console.log("Quote table created!");
+                onFinish();
+            });
+        });    
+    });
+}
 
 
 //add the functions above to this module so that they are usable outside of the module
@@ -488,5 +548,7 @@ exports.createUser = createUser;
 exports.verifyUserCredentials = verifyUserCredentials;
 exports.getUserData = getUserData;
 exports.isUsernameTaken = isUsernameTaken;
+exports.cleanDatabase = cleanDatabase;
 exports.closeConnection = closeConnection;
+exports.setupDatabase = setupDatabase;
 

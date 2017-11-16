@@ -280,7 +280,8 @@ function nowLoggedIn( userData )
         $.get( $( this ).attr( "href" ) , function( data, status )
         {
             console.log( data );
-            //TODO: the user is now logged out,reload the page
+            //the user is now logged out,reload the page
+            location.reload( true );
         });
         e.preventDefault();
         return false;
@@ -362,7 +363,6 @@ function()
         return false;
     });
 
-    //TODO: handle not logged in, maybe use endpoint /userData
     $( "#newQuoteLink" ).on( "click" , function( e )
     {
         if ( $( this ).hasClass( "disabled" ) )

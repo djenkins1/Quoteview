@@ -4,7 +4,6 @@ var urlHandler = require('./urlHandler');
 var execsql = require('execsql');
 var dataAPI = require( "./dataAPI" );
 
-//TODO: login and users
 //TODO: duplicate usernames needs to be handled
 
 //simple error function that displays whatever errors occurred
@@ -367,53 +366,12 @@ else
     }
     else if ( myArgs[ 0 ] === "--clean" )
     {
-        //TODO: clean the database  
-        var mongoClient = require('mongodb').MongoClient; 
-        var url = "mongodb://localhost:27017/quotes";
-        mongoClient.connect(url, function(err, db) 
-        {     
-            db.collection("quote").drop(function(err, delOK) 
-            {
-                if (err) throw err;
-
-                if (delOK) 
-                    console.log("Quote Collection deleted");
-
-                db.collection("user").drop(function(err2, delOK2) 
-                {
-                    if (err2) throw err;
-
-                    if (delOK2) 
-                        console.log("User Collection deleted");
-
-                    db.close();
-                });
-            });
-        });
+        dataAPI.cleanDatabase( dataAPI.closeConnection );
+        console.log( "Database cleaned" );
     }
     else if ( myArgs[ 0 ] === "--setup" )
     {
-        var mongoClient = require('mongodb').MongoClient; 
-        var url = "mongodb://localhost:27017/quotes";
-        mongoClient.connect(url, function(err, db) 
-        {
-            if (err) throw err;
-
-            console.log("Database created!");
-            db.createCollection("user", function(err, res) 
-            {
-                if (err) throw err;
-                console.log("User table created!");
-
-                db.createCollection( "quote", function(err, res) 
-                {
-                    if (err) throw err;
-                    console.log("Quote table created!");
-                    db.close();
-                });
-            });
-        });
-        
+        dataAPI.setupDatabase( dataAPI.closeConnection );
     }
     else
     {
