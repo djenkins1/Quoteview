@@ -4,8 +4,6 @@ var urlHandler = require('./urlHandler');
 var execsql = require('execsql');
 var dataAPI = require( "./dataAPI" );
 
-//TODO: duplicate usernames needs to be handled
-
 //simple error function that displays whatever errors occurred
 function standardErrorCall( errorList, queryObj, response, sessionObj, onFinish )
 {

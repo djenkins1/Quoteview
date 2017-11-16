@@ -1,6 +1,12 @@
 var dataAPI = require( "./dataAPI" );
 
+var totalQuotesCreated = 0;
+
 var testUsername = "DILAN";
+
+var createdUser = {};
+
+const PAGE_SIZE = 10;
 
 function testModified( result )
 {
@@ -42,9 +48,18 @@ function updateQuoteWithId( quoteResult )
     });
 }
 
-function createQuoteWithUser( userResult )
+function createQuoteWithUser( userResult, onFinish )
 {
-    dataAPI.createQuote( "Dilan", "Hello " + ( new Date() ).getTime(), userResult._id, updateQuoteWithId );
+    dataAPI.createQuote( "Dilan", "Hello " + ( new Date() ).getTime(), userResult._id, onFinish );
+}
+
+function testUsernameNotTaken( userResult )
+{
+    dataAPI.isUsernameTaken( testUsername + '@123', function( isTaken ) 
+    {
+        console.log( "Username is taken? " , isTaken );
+        createQuoteWithUser( userResult, updateQuoteWithId );
+    });
 }
 
 function testUsernameTaken( userResult )
@@ -52,7 +67,7 @@ function testUsernameTaken( userResult )
     dataAPI.isUsernameTaken( testUsername, function( isTaken ) 
     {
         console.log( "Username is taken? " , isTaken );
-        createQuoteWithUser( userResult );
+        testUsernameNotTaken( userResult );
     });
 }
 
@@ -74,6 +89,52 @@ function testVerifyUser( userResult )
     });
 }
 
-dataAPI.createUser( testUsername , testUsername , testVerifyUser );
+function testPages( results )
+{
+    if ( results == undefined || results.length == 0 )
+    {
+        console.log( "ALL END" );
+        dataAPI.closeConnection();
+        return;
+    }
 
+    console.log( "PAGE START" )
+    logQuotes( results );
+    console.log( "PAGE END" );
+
+    dataAPI.getPagedQuotes( results[ results.length - 1]._id , PAGE_SIZE, testPages );
+}
+
+function createAnotherQuote( quoteResult )
+{
+    totalQuotesCreated++;
+    if ( totalQuotesCreated >= 50 )
+    {
+        console.log( "Fifty quotes created" );
+        dataAPI.getRecentQuotes( PAGE_SIZE, testPages );
+        return;
+    }
+
+    createQuoteWithUser( createdUser, createAnotherQuote );
+}
+
+function testCreateFiftyQuotes( userResult )
+{
+    createdUser = userResult;
+    createQuoteWithUser( userResult, createAnotherQuote );
+}
+
+function normalTest()
+{
+    dataAPI.createUser( testUsername , testUsername , testVerifyUser );
+}
+
+function pagedQuotesTest()
+{
+    dataAPI.createUser( testUsername , testUsername , testCreateFiftyQuotes );
+}
+
+
+normalTest();
+//pagedQuotesTest();
 

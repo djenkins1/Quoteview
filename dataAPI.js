@@ -53,6 +53,60 @@ function getDefaultConn( onFinish )
 }
 
 /*
+function: getPagedQuotes
+info:
+    This function passes along the next n quotes that come after the afterId given.
+parameters:
+    afterId, string, marks the last id that was used to get results
+    pageSize, int, the total number of quotes per page
+    onFinish, function, the function to be called once the query has finished
+returns:
+    nothing
+*/
+function getPagedQuotes( afterId, pageSize, onFinish )
+{
+    var afterIdObj = afterId;
+    if ( typeof affterId === "string" )
+    {
+        afterIdObj = ObjectId( afterId );
+    }
+
+    getDefaultConn( function( db )
+    {
+        db.collection( QUOTE_TABLE ).find( {'_id' : { $gt : afterId} }, { limit : pageSize } ).toArray( function( err, results )
+        {
+            if ( err ) throw err;
+
+            onFinish( results );
+        });
+    });
+    
+}
+
+/*
+function: getRecentQuotes
+info:
+    This function passes along the most recent quotes to the onFinish function.
+parameters:
+    pageSize, int, the total number of quotes per page
+    onFinish, function, the function to be called when the database query has finished
+returns:
+    nothing
+*/
+function getRecentQuotes( pageSize, onFinish )
+{
+    getDefaultConn( function( db )
+    {
+        db.collection( QUOTE_TABLE ).find( {},{ limit : pageSize } ).toArray( function( err, results )
+        {
+            if ( err ) throw err;
+
+            onFinish( results );
+        });
+    });    
+}
+
+/*
 function: getAllQuotes
 info:
     Queries the database for an array of all the quotes that are in the database.
@@ -551,4 +605,6 @@ exports.isUsernameTaken = isUsernameTaken;
 exports.cleanDatabase = cleanDatabase;
 exports.closeConnection = closeConnection;
 exports.setupDatabase = setupDatabase;
+exports.getRecentQuotes = getRecentQuotes;
+exports.getPagedQuotes = getPagedQuotes;
 
