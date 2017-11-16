@@ -353,7 +353,7 @@ if ( myArgs.length == 0 )
 }
 else
 {
-    if ( myArgs[ 0 ] === "--server" )
+    if ( myArgs[ 0 ] === "--serve" )
     {
         setupHandlers();
         http.createServer(function (request, response) 

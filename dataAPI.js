@@ -297,7 +297,7 @@ function createUser( username, password, onFinish )
     {
         getDefaultConn( function( db )
         {
-            var toInsert = { "username" : username, "password" : hash, "role" : "user" };
+            var toInsert = { "username" : username.toLowerCase(), "password" : hash, "role" : "user" };
             db.collection( USER_TABLE ).insertOne( toInsert, function(err, result ) 
             {
                 if (err) throw err;
@@ -337,7 +337,7 @@ function isUsernameTaken( username, onFinish )
 {
     getDefaultConn( function( db )
     {
-        db.collection( USER_TABLE ).findOne( { "username" : username } , function( err, result ) 
+        db.collection( USER_TABLE ).findOne( { "username" : username.toLowerCase() } , function( err, result ) 
         {
             if ( err ) throw err;
 
@@ -422,7 +422,7 @@ function verifyUserCredentials( username, password, onFinish )
 {
     getDefaultConn( function( db )
     {
-        db.collection( USER_TABLE ).findOne( { "username" : username }, function( err, result )
+        db.collection( USER_TABLE ).findOne( { "username" : username.toLowerCase() }, function( err, result )
         {
             if ( err ) throw err;
 
