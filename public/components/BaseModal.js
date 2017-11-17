@@ -19,7 +19,7 @@ export default class BaseModal extends React.Component
                         </div>
                         <div className="modal-body"> {this.props.modalBody} </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-primary"> {this.props.yesText} </button>
+                            <button type="button" className="btn btn-primary" onClick={this.yesButtonClick.bind( this )} > {this.props.yesText} </button>
                             <button type="button" className="btn btn-secondary" data-dismiss="modal"> {this.props.noText} </button>
                         </div>
                     </div>
@@ -28,10 +28,17 @@ export default class BaseModal extends React.Component
         );
     }
 
-  componentDidMount()
+    componentDidMount()
     {
         var self = ReactDOM.findDOMNode(this);
         $( self ).modal();
+    }
+
+    yesButtonClick( e )
+    {
+        console.log( "Yes Button Clicked" );
+        var self = this;
+        this.props.yesFunc( self );
     }
 }
 
