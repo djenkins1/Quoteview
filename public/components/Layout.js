@@ -2,7 +2,7 @@ import React from "react";
 
 import NavBar from "./NavBar";
 
-import Quote from "./Quote";
+import QuoteList from "./QuoteList";
 
 export default class Layout extends React.Component
 {
@@ -11,9 +11,7 @@ export default class Layout extends React.Component
         return (
             <div>
                 <NavBar />
-                <div id="quoteList" className="list-group">
-                    <Quote author="Redbeard" body="What is your name?" score="0" qid="abcdefghijk" />
-                </div>
+                <QuoteList />
             </div>
         );
     }

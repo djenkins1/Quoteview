@@ -135,6 +135,6 @@ function pagedQuotesTest()
 }
 
 
-normalTest();
-//pagedQuotesTest();
+//normalTest();
+pagedQuotesTest();
 
