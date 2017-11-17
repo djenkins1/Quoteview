@@ -4,6 +4,7 @@ import QuoteScore from "./QuoteScore"
 
 export default class Quote extends React.Component
 {
+    //shows a quote and its author and score
     render()
     {
         return (

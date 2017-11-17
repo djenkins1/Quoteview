@@ -1,0 +1,38 @@
+import React from "react";
+
+import ReactDOM from "react-dom";
+
+//the main layout for the page
+export default class BaseModal extends React.Component
+{
+    render()
+    {
+        return (
+            <div className="modal">
+                <div className="modal-dialog" role="document">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title"> {this.props.modalTitle} </h5>
+                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div className="modal-body"> {this.props.modalBody} </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-primary"> {this.props.yesText} </button>
+                            <button type="button" className="btn btn-secondary" data-dismiss="modal"> {this.props.noText} </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+  componentDidMount()
+    {
+        var self = ReactDOM.findDOMNode(this);
+        $( self ).modal();
+    }
+}
+
+

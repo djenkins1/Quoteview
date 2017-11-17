@@ -1,5 +1,6 @@
 import React from "react";
 
+//contains the score for a quote
 export default class QuoteScore extends React.Component
 {
     render()
