@@ -18,3 +18,9 @@ a.nav-link:hover
 {
     color: lightgray;
 }
+
+div.badgeContain
+{
+    position: relative; 
+    bottom: 20px
+}
