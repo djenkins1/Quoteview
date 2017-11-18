@@ -41,7 +41,7 @@ export default class NavBar extends React.Component
         e.preventDefault();
         var self = this;
         //send ajax request to server to logout the user
-        $.post( "/logout" , {}, function( data, status )
+        $.get( "/logout" , {}, function( data, status )
         {
             if ( data.error || data.errors )
             {
