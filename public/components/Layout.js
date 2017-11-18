@@ -14,7 +14,7 @@ export default class Layout extends React.Component
         super( props );
         this.state = {};
         //TODO: next line is for testing,needs to be removed
-        this.state.modalType = "signup";
+        //this.state.modalType = "signup";
     }
 
     render()
@@ -25,19 +25,27 @@ export default class Layout extends React.Component
         if ( this.state.modalType )
         {
             //TODO: need to distinguish between the modals
-            modalDiv = ( <SignupModal /> );        
+            modalDiv = ( <SignupModal clearModal={this.clearModalType.bind(this)} modalChange={this.changeModalType.bind(this)} /> );        
         }
 
         return (
             <div>
-                <NavBar />
+                <NavBar modalChange={this.changeModalType.bind(this)} />
                 <QuoteList />
                 {modalDiv}
             </div>
         );
     }
 
-    //TODO: need to be able to change the modalType dynamically from other elements
+    changeModalType( newType )
+    {
+        this.setState( { "modalType" : newType } );
+    }
+
+    clearModalType()
+    {
+        this.setState( { "modalType" : undefined } );
+    }
 
 
 }

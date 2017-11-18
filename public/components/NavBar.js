@@ -9,12 +9,17 @@ export default class NavBar extends React.Component
             <nav className="navbar sticky-top navbar-dark bg-primary justify-content-between navbar-expand-lg">
                 <a className="navbar-brand">Quote View</a>
                 <div id="navbarLinks" className="collapse navbar-collapse">
-                    <a id="newUserLink" className="nav-item nav-link" href="#">Login/Signup</a>
+                    <a id="newUserLink" onClick={this.handleClickLink.bind( this )} className="nav-item nav-link" href="#">Login/Signup</a>
                     <a id="newQuoteLink" className="nav-item nav-link disabled" href="#">New Quote</a>
                 </div>
             </nav>
         );
     }
 
+    handleClickLink( e )
+    {
+        e.preventDefault();
+        this.props.modalChange( e.target.innerText );
+    }
 
 }

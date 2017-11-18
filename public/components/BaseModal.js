@@ -13,14 +13,15 @@ export default class BaseModal extends React.Component
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title"> {this.props.modalTitle} </h5>
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                            <button type="button" onClick={this.noButtonClick.bind( this )} className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div className="modal-body"> {this.props.modalBody} </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-primary" onClick={this.yesButtonClick.bind( this )} > {this.props.yesText} </button>
-                            <button type="button" className="btn btn-secondary" data-dismiss="modal"> {this.props.noText} </button>
+                            <button type="button" className="btn btn-secondary" onClick={this.noButtonClick.bind( this )} 
+                                data-dismiss="modal"> {this.props.noText} </button>
                         </div>
                     </div>
                 </div>
@@ -36,9 +37,16 @@ export default class BaseModal extends React.Component
 
     yesButtonClick( e )
     {
-        console.log( "Yes Button Clicked" );
+        e.preventDefault();
         var self = this;
         this.props.yesFunc( self );
+    }
+
+    noButtonClick( e )
+    {
+        e.preventDefault();
+        var self = this;
+        this.props.noFunc( self );
     }
 }
 

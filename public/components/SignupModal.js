@@ -21,7 +21,7 @@ export default class SignupModal extends React.Component
     //whenever the password input is changed,update this component's password in the inputData field
     updatePassField( passWord )
     {
-        this.inputData.passWord =  passWord;
+        this.inputData.passWord = passWord;
     }
 
     render()
@@ -31,7 +31,8 @@ export default class SignupModal extends React.Component
                 modalBody={<SignupForm userChange={this.updateUserField.bind(this)} 
                     passChange={this.updatePassField.bind( this )} />}
                 yesText='Sign Up' noText='Cancel' 
-                yesFunc={this.signup.bind( this )} />
+                yesFunc={this.signup.bind( this )} 
+                noFunc={this.props.clearModal} />
         );
     }
 
