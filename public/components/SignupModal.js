@@ -9,19 +9,19 @@ export default class SignupModal extends React.Component
     {
         super( props );
         this.state = {};
-        this.inputData = {"userName" : "" , "passWord" : ""};
+        this.inputData = {"username" : "" , "password" : ""};
     }
 
     //whenever the username input is changed,update this component's username in the inputData field
     updateUserField( userName )
     {
-        this.inputData.userName = userName;
+        this.inputData.username = userName;
     }
 
     //whenever the password input is changed,update this component's password in the inputData field
     updatePassField( passWord )
     {
-        this.inputData.passWord = passWord;
+        this.inputData.password = passWord;
     }
 
     render()
@@ -38,9 +38,22 @@ export default class SignupModal extends React.Component
 
     signup( reactDomModal )
     {
-        //TODO: send off ajax request to attempt to signup
-        console.log( "SIGNUP" );
-        console.log( this.inputData.userName );
-        console.log( this.inputData.passWord );
+        var self = this;
+        //send off ajax request to attempt to signup
+        $.post( "/newUser" , this.inputData, function( data, status )
+        {
+            //if there were any problems then show said problems
+            if ( data.error || data.errors )
+            {
+                //TODO: need to display problems to user
+                console.log( "ERROR:" + data.error );
+                console.log( data.errors );
+                return;
+            }
+            
+            //otherwise, no problems so update the user logged in to the server's response
+            self.props.clearModal();
+            self.props.userChange( data );
+        });
     }
 }

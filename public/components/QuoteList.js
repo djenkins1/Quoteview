@@ -1,6 +1,5 @@
 import React from "react";
 import Quote from "./Quote";
-import $ from "jquery";
 
 export default class QuoteList extends React.Component
 {

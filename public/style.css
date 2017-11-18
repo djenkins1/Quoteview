@@ -24,3 +24,8 @@ div.badgeContain
     position: relative; 
     bottom: 20px
 }
+
+.navbar-text
+{
+    color: white !important;
+}
