@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import ErrorList from "./ErrorList";
 
 //the main layout for the page
 export default class BaseModal extends React.Component
@@ -16,7 +17,10 @@ export default class BaseModal extends React.Component
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <div className="modal-body"> {this.props.modalBody} </div>
+                        <div className="modal-body"> 
+                            {this.props.modalBody} 
+                            <ErrorList errors={this.props.errors} />
+                        </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-primary" onClick={this.yesButtonClick.bind( this )} > {this.props.yesText} </button>
                             <button type="button" className="btn btn-secondary" onClick={this.noButtonClick.bind( this )} 
@@ -32,6 +36,12 @@ export default class BaseModal extends React.Component
     {
         var self = ReactDOM.findDOMNode(this);
         $( self ).modal();
+    }
+
+    componentWillUnmount()
+    {
+        var self = ReactDOM.findDOMNode(this);
+        $( ".modal-backdrop" ).remove();
     }
 
     yesButtonClick( e )

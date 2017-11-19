@@ -2,14 +2,13 @@ import React from "react";
 import BaseModal from "./BaseModal";
 import SignupForm from "./SignupForm";
 
-//the main layout for the page
 export default class SignupModal extends React.Component
 {
     constructor( props )
     {
         super( props );
-        this.state = {};
-        this.inputData = {"username" : "" , "password" : ""};
+        this.state = { "errors" : [] };
+        this.inputData = {"username" : "" , "password" : "" };
     }
 
     //whenever the username input is changed,update this component's username in the inputData field
@@ -26,13 +25,15 @@ export default class SignupModal extends React.Component
 
     render()
     {
+        console.log( "RENDER SIGNUP" );
         return (
             <BaseModal modalTitle='Sign Up' 
                 modalBody={<SignupForm userChange={this.updateUserField.bind(this)} 
-                    passChange={this.updatePassField.bind( this )} />}
+                    passChange={this.updatePassField.bind( this )} 
+                    username={this.inputData.username} password={this.inputData.password} />}
                 yesText='Sign Up' noText='Cancel' 
                 yesFunc={this.signup.bind( this )} 
-                noFunc={this.props.clearModal} />
+                noFunc={this.props.clearModal} errors={this.state.errors}/>
         );
     }
 
@@ -45,9 +46,9 @@ export default class SignupModal extends React.Component
             //if there were any problems then show said problems
             if ( data.error || data.errors )
             {
-                //TODO: need to display problems to user
+                //display problems to user
                 console.log( "ERROR:" + data.error );
-                console.log( data.errors );
+                self.setState( { "errors" : data.errors } );
                 return;
             }
             

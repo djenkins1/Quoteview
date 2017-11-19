@@ -7,7 +7,7 @@ import SignupModal from "./SignupModal";
 //PRIORITY
 //TODO: need to work on other modals(login/newQuote)
 //TODO: need to be able to distinguish between modals based on state in layout
-//TODO: need to show errors to user for sign up modal,and other modals
+//TODO: need to replace whitespace in potential usernames and error out if there was any whitespace
 //
 //FUTURE:
 //TODO: move QuoteList getData to layout component and pass as prop
@@ -63,7 +63,6 @@ export default class Layout extends React.Component
 
     clearModalType()
     {
-        $( ".modal-backdrop" ).remove();
         this.setState( { "modalType" : undefined } );
     }
 
