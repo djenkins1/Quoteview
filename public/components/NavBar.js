@@ -23,7 +23,7 @@ export default class NavBar extends React.Component
             <nav className="navbar sticky-top navbar-dark bg-primary justify-content-between navbar-expand-lg">
                 <a className="navbar-brand">Quote View</a>
                 <div className="collapse navbar-collapse">
-                    <a className="nav-item nav-link" href="#">Login</a>
+                    <a onClick={this.handleClickLink.bind( this )} className="nav-item nav-link" href="#">Login</a>
                     <a onClick={this.handleClickLink.bind( this )} className="nav-item nav-link" href="#">Sign Up</a>
                 </div>
             </nav>

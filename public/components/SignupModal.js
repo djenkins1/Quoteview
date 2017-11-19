@@ -25,7 +25,6 @@ export default class SignupModal extends React.Component
 
     render()
     {
-        console.log( "RENDER SIGNUP" );
         return (
             <BaseModal modalTitle='Sign Up' 
                 modalBody={<SignupForm userChange={this.updateUserField.bind(this)} 

@@ -2,12 +2,14 @@ import React from "react";
 import NavBar from "./NavBar";
 import QuoteList from "./QuoteList";
 import SignupModal from "./SignupModal";
+import LoginModal from "./LoginModal";
 
 /*
 //PRIORITY
-//TODO: need to work on other modals(login/newQuote)
+//TODO: need to work on other modals(newQuote)
 //TODO: need to be able to distinguish between modals based on state in layout
 //TODO: need to replace whitespace in potential usernames and error out if there was any whitespace
+//TODO BUG: can no longer scroll down once modalType on layout has changed
 //
 //FUTURE:
 //TODO: move QuoteList getData to layout component and pass as prop
@@ -39,11 +41,25 @@ export default class Layout extends React.Component
         //  otherwise, just show an empty div instead of the modal
         if ( this.state.modalType )
         {
-            //TODO: need to distinguish between the modals
-            modalDiv = ( 
-                <SignupModal clearModal={this.clearModalType.bind(this)} modalChange={this.changeModalType.bind(this)} 
-                    userChange={this.changeUser.bind( this )} userClear={this.clearUser.bind( this )} /> 
-            );        
+            //distinguish between the modals
+            if ( this.state.modalType === "Sign Up" )
+            {
+                modalDiv = ( 
+                    <SignupModal clearModal={this.clearModalType.bind(this)} modalChange={this.changeModalType.bind(this)} 
+                        userChange={this.changeUser.bind( this )} userClear={this.clearUser.bind( this )} /> 
+                ); 
+            }  
+            else if ( this.state.modalType === "Login" )
+            {
+                modalDiv = ( 
+                    <LoginModal clearModal={this.clearModalType.bind(this)} modalChange={this.changeModalType.bind(this)} 
+                        userChange={this.changeUser.bind( this )} userClear={this.clearUser.bind( this )} /> 
+                ); 
+            }    
+            else
+            {
+                console.log( "FELL THROUGH MODALTYPE" );
+            } 
         }
 
         return (
