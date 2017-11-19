@@ -5,13 +5,13 @@ import SignupModal from "./SignupModal";
 
 /*
 //PRIORITY
-//TODO: need to send request to server to see if logged in already
 //TODO: need to work on other modals(login/newQuote)
 //TODO: need to be able to distinguish between modals based on state in layout
 //TODO: need to show errors to user for sign up modal,and other modals
 //TODO: need to get upvote and downvote buttons working, for now ignore order of quotes
 //
 //FUTURE:
+//TODO: move QuoteList getData to layout component and pass as prop
 //TODO: quotes need to be ordered by score and need to be re-ordered when quotes get voted on
 //TODO: if there is a problem with logout then error message must be shown to user somehow
 //TODO: show creator of a quote on the quote somewhere
@@ -77,5 +77,16 @@ export default class Layout extends React.Component
         this.setState( { "userName" : undefined } );
     }
 
-
+    componentDidMount()
+    {
+        var self = this;
+        $.get( "/userData" , {} , function( data, status )
+        {
+            if ( data.username )
+            {
+                self.clearModalType();
+                self.setState( { "userName" : data } );
+            }
+        });
+    }
 }

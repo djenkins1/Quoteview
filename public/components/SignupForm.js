@@ -3,11 +3,6 @@ import React from "react";
 //the main layout for the page
 export default class SignupForm extends React.Component
 {
-    constructor( props )
-    {
-        super( props );
-    }
-
     handleUserField( e )
     {
         this.props.userChange( e.target.value );
