@@ -13,7 +13,8 @@ export default class Quote extends React.Component
                     <q className='quoteBody'>{this.props.body}</q>
                     <div className='quoteAuthor'> -- {this.props.author}</div>
                 </div>
-                <QuoteScore score={this.props.score} qid={this.props.qid} />
+                <QuoteScore score={this.props.score} qid={this.props.qid} upvoteFunc={this.props.upvoteFunc}
+                    downvoteFunc={this.props.downvoteFunc} />
             </div>
         );
     }

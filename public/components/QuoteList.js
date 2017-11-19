@@ -19,7 +19,10 @@ export default class QuoteList extends React.Component
         for ( var i = 0; i < this.state.quotes.length; i++ )
         {
             var myQuote = this.state.quotes[ i ];
-            quotesShown.push( <Quote key={i} author={myQuote.author} body={myQuote.body} score={myQuote.score} qid={myQuote.qid} /> );
+            quotesShown.push( 
+                <Quote key={i} author={myQuote.author} body={myQuote.body} score={myQuote.score} qid={myQuote.qid} 
+                    upvoteFunc={this.upvoteQuote.bind(this)} downvoteFunc={this.downvoteQuote.bind( this )} /> 
+            );
         }
 
         //if there are not any quotes in the state,then show a message
@@ -62,4 +65,50 @@ export default class QuoteList extends React.Component
         });
     }
 
+    voteQuote( qid, href )
+    {
+        var self = this;
+        $.post( href , { "qid" : qid } , function( data, status )
+        {
+            if ( data.qid )
+            {
+                self.updateQuote( qid, data );
+            }
+            else
+            {
+                //TODO: show error message
+                console.log( "BAD " + href + ",No qid" );
+            }
+        });
+    }
+
+    upvoteQuote( qid )
+    {
+        this.voteQuote( qid, "/upvoteQuote" );
+    }
+
+    downvoteQuote( qid )
+    {
+        this.voteQuote( qid, "/downvoteQuote" );
+    }
+
+    updateQuote( qid, newData )
+    {
+        var quotesCopy = this.state.quotes.slice();
+        for ( var i = 0; i < quotesCopy.length; i++ )
+        {
+            var atQuote = quotesCopy[ i ];
+            if ( atQuote.qid === qid )
+            {
+                quotesCopy[ i ] = newData;
+                break;
+            }
+        }
+
+        //update the state if and only if the for loop did not go to end of the quotes array
+        if ( i < quotesCopy.length )
+        {
+            this.setState( { "quotes" : quotesCopy } );
+        }
+    }
 }

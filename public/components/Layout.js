@@ -8,7 +8,6 @@ import SignupModal from "./SignupModal";
 //TODO: need to work on other modals(login/newQuote)
 //TODO: need to be able to distinguish between modals based on state in layout
 //TODO: need to show errors to user for sign up modal,and other modals
-//TODO: need to get upvote and downvote buttons working, for now ignore order of quotes
 //
 //FUTURE:
 //TODO: move QuoteList getData to layout component and pass as prop
@@ -21,6 +20,7 @@ import SignupModal from "./SignupModal";
 //TODO: rate limit upvote/downvote of quotes so that can only vote once per second
 //TODO: should only be able to upvote/downvote quotes if logged in
 //TODO: should not be able to upvote/downvote own posts
+//TODO: use hash table to keep track of position of quotes on quoteList for faster updating
 */
 
 //the main layout for the page
