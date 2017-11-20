@@ -23,7 +23,7 @@ export default class BaseModal extends React.Component
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-primary" onClick={this.yesButtonClick.bind( this )} > {this.props.yesText} </button>
-                            <button type="button" className="btn btn-secondary" onClick={this.noButtonClick.bind( this )} 
+                            <button type="button" className="btn btn-secondary closeModalBtn" onClick={this.noButtonClick.bind( this )} 
                                 data-dismiss="modal"> {this.props.noText} </button>
                         </div>
                     </div>
@@ -41,7 +41,7 @@ export default class BaseModal extends React.Component
     componentWillUnmount()
     {
         var self = ReactDOM.findDOMNode(this);
-        $( ".modal-backdrop" ).remove();
+        $( ".closeModalBtn" ).click();
     }
 
     yesButtonClick( e )
