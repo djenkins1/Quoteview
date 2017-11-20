@@ -337,8 +337,11 @@ function setupHandlers()
     urlHandler.registerObserver( "POST" , "/newQuote" , [ urlHandler.createParameter( "author" , "string" , true, 5, 60 ) , urlHandler.createParameter( "body" , "string" , true, 5, 3000 ) ], postQuote, outputErrorAsJson );
     urlHandler.registerObserver( "POST" , "/upvoteQuote" , [ urlHandler.createParameter( "qid" , "string" , true , 1 , 256 ) ], postUpvoteQuote, outputErrorAsJson );
     urlHandler.registerObserver( "POST" , "/downvoteQuote" , [ urlHandler.createParameter( "qid" , "string" , true , 1, 256 ) ], postDownvoteQuote, outputErrorAsJson );
-    urlHandler.registerObserver( "POST" , "/newUser" , [ urlHandler.createParameter( "username" , "string" , true, 5, 100 ) , urlHandler.createParameter( "password" , "string" , true, 5, 100 ) ], testCreateUser , outputErrorAsJson );
-    urlHandler.registerObserver( "POST" , "/login" , [ urlHandler.createParameter( "username" , "string" , true, 5, 100 ) , urlHandler.createParameter( "password" , "string" , true, 5, 100 ) ],  loginUser, outputErrorAsJson );
+
+    var userSchema = urlHandler.createParameter( "username" , "string" , true, 5, 100 );
+    userSchema.finalValidate = urlHandler.validateUsername;
+    urlHandler.registerObserver( "POST" , "/newUser" , [ userSchema , urlHandler.createParameter( "password" , "string" , true, 5, 100 ) ], testCreateUser , outputErrorAsJson );
+    urlHandler.registerObserver( "POST" , "/login" , [ userSchema , urlHandler.createParameter( "password" , "string" , true, 5, 100 ) ],  loginUser, outputErrorAsJson );
     urlHandler.registerObserver( "GET" , "/userData" , [] , loggedInAs, outputErrorAsJson );
     urlHandler.registerObserver( "GET" , "/logout" , [] , logoutUser , outputErrorAsJson );
 }

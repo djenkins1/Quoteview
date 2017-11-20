@@ -8,7 +8,7 @@ export default class ErrorList extends React.Component
         for ( var i = 0; i < this.props.errors.length; i++ )
         {
             errorElems.push( 
-                <div key={i} > {this.props.errors[ i ].name + ":" + this.props.errors[ i ].problem} </div>
+                <div key={i} > {this.props.errors[ i ].name + ": " + this.props.errors[ i ].problem} </div>
             );
         }
 

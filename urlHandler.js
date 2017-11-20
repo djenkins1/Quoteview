@@ -18,6 +18,7 @@ parameterSchema object:
     parameterSchema.name = string ,the name of the required parameter
     parameterSchema.type = string ,the type of the required parameter(i.e string,int,float)
     parameterSchema.required = boolean ,true if must be in the url or false if optional
+    parameterSchema.finalValidate = function, a function that is to be called if all other validation succeeds
     TODO: any other validation required,i.e if number must be in specific range...
 
 TODO: should be able to also specify min/max values or string lengths of values
@@ -234,9 +235,40 @@ function checkParameters( parameterSchema, queryObj )
             toReturn.errors.push( objError );
             continue;
         }
+
+        if ( queryObj[ schemaObj.name ] != undefined && schemaObj.finalValidate )
+        {
+            schemaObj.finalValidate( schemaObj, queryObj[ schemaObj.name ], toReturn );
+        }
     }
 
     return toReturn;
+}
+
+/*
+function: validateUsername
+info:
+    This function checks whether the username given does not contain any whitespace.
+parameters:
+    schemaObj, object, a schemaObj
+    username, string, the username to check
+    errorObj, object, object containing errors field that can be appended to if this function finds a problem with the username.
+returns:
+    boolean, true if the username passes or false otherwise
+*/
+function validateUsername( schemaObj, username, errorObj )
+{
+    if ( username.replace(/\s/g, "") !== username )
+    {
+        if ( errorObj && errorObj.errors )
+        {
+            errorObj.errors.push( { "name" : schemaObj.name , "problem" : "Usernames cannot contain spaces." } );
+        }
+
+        return false;
+    }
+
+    return true;
 }
 
 /*
@@ -446,5 +478,5 @@ exports.registerObserver = registerObserver;
 exports.handleFile = handleFile;
 exports.createParameter = createParameter;
 exports.redirectToUrl = redirectToUrl;
-
+exports.validateUsername = validateUsername;
 
