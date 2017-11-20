@@ -15,7 +15,7 @@ export default class SignupForm extends React.Component
     render()
     {
         return (
-            <form action='/newUser' id='newUserForm' method='post'>
+            <form action='/newUser' method='post'>
                 <input size='30' onChange={this.handleUserField.bind(this)} type='text' name='username' placeholder='Username' 
                      />
                 <br /><br />

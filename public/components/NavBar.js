@@ -12,7 +12,7 @@ export default class NavBar extends React.Component
                     <a className="navbar-brand">Quote View</a>
                     <div className="collapse navbar-collapse">
                         <span className="navbar-text"> Hello, {this.props.userName.username} </span>
-                        <a className="nav-item nav-link" href="#">New Quote</a>
+                        <a className="nav-item nav-link" href="#" onClick={this.handleClickLink.bind( this )} >New Quote</a>
                         <a className="nav-item nav-link" href="#" onClick={this.handleLogout.bind( this )} >Logout</a>
                     </div>
                 </nav>

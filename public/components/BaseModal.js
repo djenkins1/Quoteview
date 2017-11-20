@@ -2,7 +2,6 @@ import React from "react";
 import ReactDOM from "react-dom";
 import ErrorList from "./ErrorList";
 
-//the main layout for the page
 export default class BaseModal extends React.Component
 {
     render()

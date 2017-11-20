@@ -28,8 +28,7 @@ export default class SignupModal extends React.Component
         return (
             <BaseModal modalTitle='Sign Up' 
                 modalBody={<SignupForm userChange={this.updateUserField.bind(this)} 
-                    passChange={this.updatePassField.bind( this )} 
-                    username={this.inputData.username} password={this.inputData.password} />}
+                    passChange={this.updatePassField.bind( this )} />}
                 yesText='Sign Up' noText='Cancel' 
                 yesFunc={this.signup.bind( this )} 
                 noFunc={this.props.clearModal} errors={this.state.errors}/>
