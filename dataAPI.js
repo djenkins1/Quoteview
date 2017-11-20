@@ -142,7 +142,7 @@ function getAllQuotes( onFinish )
 }
 
 /*
-function: createQuote
+function: createQuoteWithUsername
 info:
     Inserts a quote into the database with the values given as parameters.
     Calls onFinish function provided when the quote has been inserted.
@@ -151,11 +151,12 @@ parameters:
     author, string, the author of the quote
     body, string, the text of the quote
     creatorId, int, id of a user who created the quote on the site
+    creatorName, string, the username of the user who created the quote on the site
     onFinish, function, the function to be called when the quote has been inserted
 returns:
     nothing
 */
-function createQuote( author, body, creatorId, onFinish )
+function createQuoteWithUsername( author, body, creatorId, creatorName, onFinish )
 {
     var creatorIdObj = creatorId;
     if ( typeof creatorId === "string" )
@@ -165,7 +166,7 @@ function createQuote( author, body, creatorId, onFinish )
 
     getDefaultConn( function( db )
     {
-        var toInsert = { "author" : author, "body" : body, "creatorId" : creatorIdObj, "score" : 0 };
+        var toInsert = { "author" : author, "body" : body, "creatorId" : creatorIdObj, "creatorName" : creatorName, "score" : 0 };
         db.collection( QUOTE_TABLE ).insertOne( toInsert, function(err, result ) 
         {
             if (err) throw err;
@@ -183,6 +184,30 @@ function createQuote( author, body, creatorId, onFinish )
         onFinish( result ); 
     });
     */
+}
+
+/*
+function: createQuote
+info:
+    Inserts a quote into the database with the values given as parameters.
+    Calls onFinish function provided when the quote has been inserted.
+    Can use result.insertId for the id of the quote that was inserted.
+    Wrapper function for createQuoteWithUsername for backwards compatibility.
+        USE createQuoteWithUsername if username of creatorId has already been queried and is known.
+parameters:
+    author, string, the author of the quote
+    body, string, the text of the quote
+    creatorId, int, id of a user who created the quote on the site
+    onFinish, function, the function to be called when the quote has been inserted
+returns:
+    nothing
+*/
+function createQuote( author, body, creatorId, onFinish )
+{
+    getUserData( creatorId , function( userObj )
+    {
+        createQuoteWithUsername( author, body, creatorId, userObj.username, onFinish );
+    });
 }
 
 /*

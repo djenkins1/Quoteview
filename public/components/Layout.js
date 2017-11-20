@@ -12,15 +12,17 @@ import NewQuoteModal from "./NewQuoteModal";
 //FUTURE:
 //TODO: quotes need to be ordered by score and need to be re-ordered when quotes get voted on
 //TODO: if there is a problem with logout then error message must be shown to user somehow
-//TODO: show creator of a quote on the quote somewhere
-//          problem, need to get username from creatorId
 //TODO: rate limit upvote/downvote of quotes so that can only vote once per second
 //TODO: should only be able to upvote/downvote quotes if logged in
 //TODO: should not be able to upvote/downvote own posts
 //TODO: use hash table to keep track of position of quotes on quoteList for faster updating
 //POSSIBLE:
-//TODO: (?)pagination on quotes by using after field
-//TODO: (?)scrolling down on page should get another page of quotes
+//My Quotes tab that only shows quotes submitted by current user logged in (link to in navbar)
+//Page for quotes that were submitted by a particular user(similar functionality to My Quotes)
+//Search quotes by particular text string in author/body
+//Quote collection should have another field being datetime when they were submitted
+//(?)pagination on quotes by using after field
+//(?)scrolling down on page should get another page of quotes
 */
 
 //the main layout for the page

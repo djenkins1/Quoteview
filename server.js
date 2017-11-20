@@ -245,10 +245,12 @@ function postQuote( queryObj , response, sessionObj, onFinish )
     }
 
     dataAPI.createQuote( queryObj.author, queryObj.body, sessionObj.data.user, function( result ) {
-        response.writeHead(200, {'Content-Type': 'text/json'});
-        var resultObj = { "qid" : result.insertId , "author" : queryObj.author , "body" : queryObj.body , "score" : 0 };
-        response.write( JSON.stringify( resultObj ) );
-        onFinish( sessionObj );     
+        dataAPI.getQuoteById( result.insertId , function( quoteObj )
+        {
+            response.writeHead(200, {'Content-Type': 'text/json'});
+            response.write( JSON.stringify( quoteObj ) );
+            onFinish( sessionObj );     
+        });
     });
 }
 
