@@ -7,22 +7,20 @@ import NewQuoteModal from "./NewQuoteModal";
 
 /*
 //PRIORITY
-//TODO: need to work on other modals(newQuote)
-//TODO: need to be able to distinguish between modals based on state in layout
 //TODO: need to replace whitespace in potential usernames and error out if there was any whitespace
 //
 //FUTURE:
-//TODO: move QuoteList getData to layout component and pass as prop
 //TODO: quotes need to be ordered by score and need to be re-ordered when quotes get voted on
 //TODO: if there is a problem with logout then error message must be shown to user somehow
 //TODO: show creator of a quote on the quote somewhere
 //          problem, need to get username from creatorId
-//TODO: pagination on quotes by using after field
-//TODO: scrolling down on page should get another page of quotes
 //TODO: rate limit upvote/downvote of quotes so that can only vote once per second
 //TODO: should only be able to upvote/downvote quotes if logged in
 //TODO: should not be able to upvote/downvote own posts
 //TODO: use hash table to keep track of position of quotes on quoteList for faster updating
+//POSSIBLE:
+//TODO: (?)pagination on quotes by using after field
+//TODO: (?)scrolling down on page should get another page of quotes
 */
 
 //the main layout for the page
@@ -32,6 +30,7 @@ export default class Layout extends React.Component
     {
         super( props );
         this.state = {};
+        this.getData();
     }
 
     render()
@@ -46,20 +45,23 @@ export default class Layout extends React.Component
             {
                 modalDiv = ( 
                     <SignupModal clearModal={this.clearModalType.bind(this)} modalChange={this.changeModalType.bind(this)} 
-                        userChange={this.changeUser.bind( this )} userClear={this.clearUser.bind( this )} /> 
+                        userChange={this.changeUser.bind( this )} userClear={this.clearUser.bind( this )} 
+                        quoteAdd={this.addQuote.bind( this )} /> 
                 ); 
             }  
             else if ( this.state.modalType === "Login" )
             {
                 modalDiv = ( 
                     <LoginModal clearModal={this.clearModalType.bind(this)} modalChange={this.changeModalType.bind(this)} 
-                        userChange={this.changeUser.bind( this )} userClear={this.clearUser.bind( this )} /> 
+                        userChange={this.changeUser.bind( this )} userClear={this.clearUser.bind( this )} 
+                        quoteAdd={this.addQuote.bind( this )} /> 
                 ); 
             }    
             else if ( this.state.modalType === "New Quote" )
             {
                 modalDiv = ( 
-                    <NewQuoteModal clearModal={this.clearModalType.bind(this)} modalChange={this.changeModalType.bind(this)} /> 
+                    <NewQuoteModal clearModal={this.clearModalType.bind(this)} modalChange={this.changeModalType.bind(this)} 
+                        quoteAdd={this.addQuote.bind( this )} />
                 );                 
             }
             else
@@ -72,7 +74,8 @@ export default class Layout extends React.Component
             <div>
                 <NavBar modalChange={this.changeModalType.bind(this)} userName={this.state.userName} 
                     userClear={this.clearUser.bind( this )} />
-                <QuoteList />
+                <QuoteList quotes={this.state.quotes} requestDone={this.state.requestDone} 
+                    downvoteQuote={this.downvoteQuote.bind( this )} upvoteQuote={this.upvoteQuote.bind( this )} />
                 {modalDiv}
             </div>
         );
@@ -98,7 +101,14 @@ export default class Layout extends React.Component
         this.setState( { "userName" : undefined } );
     }
 
-    componentDidMount()
+    addQuote( newQuote )
+    {
+        var quotesCopy = this.state.quotes.slice();
+        quotesCopy.push( newQuote );
+        this.setState( { "quotes" : quotesCopy } );
+    }
+
+    getData()
     {
         var self = this;
         $.get( "/userData" , {} , function( data, status )
@@ -109,5 +119,66 @@ export default class Layout extends React.Component
                 self.setState( { "userName" : data } );
             }
         });
+
+        //sends ajax get request to server for all the quotes
+        $.get( "/quotes" , function( data, status )
+        {
+            if ( data.length == 0 )
+            {
+                self.setState( { quotes: [] } );
+                self.setState( { requestDone: true } );
+                return;
+            }
+
+            self.setState( { quotes: data } );
+            self.setState( { requestDone: true } );
+        });
+    }
+
+    voteQuote( qid, href )
+    {
+        var self = this;
+        $.post( href , { "qid" : qid } , function( data, status )
+        {
+            if ( data.qid )
+            {
+                self.updateQuote( qid, data );
+            }
+            else
+            {
+                //TODO: show error message
+                console.log( "BAD " + href + ",No qid" );
+            }
+        });
+    }
+
+    upvoteQuote( qid )
+    {
+        this.voteQuote( qid, "/upvoteQuote" );
+    }
+
+    downvoteQuote( qid )
+    {
+        this.voteQuote( qid, "/downvoteQuote" );
+    }
+
+    updateQuote( qid, newData )
+    {
+        var quotesCopy = this.state.quotes.slice();
+        for ( var i = 0; i < quotesCopy.length; i++ )
+        {
+            var atQuote = quotesCopy[ i ];
+            if ( atQuote.qid === qid )
+            {
+                quotesCopy[ i ] = newData;
+                break;
+            }
+        }
+
+        //update the state if and only if the for loop did not go to end of the quotes array
+        if ( i < quotesCopy.length )
+        {
+            this.setState( { "quotes" : quotesCopy } );
+        }
     }
 }

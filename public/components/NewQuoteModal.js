@@ -54,7 +54,10 @@ export default class NewQuoteModal extends React.Component
             }       
 
             self.props.clearModal();     
-            //TODO: need to add new quote to list of quotes somehow?
+            if ( self.props.quoteAdd )
+            {
+                self.props.quoteAdd( data );
+            }
         });
     }
 }
