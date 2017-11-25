@@ -8,7 +8,7 @@ export default class Quote extends React.Component
     render()
     {
         return (
-            <div className='list-group-item d-flex flex-column justify-content-center align-items-start'>
+            <div className='quoteDivContainer list-group-item d-flex flex-column justify-content-center align-items-start'>
                 <div className='quoteTextContainer'>
                     <q className='quoteBody'>{this.props.quoteObj.body}</q>
                     <div className='quoteAuthor'> -- {this.props.quoteObj.author}</div>

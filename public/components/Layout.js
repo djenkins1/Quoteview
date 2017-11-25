@@ -17,6 +17,7 @@ import NewQuoteModal from "./NewQuoteModal";
 //rate limit upvote/downvote of quotes so that can only vote once per second
 //should only be able to upvote/downvote quotes if logged in
 //hovering over disabled upvote/downvote badge should show caption saying need to log in
+//login/signup forms on modal should trigger submit code when enter key is pressed
 //
 //POSSIBLE:
 //My Quotes tab that only shows quotes submitted by current user logged in (link to in navbar)

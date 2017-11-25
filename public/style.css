@@ -5,6 +5,11 @@
     font-family: monospace;
 }
 
+.quoteDivContainer
+{
+    position: relative;
+}
+
 .quoteTextContainer
 {
     margin-right: 4em;
@@ -35,15 +40,11 @@ a.nav-link:hover
     color: lightgray;
 }
 
-#quoteList
-{
-    position: relative;
-}
-
 div.badgeContain
 {
     position: absolute; 
     top: 50%;
+    right: 0;
     transform: translateY(-50%);
     -webkit-transform: translateY(-50%);
     -ms-transform: translateY(-50%);
