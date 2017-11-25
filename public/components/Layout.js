@@ -19,7 +19,6 @@ import NewQuoteModal from "./NewQuoteModal";
 //should not be able to upvote/downvote own posts
 //use hash table to keep track of position of quotes on quoteList for faster updating
 //replace createQuote calls with createQuoteWithUsername wherever possible
-//figure out better solution for vertical centering of score buttons on a quote
 //
 //POSSIBLE:
 //My Quotes tab that only shows quotes submitted by current user logged in (link to in navbar)

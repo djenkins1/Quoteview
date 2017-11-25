@@ -5,6 +5,11 @@
     font-family: monospace;
 }
 
+.quoteTextContainer
+{
+    margin-right: 4em;
+}
+
 a.nav-link
 {
     color: white;
