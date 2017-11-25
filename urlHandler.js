@@ -19,9 +19,7 @@ parameterSchema object:
     parameterSchema.type = string ,the type of the required parameter(i.e string,int,float)
     parameterSchema.required = boolean ,true if must be in the url or false if optional
     parameterSchema.finalValidate = function, a function that is to be called if all other validation succeeds
-    TODO: any other validation required,i.e if number must be in specific range...
 
-TODO: should be able to also specify min/max values or string lengths of values
 TODO: other types like email,password
 */
 

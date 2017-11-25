@@ -1,7 +1,8 @@
 .quoteBadge
 {
-    padding: 1em !important;
+    padding: 1.1em !important;
     margin-right: 0.25em;
+    font-family: monospace;
 }
 
 a.nav-link
@@ -19,10 +20,18 @@ a.nav-link:hover
     color: lightgray;
 }
 
+#quoteList
+{
+    position: relative;
+}
+
 div.badgeContain
 {
-    position: relative; 
-    bottom: 20px
+    position: absolute; 
+    top: 50%;
+    transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
 }
 
 .navbar-text
