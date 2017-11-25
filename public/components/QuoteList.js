@@ -14,7 +14,9 @@ export default class QuoteList extends React.Component
             {
                 var myQuote = this.props.quotes[ i ];
                 quotesShown.push( 
-                    <Quote key={i} quoteObj={myQuote} upvoteFunc={this.props.upvoteQuote} downvoteFunc={this.props.downvoteQuote} /> 
+                    <Quote key={i} quoteObj={myQuote} upvoteFunc={this.props.upvoteQuote} 
+                        downvoteFunc={this.props.downvoteQuote} 
+                        loggedInAs={this.props.loggedInAs} /> 
                 );
             }
         }

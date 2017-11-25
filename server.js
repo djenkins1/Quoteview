@@ -267,6 +267,13 @@ function postUpvoteQuote( queryObj, response, sessionObj, onFinish )
         return;
     }
 
+    //if the user is not logged in then output error
+    if ( sessionObj.data.user == undefined )
+    {
+        outputErrorAsJson( {"error": true , "errors": [{"name":"user","problem":"Must be logged in to vote on quote." }]}, queryObj, response, sessionObj, onFinish );
+        return;           
+    }
+
     dataAPI.upvoteQuote( queryObj.qid, function( result ) 
     {
         if ( result.affectedRows == 0 )
@@ -294,6 +301,13 @@ function postDownvoteQuote( queryObj, response, sessionObj, onFinish )
         console.log( "Problem postDownvoteQuote, required parameters undefined" );
         respondServerError( queryObj, response, sessionObj, onFinish );
         return;
+    }
+
+    //if the user is not logged in then output error
+    if ( sessionObj.data.user == undefined )
+    {
+        outputErrorAsJson( {"error": true , "errors": [{"name":"user","problem":"Must be logged in to vote on quote." }]}, queryObj, response, sessionObj, onFinish );
+        return;           
     }
 
     dataAPI.downvoteQuote( queryObj.qid, function( result ) 

@@ -15,7 +15,7 @@ export default class Quote extends React.Component
                     <div className='quoteSubmitted'> Submitted by {this.props.quoteObj.creatorName} </div>
                 </div>
                 <QuoteScore score={this.props.quoteObj.score} qid={this.props.quoteObj.qid} upvoteFunc={this.props.upvoteFunc}
-                    downvoteFunc={this.props.downvoteFunc} />
+                    downvoteFunc={this.props.downvoteFunc} loggedInAs={this.props.loggedInAs} />
             </div>
         );
     }

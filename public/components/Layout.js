@@ -16,8 +16,7 @@ import NewQuoteModal from "./NewQuoteModal";
 //if there is a problem with logout then error message must be shown to user somehow
 //rate limit upvote/downvote of quotes so that can only vote once per second
 //should only be able to upvote/downvote quotes if logged in
-//should not be able to upvote/downvote own posts
-//  score upvote/downvote should show up as disabled on page for own quotes
+//hovering over disabled upvote/downvote badge should show caption saying need to log in
 //
 //POSSIBLE:
 //My Quotes tab that only shows quotes submitted by current user logged in (link to in navbar)
@@ -83,7 +82,8 @@ export default class Layout extends React.Component
                 <NavBar modalChange={this.changeModalType.bind(this)} userName={this.state.userName} 
                     userClear={this.clearUser.bind( this )} />
                 <QuoteList quotes={this.state.quotes} requestDone={this.state.requestDone} 
-                    downvoteQuote={this.downvoteQuote.bind( this )} upvoteQuote={this.upvoteQuote.bind( this )} />
+                    downvoteQuote={this.downvoteQuote.bind( this )} upvoteQuote={this.upvoteQuote.bind( this )} 
+                    loggedInAs={this.state.userName}/>
                 {modalDiv}
             </div>
         );

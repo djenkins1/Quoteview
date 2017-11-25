@@ -15,9 +15,19 @@ a.nav-link
     color: white;
 }
 
-a.disabled
+.quoteBadge.disabled
 {
-    color: gray !important;
+    color: white !important;
+}
+
+a.quoteBadge.disabled.bg-secondary
+{
+    background-color: gray !important;
+}
+
+.quoteBadge.disabled.bg-secondary:hover
+{
+    background-color: gray !important;
 }
 
 a.nav-link:hover
