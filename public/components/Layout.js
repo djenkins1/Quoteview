@@ -17,8 +17,7 @@ import NewQuoteModal from "./NewQuoteModal";
 //rate limit upvote/downvote of quotes so that can only vote once per second
 //should only be able to upvote/downvote quotes if logged in
 //should not be able to upvote/downvote own posts
-//use hash table to keep track of position of quotes on quoteList for faster updating
-//replace createQuote calls with createQuoteWithUsername wherever possible
+//  score upvote/downvote should show up as disabled on page for own quotes
 //
 //POSSIBLE:
 //My Quotes tab that only shows quotes submitted by current user logged in (link to in navbar)
@@ -28,6 +27,7 @@ import NewQuoteModal from "./NewQuoteModal";
 //Quote collection should have another field being datetime when they were submitted
 //(?)pagination on quotes by using after field
 //(?)scrolling down on page should get another page of quotes
+//(?)use hash table to keep track of position of quotes on quoteList for faster updating
 //----------------------------
 */
 

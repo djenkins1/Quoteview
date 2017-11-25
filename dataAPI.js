@@ -632,4 +632,4 @@ exports.closeConnection = closeConnection;
 exports.setupDatabase = setupDatabase;
 exports.getRecentQuotes = getRecentQuotes;
 exports.getPagedQuotes = getPagedQuotes;
-
+exports.createQuoteWithUsername = createQuoteWithUsername;

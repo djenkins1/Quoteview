@@ -213,6 +213,7 @@ function loginUser( queryObj, response, sessionObj, onFinish )
 
         response.writeHead(200, {'Content-Type': 'text/json'});
         sessionObj.data.user = resultObj.userId;
+        sessionObj.data.username = resultObj.username;
         response.write( JSON.stringify( resultObj ) );
         onFinish( sessionObj );         
     });
@@ -244,7 +245,7 @@ function postQuote( queryObj , response, sessionObj, onFinish )
         return;
     }
 
-    dataAPI.createQuote( queryObj.author, queryObj.body, sessionObj.data.user, function( result ) {
+    dataAPI.createQuoteWithUsername( queryObj.author, queryObj.body, sessionObj.data.user, sessionObj.data.username, function( result ) {
         dataAPI.getQuoteById( result.insertId , function( quoteObj )
         {
             response.writeHead(200, {'Content-Type': 'text/json'});
