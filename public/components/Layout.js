@@ -10,21 +10,23 @@ import NewQuoteModal from "./NewQuoteModal";
 //TODO BOARD
 //----------------------------
 //PRIORITY
+//quotes need to be ordered by score and need to be re-ordered when quotes get voted on
+//Page for quotes that were submitted by a particular user(similar functionality to My Quotes)
+//  Have functionality,just need to be able to reset back to everyone's quotes on logout
+//Add link for normal quotes page on navbar(to go back to quotes by everyone)
 //
 //FUTURE:
-//quotes need to be ordered by score and need to be re-ordered when quotes get voted on
 //if there is a problem with logout then error message must be shown to user somehow
-//rate limit upvote/downvote of quotes so that can only vote once per second
-//should only be able to upvote/downvote quotes if logged in
-//hovering over disabled upvote/downvote badge should show caption saying need to log in
-//login/signup forms on modal should trigger submit code when enter key is pressed
 //
 //POSSIBLE:
 //My Quotes tab that only shows quotes submitted by current user logged in (link to in navbar)
-//Page for quotes that were submitted by a particular user(similar functionality to My Quotes)
 //Search quotes by particular text string in author/body
 //Add email field to signup form
 //admin panel to hide quotes
+//login/signup forms on modal should trigger submit code when enter key is pressed
+//hovering over disabled upvote/downvote badge should show caption saying need to log in
+//keep track of quotes that user has voted on and stop them from voting more than once on the same quote
+//add back button functionality
 //(?)pagination on quotes by using after field
 //(?)scrolling down on page should get another page of quotes
 //(?)use hash table to keep track of position of quotes on quoteList for faster updating
@@ -37,8 +39,8 @@ export default class Layout extends React.Component
     constructor( props )
     {
         super( props );
-        this.state = {};
-        this.getData();
+        this.state = { "currentTitle" : "Quotes" };
+        this.getData( "/quotes" , {} );
     }
 
     render()
@@ -78,16 +80,30 @@ export default class Layout extends React.Component
             } 
         }
 
-        return (
-            <div>
-                <NavBar modalChange={this.changeModalType.bind(this)} userName={this.state.userName} 
-                    userClear={this.clearUser.bind( this )} />
-                <QuoteList quotes={this.state.quotes} requestDone={this.state.requestDone} 
-                    downvoteQuote={this.downvoteQuote.bind( this )} upvoteQuote={this.upvoteQuote.bind( this )} 
-                    loggedInAs={this.state.userName}/>
-                {modalDiv}
-            </div>
-        );
+        //if there is a current page that the user is on then render that page
+        if ( this.state.currentPage )
+        {
+            return (
+                <div>
+                    Not yet implemented
+                </div>
+            );
+        }
+        else
+        {
+            return (
+                    <div>
+                        <NavBar modalChange={this.changeModalType.bind(this)} userName={this.state.userName} 
+                            userClear={this.clearUser.bind( this )} />
+                        <h1>{this.state.currentTitle} </h1>
+                        <QuoteList quotes={this.state.quotes} requestDone={this.state.requestDone} 
+                            downvoteQuote={this.downvoteQuote.bind( this )} upvoteQuote={this.upvoteQuote.bind( this )} 
+                            loggedInAs={this.state.userName}
+                            authorClickFunc={this.getQuotesByCreator.bind(this)} />
+                        {modalDiv}
+                    </div>
+                );
+        }
     }
 
     changeModalType( newType )
@@ -117,7 +133,14 @@ export default class Layout extends React.Component
         this.setState( { "quotes" : quotesCopy } );
     }
 
-    getData()
+    getQuotesByCreator( creatorId, creatorName )
+    {
+        console.log( "GETTING QUOTES FROM: " + creatorId );
+        this.setState( { "currentTitle" : "Quotes by " + creatorName } );
+        this.getData( "/quotes" , { "creator" : creatorId } );
+    }
+
+    getData( fromQuoteUrl, fromQuoteParams )
     {
         var self = this;
         $.get( "/userData" , {} , function( data, status )
@@ -130,7 +153,7 @@ export default class Layout extends React.Component
         });
 
         //sends ajax get request to server for all the quotes
-        $.get( "/quotes" , function( data, status )
+        $.get( fromQuoteUrl , fromQuoteParams, function( data, status )
         {
             if ( data.length == 0 )
             {

@@ -17,12 +17,23 @@ export default class Quote extends React.Component
                 <div className='quoteTextContainer'>
                     <q className='quoteBody'>{this.props.quoteObj.body}</q>
                     <div className='quoteAuthor'> -- {this.props.quoteObj.author}</div>
-                    <div className='quoteSubmitted'> Submitted by {this.props.quoteObj.creatorName} on {quoteDate} at {quoteTime} </div>
+                    <div className='quoteSubmitted'>
+                        <span>Submitted by </span>
+                        <a href='#' onClick={this.handleAuthorClick.bind( this )}>{this.props.quoteObj.creatorName}</a> 
+                        <span> on </span>
+                        <span>{quoteDate} at {quoteTime}</span>
+                    </div>
                 </div>
                 <QuoteScore score={this.props.quoteObj.score} qid={this.props.quoteObj.qid} upvoteFunc={this.props.upvoteFunc}
                     downvoteFunc={this.props.downvoteFunc} loggedInAs={this.props.loggedInAs} />
             </div>
         );
+    }
+
+    handleAuthorClick( e )
+    {
+        e.preventDefault();
+        this.props.authorClickFunc( this.props.quoteObj.creatorId, this.props.quoteObj.creatorName );
     }
 }
 

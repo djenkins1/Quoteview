@@ -68,11 +68,22 @@ function exponentNumber( queryObj, response, sessionObj, onFinish )
 //responds with all the quotes in the database
 function returnAllQuotes( queryObj , response, sessionObj, onFinish )
 {
-    dataAPI.getAllQuotes( function( results ) {
-        response.writeHead(200, {'Content-Type': 'text/json'});
-        response.write( JSON.stringify( results ) );
-        onFinish( sessionObj );
-    });
+    if ( queryObj.creator )
+    {
+        dataAPI.getAllQuotesFromUser( queryObj.creator, function( results ) {
+            response.writeHead(200, {'Content-Type': 'text/json'});
+            response.write( JSON.stringify( results ) );
+            onFinish( sessionObj );
+        });       
+    }
+    else
+    {
+        dataAPI.getAllQuotes( function( results ) {
+            response.writeHead(200, {'Content-Type': 'text/json'});
+            response.write( JSON.stringify( results ) );
+            onFinish( sessionObj );
+        });
+    }
 }
 
 //sends back a 500 error
@@ -349,7 +360,7 @@ function setupHandlers()
     urlHandler.registerObserver( "GET" , "/sessionTest" , [] , testSession, standardErrorCall );
     urlHandler.registerObserver( "GET" , "/sessionDelete" , [] , testDeleteSession, standardErrorCall );
     //setup the observer for getting all quotes
-    urlHandler.registerObserver( "GET" , "/quotes" , [] , returnAllQuotes, outputErrorAsJson );
+    urlHandler.registerObserver( "GET" , "/quotes" , [ urlHandler.createParameter( "creator" , "string" , false , 1 , 256 ) ] , returnAllQuotes, outputErrorAsJson );
     urlHandler.registerObserver( "POST" , "/newQuote" , [ urlHandler.createParameter( "author" , "string" , true, 5, 60 ) , urlHandler.createParameter( "body" , "string" , true, 5, 3000 ) ], postQuote, outputErrorAsJson );
     urlHandler.registerObserver( "POST" , "/upvoteQuote" , [ urlHandler.createParameter( "qid" , "string" , true , 1 , 256 ) ], postUpvoteQuote, outputErrorAsJson );
     urlHandler.registerObserver( "POST" , "/downvoteQuote" , [ urlHandler.createParameter( "qid" , "string" , true , 1, 256 ) ], postDownvoteQuote, outputErrorAsJson );

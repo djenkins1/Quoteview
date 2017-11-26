@@ -616,6 +616,29 @@ function setupDatabase( onFinish )
     });
 }
 
+function getAllQuotesFromUser( userId, onFinish )
+{
+    var myQuery = { "creatorId" : userId };
+    if ( typeof userId === "string" )
+    {
+        myQuery.creatorId = ObjectId( userId );
+    }
+
+    getDefaultConn( function( db )
+    {
+        db.collection( QUOTE_TABLE ).find( myQuery ).toArray( function(err, results ) 
+        {
+            if (err) throw err;
+            for ( var i = 0; i < results.length; i++ )
+            {
+                results[ i ].qid = results[ i ]._id;
+            }
+            onFinish( results );
+        
+        });
+    });
+}
+
 
 //add the functions above to this module so that they are usable outside of the module
 exports.getAllQuotes = getAllQuotes;
@@ -633,3 +656,5 @@ exports.setupDatabase = setupDatabase;
 exports.getRecentQuotes = getRecentQuotes;
 exports.getPagedQuotes = getPagedQuotes;
 exports.createQuoteWithUsername = createQuoteWithUsername;
+exports.getAllQuotesFromUser = getAllQuotesFromUser;
+
