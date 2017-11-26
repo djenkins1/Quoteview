@@ -616,6 +616,16 @@ function setupDatabase( onFinish )
     });
 }
 
+/*
+function: getAllQuotesFromUser
+info:
+    This function passes along the quotes that were created by the user with id given.
+parameters:
+    userId, string, the id of the user who created the quotes
+    onFinish, function, the function to be called when the database query finishes.
+returns:
+    nothing
+*/
 function getAllQuotesFromUser( userId, onFinish )
 {
     var myQuery = { "creatorId" : userId };

@@ -14,18 +14,18 @@ import NewQuoteModal from "./NewQuoteModal";
 //Page for quotes that were submitted by a particular user(similar functionality to My Quotes)
 //  Have functionality,just need to be able to reset back to everyone's quotes on logout
 //Add link for normal quotes page on navbar(to go back to quotes by everyone)
+//My Quotes tab that only shows quotes submitted by current user logged in (link to in navbar)
 //
 //FUTURE:
 //if there is a problem with logout then error message must be shown to user somehow
+//Search quotes by particular text string in author/body
+//login/signup forms on modal should trigger submit code when enter key is pressed
+//keep track of quotes that user has voted on and stop them from voting more than once on the same quote
 //
 //POSSIBLE:
-//My Quotes tab that only shows quotes submitted by current user logged in (link to in navbar)
-//Search quotes by particular text string in author/body
 //Add email field to signup form
 //admin panel to hide quotes
-//login/signup forms on modal should trigger submit code when enter key is pressed
 //hovering over disabled upvote/downvote badge should show caption saying need to log in
-//keep track of quotes that user has voted on and stop them from voting more than once on the same quote
 //add back button functionality
 //(?)pagination on quotes by using after field
 //(?)scrolling down on page should get another page of quotes
