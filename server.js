@@ -170,6 +170,7 @@ function testCreateUser( queryObj, response, sessionObj, onFinish )
         dataAPI.createUser( queryObj.username, queryObj.password, function( result ) 
         {
             sessionObj.data.user = result.insertId;
+            sessionObj.data.username = queryObj.username;
             response.writeHead(200, {'Content-Type': 'text/json'});
             var userObj = { "userId" : result.insertId , "username" : queryObj.username, "role" : "user" };
             response.write( JSON.stringify( userObj ) );

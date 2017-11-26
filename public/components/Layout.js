@@ -24,7 +24,7 @@ import NewQuoteModal from "./NewQuoteModal";
 //Page for quotes that were submitted by a particular user(similar functionality to My Quotes)
 //Search quotes by particular text string in author/body
 //Add email field to signup form
-//Quote collection should have another field being datetime when they were submitted
+//admin panel to hide quotes
 //(?)pagination on quotes by using after field
 //(?)scrolling down on page should get another page of quotes
 //(?)use hash table to keep track of position of quotes on quoteList for faster updating
