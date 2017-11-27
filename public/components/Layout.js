@@ -174,20 +174,20 @@ export default class Layout extends React.Component
                 self.clearModalType();
                 self.setState( { "userName" : data } );
             }
-        });
 
-        //sends ajax get request to server for all the quotes
-        $.get( fromQuoteUrl , fromQuoteParams, function( data, status )
-        {
-            if ( data.length == 0 )
+            //sends ajax get request to server for all the quotes
+            $.get( fromQuoteUrl , fromQuoteParams, function( data, status )
             {
-                self.setState( { quotes: [] } );
-                self.setState( { requestDone: true } );
-                return;
-            }
+                if ( data.length == 0 )
+                {
+                    self.setState( { quotes: [] } );
+                    self.setState( { requestDone: true } );
+                    return;
+                }
 
-            self.setState( { quotes: data } );
-            self.setState( { requestDone: true } );
+                self.setState( { quotes: data } );
+                self.setState( { requestDone: true } );
+            });
         });
     }
 

@@ -202,9 +202,9 @@ function loginUser( queryObj, response, sessionObj, onFinish )
 
     if ( sessionObj.data.user )
     {
-            var errorList = [ { "name" : "user" , "problem" : "already logged in" } ];
-            outputErrorAsJson( errorList, queryObj, response, sessionObj, onFinish );
-            return;
+        var errorList = [ { "name" : "user" , "problem" : "already logged in" } ];
+        outputErrorAsJson( errorList, queryObj, response, sessionObj, onFinish );
+        return;
     }
 
     dataAPI.verifyUserCredentials( queryObj.username, queryObj.password, function( isValid, resultObj )
@@ -356,9 +356,9 @@ function setupHandlers()
     urlHandler.registerObserver( "GET" , "/square" , [ { "name" : "number" , "type" : "float" , "required" : true } ], squareNumber, standardErrorCall );
     urlHandler.registerObserver( "GET" , "/exponent" , [ { "name" : "number" , "type" : "float" , "required" : true } , { "name" : "exp" , "type" : "float" , "required" : false } ], exponentNumber, standardErrorCall );
     urlHandler.registerObserver( "GET" , "/errorTest" , [] , respondServerError , standardErrorCall );
-    */
     urlHandler.registerObserver( "GET" , "/sessionTest" , [] , testSession, standardErrorCall );
     urlHandler.registerObserver( "GET" , "/sessionDelete" , [] , testDeleteSession, standardErrorCall );
+    */
     //setup the observer for getting all quotes
     urlHandler.registerObserver( "GET" , "/quotes" , [ urlHandler.createParameter( "creator" , "string" , false , 1 , 256 ) ] , returnAllQuotes, outputErrorAsJson );
     urlHandler.registerObserver( "POST" , "/newQuote" , [ urlHandler.createParameter( "author" , "string" , true, 5, 60 ) , urlHandler.createParameter( "body" , "string" , true, 5, 3000 ) ], postQuote, outputErrorAsJson );

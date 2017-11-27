@@ -424,7 +424,7 @@ function handleUrl( request, response )
     //var qdata = q.query; //object with key value pairs representing the url parameters
 
     //if the request method is get,then handle request using handleGet function
-    if(request.method === "GET") 
+    if ( request.method === "GET" ) 
     {
         return handleGet( request, response, parsedUrl );
     }
