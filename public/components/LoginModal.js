@@ -30,7 +30,8 @@ export default class LoginModal extends React.Component
             <BaseModal modalTitle='Login' 
                 modalBody={<SignupForm userChange={this.updateUserField.bind(this)} 
                     passChange={this.updatePassField.bind( this )} 
-                    username={this.inputData.username} password={this.inputData.password} />}
+                    username={this.inputData.username} password={this.inputData.password} 
+                    submitFunc={this.login.bind(this)} />}
                 yesText='Login' noText='Cancel' 
                 yesFunc={this.login.bind( this )} 
                 noFunc={this.props.clearModal} errors={this.state.errors}/>

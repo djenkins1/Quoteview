@@ -7,6 +7,16 @@ export default class SignupForm extends React.Component
         this.props.userChange( e.target.value );
     }
 
+    handleEnterPress( e )
+    {
+        console.log( "handleEnterPress()" )
+        if ( e.which == 13 || e.keyCode == 13 )
+        {
+            console.log( "Enter pressed" );
+            this.props.submitFunc( undefined );
+        }
+    }
+
     handlePasswordField( e )
     {
         this.props.passChange( e.target.value );
@@ -15,11 +25,16 @@ export default class SignupForm extends React.Component
     render()
     {
         return (
-            <form action='/newUser' method='post'>
-                <input size='30' onChange={this.handleUserField.bind(this)} type='text' name='username' placeholder='Username' 
-                     />
+            <form action='/newUser' method='post' >
+                <input size='30' 
+                    onKeyPress={this.handleEnterPress.bind( this )}
+                    onChange={this.handleUserField.bind(this)} 
+                    type='text' name='username' placeholder='Username' />
                 <br /><br />
-                <input size='30' onChange={this.handlePasswordField.bind( this )} type='password' name='password' 
+                <input 
+                    size='30' type='password' name='password' 
+                    onChange={this.handlePasswordField.bind( this )} 
+                    onKeyPress={this.handleEnterPress.bind( this )}
                     placeholder='Password'  />
                 <br /><br />
             </form>
