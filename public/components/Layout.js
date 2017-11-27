@@ -4,6 +4,7 @@ import QuoteList from "./QuoteList";
 import SignupModal from "./SignupModal";
 import LoginModal from "./LoginModal";
 import NewQuoteModal from "./NewQuoteModal";
+import Constants from "./Constants";
 
 /*
 //----------------------------
@@ -39,7 +40,7 @@ export default class Layout extends React.Component
     constructor( props )
     {
         super( props );
-        this.state = { "currentTitle" : "Quotes" };
+        this.state = { "currentTitle" : Constants.TXT_TITLE_DEFAULT };
         this.getData( "/quotes" , {} );
     }
 
@@ -51,7 +52,7 @@ export default class Layout extends React.Component
         if ( this.state.modalType )
         {
             //distinguish between the modals
-            if ( this.state.modalType === "Sign Up" )
+            if ( this.state.modalType === Constants.TXT_NAV_SIGNUP )
             {
                 modalDiv = ( 
                     <SignupModal clearModal={this.clearModalType.bind(this)} modalChange={this.changeModalType.bind(this)} 
@@ -59,7 +60,7 @@ export default class Layout extends React.Component
                         quoteAdd={this.addQuote.bind( this )} /> 
                 ); 
             }  
-            else if ( this.state.modalType === "Login" )
+            else if ( this.state.modalType === Constants.TXT_NAV_SIGNIN )
             {
                 modalDiv = ( 
                     <LoginModal clearModal={this.clearModalType.bind(this)} modalChange={this.changeModalType.bind(this)} 
@@ -67,7 +68,7 @@ export default class Layout extends React.Component
                         quoteAdd={this.addQuote.bind( this )} /> 
                 ); 
             }    
-            else if ( this.state.modalType === "New Quote" )
+            else if ( this.state.modalType === Constants.TXT_QUOTE_NEW )
             {
                 modalDiv = ( 
                     <NewQuoteModal clearModal={this.clearModalType.bind(this)} modalChange={this.changeModalType.bind(this)} 
@@ -94,7 +95,8 @@ export default class Layout extends React.Component
             return (
                     <div>
                         <NavBar modalChange={this.changeModalType.bind(this)} userName={this.state.userName} 
-                            userClear={this.clearUser.bind( this )} />
+                            userClear={this.clearUser.bind( this )} 
+                            authorClickFunc={this.getQuotesByCreator.bind(this)} />
                         <h1>{this.state.currentTitle} </h1>
                         <QuoteList quotes={this.state.quotes} requestDone={this.state.requestDone} 
                             downvoteQuote={this.downvoteQuote.bind( this )} upvoteQuote={this.upvoteQuote.bind( this )} 
@@ -135,8 +137,33 @@ export default class Layout extends React.Component
 
     getQuotesByCreator( creatorId, creatorName )
     {
-        console.log( "GETTING QUOTES FROM: " + creatorId );
-        this.setState( { "currentTitle" : "Quotes by " + creatorName } );
+        //if the creatorId is undefined then assume that we want all quotes to be shown
+        if ( creatorId === undefined )
+        {
+            //if the page is already showing all of the quotes then there is no need to send another request to the server
+            if ( this.state.currentTitle === Constants.TXT_TITLE_DEFAULT )
+            {
+                console.log( "Already showing All Quotes,cancelled sending another request" );
+                return;
+            }
+
+            console.log( "CreatorId undefined, getting all quotes" );
+            this.setState( { "currentTitle" : Constants.TXT_TITLE_DEFAULT } );
+            this.getData( "/quotes" , {} );
+            return;
+        }
+
+        //if we are getting quotes from the currently logged in user
+        //  then update the title of the page to 'My Quotes'
+        if ( this.state.userName && creatorName.toLowerCase() === this.state.userName.username )
+        {
+            this.setState( { "currentTitle" : "My Quotes" } );
+        }
+        else
+        {
+            this.setState( { "currentTitle" : "Quotes by " + creatorName } );
+        }
+
         this.getData( "/quotes" , { "creator" : creatorId } );
     }
 
