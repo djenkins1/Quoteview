@@ -12,8 +12,7 @@ import Constants from "./Constants";
 //----------------------------
 //PRIORITY
 //quotes need to be ordered by score and need to be re-ordered when quotes get voted on
-//Page for quotes that were submitted by a particular user(similar functionality to My Quotes)
-//  Have functionality,just need to be able to reset back to everyone's quotes on logout
+//hovering over disabled upvote/downvote badge should show caption saying need to log in
 //
 //FUTURE:
 //if there is a problem with logout then error message must be shown to user somehow
@@ -23,8 +22,8 @@ import Constants from "./Constants";
 //POSSIBLE:
 //Add email field to signup form
 //admin panel to hide quotes
-//hovering over disabled upvote/downvote badge should show caption saying need to log in
 //add back button functionality
+//Server Sessions: delete session files periodically
 //(?)pagination on quotes by using after field
 //(?)scrolling down on page should get another page of quotes
 //(?)use hash table to keep track of position of quotes on quoteList for faster updating
@@ -122,6 +121,10 @@ export default class Layout extends React.Component
 
     clearUser()
     {
+        if ( this.state.userName && this.state.currentTitle && this.state.currentTitle === "My Quotes" )
+        {
+            this.setState( { "currentTitle" : "Quotes by " + this.state.userName.username } );
+        }
         this.setState( { "userName" : undefined } );
     }
 

@@ -9,10 +9,8 @@ export default class SignupForm extends React.Component
 
     handleEnterPress( e )
     {
-        console.log( "handleEnterPress()" )
         if ( e.which == 13 || e.keyCode == 13 )
         {
-            console.log( "Enter pressed" );
             this.props.submitFunc( undefined );
         }
     }
