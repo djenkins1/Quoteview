@@ -1,6 +1,5 @@
 import React from "react";
 import NavBar from "./NavBar";
-import QuoteList from "./QuoteList";
 import SignupModal from "./SignupModal";
 import LoginModal from "./LoginModal";
 import NewQuoteModal from "./NewQuoteModal";
@@ -36,8 +35,8 @@ export default class Layout extends React.Component
     constructor( props )
     {
         super( props );
-        this.state = { "currentTitle" : Constants.TXT_TITLE_DEFAULT };
-        this.getData( "/quotes" , {} );
+        this.state = { "finishedLoginCheck" : true };
+        this.getData();
     }
 
     render()
@@ -77,31 +76,15 @@ export default class Layout extends React.Component
             } 
         }
 
-        //if there is a current page that the user is on then render that page
-        if ( this.state.currentPage )
-        {
-            return (
+        return (
                 <div>
-                    Not yet implemented
+                    <NavBar modalChange={this.changeModalType.bind(this)} userName={this.state.userName} 
+                        userClear={this.clearUser.bind( this )} 
+                        authorClickFunc={this.getQuotesByCreator.bind(this)} />
+                    {this.props.children}
+                    {modalDiv}
                 </div>
             );
-        }
-        else
-        {
-            return (
-                    <div>
-                        <NavBar modalChange={this.changeModalType.bind(this)} userName={this.state.userName} 
-                            userClear={this.clearUser.bind( this )} 
-                            authorClickFunc={this.getQuotesByCreator.bind(this)} />
-                        <h1>{this.state.currentTitle} </h1>
-                        <QuoteList quotes={this.state.quotes} requestDone={this.state.requestDone} 
-                            downvoteQuote={this.downvoteQuote.bind( this )} upvoteQuote={this.upvoteQuote.bind( this )} 
-                            loggedInAs={this.state.userName}
-                            authorClickFunc={this.getQuotesByCreator.bind(this)} />
-                        {modalDiv}
-                    </div>
-                );
-        }
     }
 
     changeModalType( newType )
@@ -121,10 +104,12 @@ export default class Layout extends React.Component
 
     clearUser()
     {
+        /*
         if ( this.state.userName && this.state.currentTitle && this.state.currentTitle === "My Quotes" )
         {
             this.setState( { "currentTitle" : "Quotes by " + this.state.userName.username } );
         }
+        */
         this.setState( { "userName" : undefined } );
     }
 
@@ -148,7 +133,7 @@ export default class Layout extends React.Component
             }
 
             console.log( "CreatorId undefined, getting all quotes" );
-            this.setState( { "currentTitle" : Constants.TXT_TITLE_DEFAULT } );
+            //this.setState( { "currentTitle" : Constants.TXT_TITLE_DEFAULT } );
             this.getData( "/quotes" , {} );
             return;
         }
@@ -167,7 +152,7 @@ export default class Layout extends React.Component
         this.getData( "/quotes" , { "creator" : creatorId } );
     }
 
-    getData( fromQuoteUrl, fromQuoteParams )
+    getData()
     {
         var self = this;
         $.get( "/userData" , {} , function( data, status )
@@ -178,19 +163,7 @@ export default class Layout extends React.Component
                 self.setState( { "userName" : data } );
             }
 
-            //sends ajax get request to server for all the quotes
-            $.get( fromQuoteUrl , fromQuoteParams, function( data, status )
-            {
-                if ( data.length == 0 )
-                {
-                    self.setState( { quotes: [] } );
-                    self.setState( { requestDone: true } );
-                    return;
-                }
-
-                self.setState( { quotes: data } );
-                self.setState( { requestDone: true } );
-            });
+            self.setState( { "finishedLoginCheck" : true } );
         });
     }
 
