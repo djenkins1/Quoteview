@@ -1,5 +1,6 @@
 import React from "react";
 import Constants from "./Constants";
+import { Link } from 'react-router-dom';
 
 export default class NavBar extends React.Component
 {
@@ -32,9 +33,7 @@ export default class NavBar extends React.Component
                 <div className="collapse navbar-collapse">
                     <a onClick={this.handleClickLinkModal.bind( this )} className="nav-item nav-link" href="#"> {Constants.TXT_NAV_SIGNIN} </a>
                     <a onClick={this.handleClickLinkModal.bind( this )} className="nav-item nav-link" href="#"> {Constants.TXT_NAV_SIGNUP} </a>
-                    <a className="nav-item nav-link" href="#" onClick={this.handleClickQuotes.bind( this )} > 
-                        {Constants.TXT_QUOTES_ALL} 
-                    </a>
+                    <Link to="/" className="nav-item nav-link" > {Constants.TXT_QUOTES_ALL} </Link>
                 </div>
             </nav>
         );

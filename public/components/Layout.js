@@ -10,10 +10,15 @@ import Constants from "./Constants";
 //TODO BOARD
 //----------------------------
 //PRIORITY
-//quotes need to be ordered by score and need to be re-ordered when quotes get voted on
-//hovering over disabled upvote/downvote badge should show caption saying need to log in
+//need to pass get loggedInAs somehow and pass it to QuoteList
+//need page for My Quotes and change navbar <a> to link 
+//need to show username of creator when showing CreatorQuotes page component
+//need to redo login/signup modals to code using react router
+//  AFTER: need to redo new quote modal to code using react router
 //
 //FUTURE:
+//quotes need to be ordered by score and need to be re-ordered when quotes get voted on
+//hovering over disabled upvote/downvote badge should show caption saying need to log in
 //if there is a problem with logout then error message must be shown to user somehow
 //Search quotes by particular text string in author/body
 //keep track of quotes that user has voted on and stop them from voting more than once on the same quote
@@ -79,8 +84,7 @@ export default class Layout extends React.Component
         return (
                 <div>
                     <NavBar modalChange={this.changeModalType.bind(this)} userName={this.state.userName} 
-                        userClear={this.clearUser.bind( this )} 
-                        authorClickFunc={this.getQuotesByCreator.bind(this)} />
+                        userClear={this.clearUser.bind( this )}  />
                     {this.props.children}
                     {modalDiv}
                 </div>

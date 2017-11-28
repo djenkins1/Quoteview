@@ -2,20 +2,34 @@ import React from "react";
 import QuoteList from "./QuoteList";
 import Constants from "./Constants";
 
-export default class MainQuotes extends React.Component
+export default class CreatorQuotes extends React.Component
 {
     constructor( props )
     {
         super( props );
         this.state = {};
-        this.getData( "/quotes" , {} );
+        if ( props.match.params.creator )
+        {
+            this.getData( "/quotes" , { "creator" : props.match.params.creator } );
+        }
     }
+
+    /*
+    componentDidUpdate(prevProps, prevState)
+    {
+        if ( this.props.match.params.creator && prevProps.match.params.creator === undefined )
+        {
+            console.log( "GETTING CREATOR" );
+            this.getData( "/quotes" , { "creator" : this.props.match.params.creator } );
+        }
+    }
+    */
 
     render()
     {
         return (
             <div>
-                <h1> All Quotes </h1>
+                <h1> Quotes by  </h1>
                 <QuoteList quotes={this.state.quotes} requestDone={this.state.requestDone} />
             </div>
         );

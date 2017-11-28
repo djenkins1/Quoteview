@@ -1,8 +1,7 @@
 import React from "react";
-
 import QuoteScore from "./QuoteScore";
-
 var ObjectId = require('mongodb').ObjectID;
+import { Link } from 'react-router-dom';
 
 export default class Quote extends React.Component
 {
@@ -19,7 +18,7 @@ export default class Quote extends React.Component
                     <div className='quoteAuthor'> -- {this.props.quoteObj.author}</div>
                     <div className='quoteSubmitted'>
                         <span>Submitted by </span>
-                        <a href='#' onClick={this.handleAuthorClick.bind( this )}>{this.props.quoteObj.creatorName}</a> 
+                        <Link to={"/quotes/" + this.props.quoteObj.creatorId} >{this.props.quoteObj.creatorName}</Link> 
                         <span> on </span>
                         <span>{quoteDate} at {quoteTime}</span>
                     </div>
