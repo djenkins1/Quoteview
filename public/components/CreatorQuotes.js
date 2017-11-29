@@ -8,22 +8,21 @@ export default class CreatorQuotes extends React.Component
     {
         super( props );
         this.state = {};
-        if ( props.match.params.creator )
+        if ( props.finishedLoginCheck && props.match.params.creator )
         {
             this.getData( "/quotes" , { "creator" : props.match.params.creator } );
         }
     }
 
-    /*
+    
     componentDidUpdate(prevProps, prevState)
     {
-        if ( this.props.match.params.creator && prevProps.match.params.creator === undefined )
+        if ( prevProps.finishedLoginCheck != true && this.props.finishedLoginCheck && this.props.match.params.creator )
         {
             console.log( "GETTING CREATOR" );
             this.getData( "/quotes" , { "creator" : this.props.match.params.creator } );
         }
     }
-    */
 
     render()
     {
