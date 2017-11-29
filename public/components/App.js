@@ -11,8 +11,6 @@ import { BrowserRouter, Route , Switch } from "react-router-dom";
 //----------------------------
 //PRIORITY
 //need to handle upvote/downvote: need code reuse across CreatorQuotes and MainQuotes 
-//need to show username of creator as title when showing CreatorQuotes page component
-//  if logged in user is the creator then title should be My Quotes constant
 //need to redo new quote modal to code using react router
 //
 //FUTURE:
