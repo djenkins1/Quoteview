@@ -11,8 +11,8 @@ import { BrowserRouter, Route , Switch } from "react-router-dom";
 //----------------------------
 //PRIORITY
 //need to handle upvote/downvote: need code reuse across CreatorQuotes and MainQuotes 
-//need page for My Quotes and change navbar <a> to link
-//need to show username of creator when showing CreatorQuotes page component
+//need to show username of creator as title when showing CreatorQuotes page component
+//  if logged in user is the creator then title should be My Quotes constant
 //need to redo new quote modal to code using react router
 //
 //FUTURE:
@@ -51,12 +51,12 @@ export default class App extends React.Component
                     clearModal={this.clearModalType.bind( this )} changeModal={this.changeModalType.bind( this )} >
                     <Switch >
                         <Route path="/quotes/:creator" render={(props)=>
-                            <CreatorQuotes userName={this.state.userName} finishedLoginCheck={this.state.finishedLoginCheck}
-                                {...props} />
+                            <CreatorQuotes userName={this.state.userName}
+                                {...props} 
+                                finishedLoginCheck={this.state.finishedLoginCheck} />
                         } />
                         <Route path="/" render={(props)=>
-                            <MainQuotes 
-                                userName={this.state.userName} 
+                            <MainQuotes userName={this.state.userName} 
                                 {...props}
                                 finishedLoginCheck={this.state.finishedLoginCheck} />
                         } />

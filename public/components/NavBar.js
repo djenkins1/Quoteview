@@ -14,12 +14,10 @@ export default class NavBar extends React.Component
                     <a className="navbar-brand"> {Constants.TXT_TITLE_APP} </a>
                     <div className="collapse navbar-collapse">
                         <span className="navbar-text"> Hello, {this.props.userName.username} </span>
-                        <a className="nav-item nav-link" href="#" onClick={this.handleClickQuotes.bind( this )} > 
-                            {Constants.TXT_QUOTES_ALL} 
-                        </a>
-                        <a className="nav-item nav-link" href="#" onClick={this.handleClickQuotes.bind( this )} > 
-                            {Constants.TXT_QUOTES_MY} 
-                        </a>
+                        <Link to="/" className="nav-item nav-link" > {Constants.TXT_QUOTES_ALL} </Link>
+                        <Link to={"/quotes/" + this.props.userName.userId} className="nav-item nav-link" >
+                            {Constants.TXT_QUOTES_MY}
+                        </Link> 
                         <a className="nav-item nav-link" href="#" onClick={this.handleClickLinkModal.bind( this )} > {Constants.TXT_QUOTE_NEW} </a>
                         <a className="nav-item nav-link" href="#" onClick={this.handleLogout.bind( this )} > {Constants.TXT_NAV_LOGOUT} </a>
                     </div>

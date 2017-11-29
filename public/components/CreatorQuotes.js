@@ -17,9 +17,8 @@ export default class CreatorQuotes extends React.Component
     
     componentDidUpdate(prevProps, prevState)
     {
-        if ( prevProps.finishedLoginCheck != true && this.props.finishedLoginCheck && this.props.match.params.creator )
+        if ( prevProps.match.params.creator != this.props.match.params.creator )
         {
-            console.log( "GETTING CREATOR" );
             this.getData( "/quotes" , { "creator" : this.props.match.params.creator } );
         }
     }
