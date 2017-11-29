@@ -29,7 +29,7 @@ export default class CreatorQuotes extends React.Component
         return (
             <div>
                 <h1> Quotes by  </h1>
-                <QuoteList quotes={this.state.quotes} requestDone={this.state.requestDone} />
+                <QuoteList quotes={this.state.quotes} requestDone={this.state.requestDone} loggedInAs={this.props.userName} />
             </div>
         );
     }
