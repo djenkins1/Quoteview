@@ -18,33 +18,33 @@ export default class Layout extends React.Component
         var modalDiv = ( <div /> );
         //if the state.modalType is defined then show a modal for that type
         //  otherwise, just show an empty div instead of the modal
-        if ( this.state.modalType )
+        if ( this.props.modalType )
         {
             //distinguish between the modals
-            if ( this.state.modalType === Constants.TXT_NAV_SIGNUP )
+            if ( this.props.modalType === Constants.TXT_NAV_SIGNUP )
             {
                 modalDiv = ( 
-                    <SignupModal clearModal={this.clearModalType.bind(this)} modalChange={this.changeModalType.bind(this)} />
+                    <SignupModal clearModal={this.props.clearModal} changeModal={this.props.changeModal} 
+                        onUpdateUser={this.props.onUpdateUser} />
                 ); 
                 /*
-                        userChange={this.changeUser.bind( this )} userClear={this.clearUser.bind( this )} 
                         quoteAdd={this.addQuote.bind( this )} /> 
                 */
             }  
-            else if ( this.state.modalType === Constants.TXT_NAV_SIGNIN )
+            else if ( this.props.modalType === Constants.TXT_NAV_SIGNIN )
             {
                 modalDiv = ( 
-                    <LoginModal clearModal={this.clearModalType.bind(this)} modalChange={this.changeModalType.bind(this)} />
+                    <LoginModal clearModal={this.props.clearModal} changeModal={this.props.changeModal} 
+                        onUpdateUser={this.props.onUpdateUser} />
                 ); 
                 /*
-                    userChange={this.changeUser.bind( this )} userClear={this.clearUser.bind( this )} 
                     quoteAdd={this.addQuote.bind( this )} /> 
                 */
             }    
-            else if ( this.state.modalType === Constants.TXT_QUOTE_NEW )
+            else if ( this.props.modalType === Constants.TXT_QUOTE_NEW )
             {
                 modalDiv = ( 
-                    <NewQuoteModal clearModal={this.clearModalType.bind(this)} modalChange={this.changeModalType.bind(this)} />
+                    <NewQuoteModal clearModal={this.props.clearModal} changeModal={this.props.changeModal}  />
                 );                 
                 //quoteAdd={this.addQuote.bind( this )} />
             }
@@ -56,22 +56,12 @@ export default class Layout extends React.Component
 
         return (
                 <div>
-                    <NavBar modalChange={this.changeModalType.bind(this)} userName={this.state.userName} />
+                    <NavBar changeModal={this.props.changeModal} userName={this.props.userName} 
+                        onUpdateUser={this.props.onUpdateUser} />
                     {this.props.children}
                     {modalDiv}
                 </div>
             );
-            //NAVBAR: userClear={this.clearUser.bind( this )}  />
-    }
-
-    changeModalType( newType )
-    {
-        this.setState( { "modalType" : newType } );
-    }
-
-    clearModalType()
-    {
-        this.setState( { "modalType" : undefined } );
     }
 
 /*

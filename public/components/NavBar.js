@@ -42,7 +42,7 @@ export default class NavBar extends React.Component
     handleClickLinkModal( e )
     {
         e.preventDefault();
-        this.props.modalChange( e.target.innerText );
+        this.props.changeModal( e.target.innerText );
     }
 
     handleClickQuotes( e )
@@ -77,7 +77,7 @@ export default class NavBar extends React.Component
                 return;
             }
 
-            self.props.userClear();
+            self.props.onUpdateUser();
         });
     }
 

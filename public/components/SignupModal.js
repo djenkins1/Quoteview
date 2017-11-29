@@ -51,8 +51,10 @@ export default class SignupModal extends React.Component
             }
             
             //otherwise, no problems so update the user logged in to the server's response
-            self.props.clearModal();
-            self.props.userChange( data );
+            if ( self.props.onUpdateUser )
+            {
+                self.props.onUpdateUser();
+            }
         });
     }
 }
