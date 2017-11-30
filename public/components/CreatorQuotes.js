@@ -8,8 +8,11 @@ export default class CreatorQuotes extends React.Component
     {
         super( props );
         this.state = { quoteUser: "???" };
+        this.hasRequestedData = false;
+
         if ( props.finishedLoginCheck && props.match.params.creator )
         {
+            this.hasRequestedData = true;
             this.getData( "/quotes" , { "creator" : props.match.params.creator } );
         }
     }
@@ -18,9 +21,12 @@ export default class CreatorQuotes extends React.Component
     //checks to see if the params.creator has changed and if so send a new ajax request for the quotes by the new creator
     componentDidUpdate(prevProps, prevState)
     {
-        if ( prevProps.match.params.creator != this.props.match.params.creator )
+        console.log( "UPDATING" );
+        console.log( prevProps.match.params );
+        if ( prevProps.match.params.creator != this.props.match.params.creator || !this.hasRequestedData )
         {
             this.getData( "/quotes" , { "creator" : this.props.match.params.creator } );
+            this.hasRequestedData = true;
         }
     }
 
@@ -56,6 +62,7 @@ export default class CreatorQuotes extends React.Component
     //sends an ajax request for quotes with the parameters given
     getData( fromQuoteUrl, fromQuoteParams )
     {
+        console.log( "REQUESTING" );
         var self = this;
         //sends ajax get request to server for all the quotes
         $.get( fromQuoteUrl , fromQuoteParams, function( data, status )

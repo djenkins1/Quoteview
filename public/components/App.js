@@ -10,8 +10,6 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //TODO BOARD
 //----------------------------
 //PRIORITY
-//should be able to use urls for react router on page reloads/bookmarks
-//  kind of working,problem is that CreatorQuotes doesn't work,stuck on loading quotes
 //need to clean up upvote/downvote code for CreatorQuotes and MainQuotes: DRY
 //need to redo new quote modal to code using react router
 //
@@ -67,6 +65,7 @@ export default class App extends React.Component
 
     getData()
     {
+        console.log( "SENDING" );
         var self = this;
         $.get( "/userData" , {} , function( data, status )
         {
