@@ -120,7 +120,7 @@ function getAllQuotes( onFinish )
 {
     getDefaultConn( function( db )
     {
-        db.collection( QUOTE_TABLE ).find({}).toArray( function(err, results ) 
+        db.collection( QUOTE_TABLE ).find({}).sort( { score : -1 } ).toArray( function(err, results ) 
         {
             if (err) throw err;
             for ( var i = 0; i < results.length; i++ )
@@ -604,13 +604,26 @@ function setupDatabase( onFinish )
         db.createCollection( USER_TABLE, function(err, res) 
         {
             if (err) throw err;
-            console.log("User table created!");
 
+            console.log("User table created!");
             db.createCollection( QUOTE_TABLE , function(err, res) 
             {
                 if (err) throw err;
+
                 console.log("Quote table created!");
-                onFinish();
+                db.collection( USER_TABLE ).createIndex( "username" , function( err, res )
+                {
+                    if ( err ) throw err;
+
+                    console.log( "Index created for username on " + USER_TABLE );
+                    db.collection( QUOTE_TABLE ).createIndex( "score" , function( err, res )
+                    {
+                        if ( err ) throw err;
+
+                        console.log( "Index created for score on " + QUOTE_TABLE );
+                        onFinish();
+                    });
+                });
             });
         });    
     });
@@ -636,7 +649,7 @@ function getAllQuotesFromUser( userId, onFinish )
 
     getDefaultConn( function( db )
     {
-        db.collection( QUOTE_TABLE ).find( myQuery ).toArray( function(err, results ) 
+        db.collection( QUOTE_TABLE ).find( myQuery ).sort( { score : -1 } ).toArray( function(err, results ) 
         {
             if (err) throw err;
             for ( var i = 0; i < results.length; i++ )
