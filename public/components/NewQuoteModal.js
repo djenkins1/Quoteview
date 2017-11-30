@@ -53,10 +53,10 @@ export default class NewQuoteModal extends React.Component
                 return;
             }       
 
-            self.props.clearModal();     
-            if ( self.props.quoteAdd )
+            self.props.clearModal();
+            if ( self.props.onAddQuote )
             {
-                self.props.quoteAdd( data );
+                self.props.onAddQuote( data );
             }
         });
     }

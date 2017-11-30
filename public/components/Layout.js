@@ -27,9 +27,6 @@ export default class Layout extends React.Component
                     <SignupModal clearModal={this.props.clearModal} changeModal={this.props.changeModal} 
                         onUpdateUser={this.props.onUpdateUser} />
                 ); 
-                /*
-                        quoteAdd={this.addQuote.bind( this )} /> 
-                */
             }  
             else if ( this.props.modalType === Constants.TXT_NAV_SIGNIN )
             {
@@ -37,9 +34,6 @@ export default class Layout extends React.Component
                     <LoginModal clearModal={this.props.clearModal} changeModal={this.props.changeModal} 
                         onUpdateUser={this.props.onUpdateUser} />
                 ); 
-                /*
-                    quoteAdd={this.addQuote.bind( this )} /> 
-                */
             }    
             else if ( this.props.modalType === Constants.TXT_QUOTE_NEW )
             {

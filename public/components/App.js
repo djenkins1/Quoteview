@@ -22,6 +22,7 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //
 //POSSIBLE:
 //Add email field to signup form
+//  could also add confirm password field
 //admin panel to hide quotes
 //Server Sessions: delete session files periodically
 //(?)pagination on quotes by using after field
