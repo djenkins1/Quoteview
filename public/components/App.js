@@ -3,13 +3,15 @@ import ReactDOM from "react-dom";
 import Layout from "./Layout";
 import MainQuotes from "./MainQuotes";
 import CreatorQuotes from "./CreatorQuotes";
-import { BrowserRouter, Route , Switch } from "react-router-dom";
+import { HashRouter, Route , Switch } from "react-router-dom";
 
 /*
 //----------------------------
 //TODO BOARD
 //----------------------------
 //PRIORITY
+//should be able to use urls for react router on page reloads/bookmarks
+//  kind of working,problem is that CreatorQuotes doesn't work,stuck on loading quotes
 //need to clean up upvote/downvote code for CreatorQuotes and MainQuotes: DRY
 //need to redo new quote modal to code using react router
 //
@@ -19,7 +21,6 @@ import { BrowserRouter, Route , Switch } from "react-router-dom";
 //if there is a problem with logout then error message must be shown to user somehow
 //Search quotes by particular text string in author/body
 //keep track of quotes that user has voted on and stop them from voting more than once on the same quote
-//should be able to use urls for react router on page reloads/bookmarks
 //
 //POSSIBLE:
 //Add email field to signup form
@@ -44,7 +45,7 @@ export default class App extends React.Component
     render()
     {
         return (
-            <BrowserRouter>
+            <HashRouter>
                 <Layout userName={this.state.userName} onUpdateUser={ this.getData.bind( this ) } modalType={this.state.modalType}
                     clearModal={this.clearModalType.bind( this )} changeModal={this.changeModalType.bind( this )} >
                     <Switch >
@@ -60,7 +61,7 @@ export default class App extends React.Component
                         } />
                     </Switch>
                 </Layout>
-            </BrowserRouter>
+            </HashRouter>
         );
     }
 
