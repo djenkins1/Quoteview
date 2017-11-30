@@ -27,7 +27,10 @@ export default class MainQuotes extends React.Component
         return (
             <div>
                 <h1> All Quotes </h1>
-                <QuoteList quotes={this.state.quotes} requestDone={this.state.requestDone} loggedInAs={this.props.userName} />
+                <QuoteList quotes={this.state.quotes} 
+                    requestDone={this.state.requestDone} 
+                    loggedInAs={this.props.userName} 
+                    downvoteQuote={this.downvoteQuote.bind( this )} upvoteQuote={this.upvoteQuote.bind( this )} />
             </div>
         );
     }
@@ -49,10 +52,52 @@ export default class MainQuotes extends React.Component
             self.setState( { requestDone: true } );
         });
     }
+
+    updateQuote( qid, newData )
+    {
+        var quotesCopy = this.state.quotes.slice();
+        for ( var i = 0; i < quotesCopy.length; i++ )
+        {
+            var atQuote = quotesCopy[ i ];
+            if ( atQuote.qid === qid )
+            {
+                quotesCopy[ i ] = newData;
+                break;
+            }
+        }
+
+        //update the state if and only if the for loop did not go to end of the quotes array
+        if ( i < quotesCopy.length )
+        {
+            this.setState( { "quotes" : quotesCopy } );
+        }
+    }
+
+    voteQuote( qid, href )
+    {
+        var self = this;
+        $.post( href , { "qid" : qid } , function( data, status )
+        {
+            if ( data.qid )
+            {
+                self.updateQuote( qid, data );
+            }
+            else
+            {
+                //TODO: show error message
+                console.log( "BAD " + href + ",No qid" );
+            }
+        });
+    }
+
+    upvoteQuote( qid )
+    {
+        this.voteQuote( qid, "/upvoteQuote" );
+    }
+
+    downvoteQuote( qid )
+    {
+        this.voteQuote( qid, "/downvoteQuote" );
+    }
 }
 
-/*
-    <QuoteList quotes={this.state.quotes} requestDone={this.state.requestDone} 
-        downvoteQuote={this.downvoteQuote.bind( this )} upvoteQuote={this.upvoteQuote.bind( this )} 
-        authorClickFunc={this.getQuotesByCreator.bind(this)} />
-*/

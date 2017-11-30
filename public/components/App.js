@@ -10,7 +10,7 @@ import { BrowserRouter, Route , Switch } from "react-router-dom";
 //TODO BOARD
 //----------------------------
 //PRIORITY
-//need to handle upvote/downvote: need code reuse across CreatorQuotes and MainQuotes 
+//need to clean up upvote/downvote code for CreatorQuotes and MainQuotes: DRY
 //need to redo new quote modal to code using react router
 //
 //FUTURE:

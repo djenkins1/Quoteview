@@ -65,92 +65,12 @@ export default class Layout extends React.Component
     }
 
 /*
-
     addQuote( newQuote )
     {
         var quotesCopy = this.state.quotes.slice();
         quotesCopy.push( newQuote );
         this.setState( { "quotes" : quotesCopy } );
     }
-
-
-    getQuotesByCreator( creatorId, creatorName )
-    {
-        //if the creatorId is undefined then assume that we want all quotes to be shown
-        if ( creatorId === undefined )
-        {
-            //if the page is already showing all of the quotes then there is no need to send another request to the server
-            if ( this.state.currentTitle === Constants.TXT_TITLE_DEFAULT )
-            {
-                console.log( "Already showing All Quotes,cancelled sending another request" );
-                return;
-            }
-
-            console.log( "CreatorId undefined, getting all quotes" );
-            //this.setState( { "currentTitle" : Constants.TXT_TITLE_DEFAULT } );
-            this.getData( "/quotes" , {} );
-            return;
-        }
-
-        //if we are getting quotes from the currently logged in user
-        //  then update the title of the page to 'My Quotes'
-        if ( this.state.userName && creatorName.toLowerCase() === this.state.userName.username )
-        {
-            this.setState( { "currentTitle" : "My Quotes" } );
-        }
-        else
-        {
-            this.setState( { "currentTitle" : "Quotes by " + creatorName } );
-        }
-
-        this.getData( "/quotes" , { "creator" : creatorId } );
-    }
-
-    voteQuote( qid, href )
-    {
-        var self = this;
-        $.post( href , { "qid" : qid } , function( data, status )
-        {
-            if ( data.qid )
-            {
-                self.updateQuote( qid, data );
-            }
-            else
-            {
-                //TODO: show error message
-                console.log( "BAD " + href + ",No qid" );
-            }
-        });
-    }
-
-    upvoteQuote( qid )
-    {
-        this.voteQuote( qid, "/upvoteQuote" );
-    }
-
-    downvoteQuote( qid )
-    {
-        this.voteQuote( qid, "/downvoteQuote" );
-    }
-
-    updateQuote( qid, newData )
-    {
-        var quotesCopy = this.state.quotes.slice();
-        for ( var i = 0; i < quotesCopy.length; i++ )
-        {
-            var atQuote = quotesCopy[ i ];
-            if ( atQuote.qid === qid )
-            {
-                quotesCopy[ i ] = newData;
-                break;
-            }
-        }
-
-        //update the state if and only if the for loop did not go to end of the quotes array
-        if ( i < quotesCopy.length )
-        {
-            this.setState( { "quotes" : quotesCopy } );
-        }
-    }
 */
+
 }

@@ -28,11 +28,5 @@ export default class Quote extends React.Component
             </div>
         );
     }
-
-    handleAuthorClick( e )
-    {
-        e.preventDefault();
-        this.props.authorClickFunc( this.props.quoteObj.creatorId, this.props.quoteObj.creatorName );
-    }
 }
 
