@@ -10,7 +10,6 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //TODO BOARD
 //----------------------------
 //PRIORITY
-//need to redo new quote modal to code using react router
 //
 //FUTURE:
 //quotes need to be ordered by score and need to be re-ordered when quotes get voted on
@@ -19,6 +18,7 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //Search quotes by particular text string in author/body
 //keep track of quotes that user has voted on and stop them from voting more than once on the same quote
 //spruce up navbar styling
+//should try to do something other than redirect for when a new quote has been added
 //
 //POSSIBLE:
 //Add email field to signup form

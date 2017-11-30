@@ -53,11 +53,14 @@ export default class NewQuoteModal extends React.Component
                 return;
             }       
 
+            window.location.href = "/index.html";
+            /*
             self.props.clearModal();
             if ( self.props.onAddQuote )
             {
                 self.props.onAddQuote( data );
             }
+            */
         });
     }
 }
