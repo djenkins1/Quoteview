@@ -10,7 +10,6 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //TODO BOARD
 //----------------------------
 //PRIORITY
-//need to clean up upvote/downvote code for CreatorQuotes and MainQuotes: DRY
 //need to redo new quote modal to code using react router
 //
 //FUTURE:
@@ -19,11 +18,11 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //if there is a problem with logout then error message must be shown to user somehow
 //Search quotes by particular text string in author/body
 //keep track of quotes that user has voted on and stop them from voting more than once on the same quote
+//spruce up navbar styling
 //
 //POSSIBLE:
 //Add email field to signup form
 //admin panel to hide quotes
-//add back button functionality
 //Server Sessions: delete session files periodically
 //(?)pagination on quotes by using after field
 //(?)scrolling down on page should get another page of quotes
@@ -65,7 +64,6 @@ export default class App extends React.Component
 
     getData()
     {
-        console.log( "SENDING" );
         var self = this;
         $.get( "/userData" , {} , function( data, status )
         {

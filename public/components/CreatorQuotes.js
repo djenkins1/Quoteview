@@ -1,13 +1,14 @@
 import React from "react";
 import QuoteList from "./QuoteList";
 import Constants from "./Constants";
+import QuotePage from "./QuotePage";
 
-export default class CreatorQuotes extends React.Component
+export default class CreatorQuotes extends QuotePage
 {
     constructor( props )
     {
         super( props );
-        this.state = { quoteUser: "???" };
+        this.state.quoteUser = "???";
         this.hasRequestedData = false;
 
         if ( props.finishedLoginCheck && props.match.params.creator )
@@ -21,8 +22,6 @@ export default class CreatorQuotes extends React.Component
     //checks to see if the params.creator has changed and if so send a new ajax request for the quotes by the new creator
     componentDidUpdate(prevProps, prevState)
     {
-        console.log( "UPDATING" );
-        console.log( prevProps.match.params );
         if ( prevProps.match.params.creator != this.props.match.params.creator || !this.hasRequestedData )
         {
             this.getData( "/quotes" , { "creator" : this.props.match.params.creator } );
@@ -57,75 +56,6 @@ export default class CreatorQuotes extends React.Component
                     downvoteQuote={this.downvoteQuote.bind( this )} upvoteQuote={this.upvoteQuote.bind( this )} />
             </div>
         );
-    }
-
-    //sends an ajax request for quotes with the parameters given
-    getData( fromQuoteUrl, fromQuoteParams )
-    {
-        console.log( "REQUESTING" );
-        var self = this;
-        //sends ajax get request to server for all the quotes
-        $.get( fromQuoteUrl , fromQuoteParams, function( data, status )
-        {
-            if ( data.length == 0 )
-            {
-                self.setState( { quotes: [] } );
-                self.setState( { requestDone: true } );
-                self.setState( { quoteUser: "???" } );
-                return;
-            }
-
-            self.setState( { quotes: data } );
-            self.setState( { requestDone: true } );
-            self.setState( { quoteUser: data[ 0 ].creatorName } );
-        });
-    }
-
-    updateQuote( qid, newData )
-    {
-        var quotesCopy = this.state.quotes.slice();
-        for ( var i = 0; i < quotesCopy.length; i++ )
-        {
-            var atQuote = quotesCopy[ i ];
-            if ( atQuote.qid === qid )
-            {
-                quotesCopy[ i ] = newData;
-                break;
-            }
-        }
-
-        //update the state if and only if the for loop did not go to end of the quotes array
-        if ( i < quotesCopy.length )
-        {
-            this.setState( { "quotes" : quotesCopy } );
-        }
-    }
-
-    voteQuote( qid, href )
-    {
-        var self = this;
-        $.post( href , { "qid" : qid } , function( data, status )
-        {
-            if ( data.qid )
-            {
-                self.updateQuote( qid, data );
-            }
-            else
-            {
-                //TODO: show error message
-                console.log( "BAD " + href + ",No qid" );
-            }
-        });
-    }
-
-    upvoteQuote( qid )
-    {
-        this.voteQuote( qid, "/upvoteQuote" );
-    }
-
-    downvoteQuote( qid )
-    {
-        this.voteQuote( qid, "/downvoteQuote" );
     }
 }
 
