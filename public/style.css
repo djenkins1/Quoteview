@@ -25,7 +25,7 @@ a.nav-link
     color: white !important;
 }
 
-a.quoteBadge.disabled.bg-secondary
+.quoteBadge.disabled.bg-secondary
 {
     background-color: gray !important;
 }

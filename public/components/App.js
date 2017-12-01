@@ -11,7 +11,6 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //----------------------------
 //PRIORITY
 //should try to do something other than redirect for when a new quote has been added
-//hovering over disabled upvote/downvote badge should show caption saying need to log in
 //
 //FUTURE:
 //admin panel to hide quotes
