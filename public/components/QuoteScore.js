@@ -17,7 +17,7 @@ export default class QuoteScore extends React.Component
             <div className='badgeContain align-items-end align-self-end'>
                 <a className={'badge badge-primary badge-pill quoteBadge' + loggedInEnableClass }
                     onClick={this.handleUpvote.bind( this )}
-                    href="#" title={loggedInTitle} 
+                    href="#"
                     data-container="body" 
                     data-toggle="popover" 
                     data-placement="top" 
@@ -25,7 +25,11 @@ export default class QuoteScore extends React.Component
                 <span className='badge badge-primary badge-pill quoteBadge quoteScore'> {this.props.score} </span>
                 <a className={'badge badge-primary badge-pill quoteBadge' + loggedInEnableClass }
                     onClick={this.handleDownvote.bind( this )}
-                    href="#" title={loggedInTitle} > - </a>
+                    href="#"                     
+                    data-container="body" 
+                    data-toggle="popover" 
+                    data-placement="top" 
+                    data-content={loggedInTitle}> - </a>
             </div>
         );
     }

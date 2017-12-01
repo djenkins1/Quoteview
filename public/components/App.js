@@ -11,6 +11,7 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //----------------------------
 //PRIORITY
 //should try to do something other than redirect for when a new quote has been added
+//spruce up navbar styling
 //
 //FUTURE:
 //admin panel to hide quotes
@@ -20,7 +21,6 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //if there is a problem with logout then error message must be shown to user somehow
 //Search quotes by particular text string in author/body
 //  see text search mongodb bookmark
-//spruce up navbar styling
 //if there 2 or more quotes that have the same score and one gets voted on it doesn't bubble up to correct position,just switches place once
 //
 //POSSIBLE:
