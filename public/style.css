@@ -45,10 +45,12 @@ a.nav-link
     background-color: gray !important;
 }
 
+/*
 a.nav-link:hover
 {
     color: lightgray;
 }
+*/
 
 div.badgeContain
 {
@@ -60,7 +62,9 @@ div.badgeContain
     -ms-transform: translateY(-50%);
 }
 
+/*
 .navbar-text
 {
     color: white !important;
 }
+*/

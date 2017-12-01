@@ -1,6 +1,6 @@
 import React from "react";
 import Constants from "./Constants";
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 export default class NavBar extends React.Component
 {
@@ -12,14 +12,14 @@ export default class NavBar extends React.Component
             return (
                 <nav className="navbar sticky-top navbar-dark bg-primary justify-content-between navbar-expand-lg">
                     <a className="navbar-brand"> {Constants.TXT_TITLE_APP} </a>
-                    <div className="collapse navbar-collapse">
-                        <span className="navbar-text"> Hello, {this.props.userName.username} </span>
-                        <Link to="/" className="nav-item nav-link" > {Constants.TXT_QUOTES_ALL} </Link>
-                        <Link to={"/quotes/" + this.props.userName.userId} className="nav-item nav-link" >
-                            {Constants.TXT_QUOTES_MY}
-                        </Link> 
+                    <button type="button" className="navbar-toggler hidden-sm-up" data-toggle="collapse" data-target="#navBarTop" >
+                        <span className="navbar-toggler-icon"></span>
+                    </button>
+                    <div id="navBarTop" className="collapse navbar-collapse nav-tabs">
+                        <NavLink exact={true} to="/" className="nav-item nav-link" activeClassName="active"> {Constants.TXT_QUOTES_ALL} </NavLink>
+                        <NavLink to={"/quotes/" + this.props.userName.userId} className="nav-item nav-link" activeClassName="active" > {Constants.TXT_QUOTES_MY} </NavLink> 
                         <a className="nav-item nav-link" href="#" onClick={this.handleClickLinkModal.bind( this )} > {Constants.TXT_QUOTE_NEW} </a>
-                        <a className="nav-item nav-link" href="#" onClick={this.handleLogout.bind( this )} > {Constants.TXT_NAV_LOGOUT} </a>
+                        <a className="nav-item nav-link" href="#" onClick={this.handleLogout.bind( this )}> {Constants.TXT_NAV_LOGOUT} </a>
                     </div>
                 </nav>
             );
@@ -28,10 +28,13 @@ export default class NavBar extends React.Component
         return (
             <nav className="navbar sticky-top navbar-dark bg-primary justify-content-between navbar-expand-lg">
                 <a className="navbar-brand"> {Constants.TXT_TITLE_APP} </a>
-                <div className="collapse navbar-collapse">
+                <button type="button" className="navbar-toggler hidden-sm-up" data-toggle="collapse" data-target="#navBarTop" >
+                    <span className="navbar-toggler-icon"></span>
+                </button>
+                <div className="collapse navbar-collapse nav-tabs" id="navBarTop" >
+                    <NavLink activeClassName="active" exact={true} to="/" className="nav-item nav-link" > {Constants.TXT_QUOTES_ALL} </NavLink>
                     <a onClick={this.handleClickLinkModal.bind( this )} className="nav-item nav-link" href="#"> {Constants.TXT_NAV_SIGNIN} </a>
                     <a onClick={this.handleClickLinkModal.bind( this )} className="nav-item nav-link" href="#"> {Constants.TXT_NAV_SIGNUP} </a>
-                    <Link to="/" className="nav-item nav-link" > {Constants.TXT_QUOTES_ALL} </Link>
                 </div>
             </nav>
         );
