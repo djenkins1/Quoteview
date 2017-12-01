@@ -11,19 +11,21 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //----------------------------
 //PRIORITY
 //should try to do something other than redirect for when a new quote has been added
-//spruce up navbar styling
 //
 //FUTURE:
 //admin panel to hide quotes
+//  quote collection in mongodb will need hidden field
 //Add email field to signup form
 //  could also add confirm password field
 //  would also need to generalize Form fields onChange
 //if there is a problem with logout then error message must be shown to user somehow
 //Search quotes by particular text string in author/body
 //  see text search mongodb bookmark
-//if there 2 or more quotes that have the same score and one gets voted on it doesn't bubble up to correct position,just switches place once
+//  would need to add search box to navbar
+//if there 2 or more quotes that have the same score and one gets voted on it doesn't bubble up to correct position,just switches place once?
 //
 //POSSIBLE:
+//Maybe move to using react-bootstrap and update modal code properly
 //Server Sessions: delete session files periodically
 //keep track of quotes that user has voted on and stop them from voting more than once on the same quote
 //  what if they want to reverse their vote?
