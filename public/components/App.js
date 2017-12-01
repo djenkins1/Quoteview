@@ -10,19 +10,19 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //TODO BOARD
 //----------------------------
 //PRIORITY
-//quotes need to be ordered by score and need to be re-ordered when quotes get voted on
+//should try to do something other than redirect for when a new quote has been added
+//hovering over disabled upvote/downvote badge should show caption saying need to log in
 //
 //FUTURE:
 //admin panel to hide quotes
 //Add email field to signup form
 //  could also add confirm password field
 //  would also need to generalize Form fields onChange
-//hovering over disabled upvote/downvote badge should show caption saying need to log in
 //if there is a problem with logout then error message must be shown to user somehow
 //Search quotes by particular text string in author/body
 //  see text search mongodb bookmark
 //spruce up navbar styling
-//should try to do something other than redirect for when a new quote has been added
+//if there 2 or more quotes that have the same score and one gets voted on it doesn't bubble up to correct position,just switches place once
 //
 //POSSIBLE:
 //Server Sessions: delete session files periodically

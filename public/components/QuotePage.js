@@ -42,13 +42,36 @@ export default class QuotePage extends React.Component
 
     updateQuote( qid, newData )
     {
+        //make a copy of the quotes for modification so as to update state later
         var quotesCopy = this.state.quotes.slice();
+        //go through all the quotes,find the quote that has the updated quote's qid
+        //once found,overwrite that position with the updated quote
         for ( var i = 0; i < quotesCopy.length; i++ )
         {
-            var atQuote = quotesCopy[ i ];
+            let atQuote = quotesCopy[ i ];
             if ( atQuote.qid === qid )
             {
-                quotesCopy[ i ] = newData;
+                let prevQuote = quotesCopy[ i - 1 ];
+                let nextQuote = quotesCopy[ i + 1 ];
+                let swapIndex = i;
+                //if the previous quote in the list has lower score than the updated quote then need to swap them
+                if ( prevQuote && prevQuote.score <= newData.score )
+                {
+                    swapIndex = i - 1;
+                }
+                //if the next quote in the list has higher score than the updated quote then need to swap them
+                else if ( nextQuote && nextQuote.score >= newData.score )
+                {
+                    swapIndex = i + 1;
+                }
+
+                //swap the elements and break out of the loop
+                prevQuote = quotesCopy[ swapIndex ];
+                quotesCopy[ swapIndex ] = newData;
+                if ( i != swapIndex )
+                {
+                    quotesCopy[ i ] = prevQuote;
+                }
                 break;
             }
         }
