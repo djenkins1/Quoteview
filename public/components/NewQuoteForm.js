@@ -31,10 +31,10 @@ export default class NewQuoteForm extends React.Component
         return ( 
             <form action='/newQuote' method='post'>
                 <input size='41' type='text' name='author' placeholder='Author' 
-                    onChange={this.handleAuthorChange.bind( this )} />
-                <br /><br />
+                    className="form-control" onChange={this.handleAuthorChange.bind( this )} />
+                <br />
                 <textarea rows='8' cols='40' name='body' placeholder='Text' 
-                    onChange={this.handleBodyChange.bind( this )} ></textarea>
+                    className="form-control" onChange={this.handleBodyChange.bind( this )} ></textarea>
             </form>
         );
     }
