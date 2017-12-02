@@ -22,11 +22,29 @@ export default class CreatorQuotes extends QuotePage
     //checks to see if the params.creator has changed and if so send a new ajax request for the quotes by the new creator
     componentDidUpdate(prevProps, prevState)
     {
+        super.componentDidUpdate( prevProps, prevState );
         if ( prevProps.match.params.creator != this.props.match.params.creator || !this.hasRequestedData )
         {
             this.getData( "/quotes" , { "creator" : this.props.match.params.creator } );
             this.hasRequestedData = true;
         }
+    }
+
+    shouldAddQuote( newQuote )
+    {
+        if ( newQuote === undefined || newQuote.creatorId === undefined )
+        {
+            console.log( "newQuote undefined or newQuote.creatorId undefined" );
+            return false;
+        }
+
+        if ( newQuote.creatorId !== this.props.match.params.creator )
+        {
+            console.log( "newQuote not by same creator" );
+            return false;
+        }
+
+        return true;
     }
 
     /*

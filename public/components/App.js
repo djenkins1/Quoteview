@@ -10,7 +10,7 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //TODO BOARD
 //----------------------------
 //PRIORITY
-//should try to do something other than redirect for when a new quote has been added
+//need to put new quote in correct place based on its score when it is being added to list of quotes
 //
 //FUTURE:
 //admin panel to hide quotes
@@ -49,17 +49,22 @@ export default class App extends React.Component
         return (
             <HashRouter>
                 <Layout userName={this.state.userName} onUpdateUser={ this.getData.bind( this ) } modalType={this.state.modalType}
-                    clearModal={this.clearModalType.bind( this )} changeModal={this.changeModalType.bind( this )} >
+                    clearModal={this.clearModalType.bind( this )} changeModal={this.changeModalType.bind( this )} 
+                    onAddQuote={this.handleAddQuote.bind( this )} >
                     <Switch >
                         <Route path="/quotes/:creator" render={(props)=>
                             <CreatorQuotes userName={this.state.userName}
-                                {...props} 
-                                finishedLoginCheck={this.state.finishedLoginCheck} />
+                                {...props}
+                                newQuote={this.state.newQuote}
+                                finishedLoginCheck={this.state.finishedLoginCheck} 
+                                finishAddQuote={this.finishAddQuote.bind( this )} />
                         } />
                         <Route path="/" render={(props)=>
                             <MainQuotes userName={this.state.userName} 
                                 {...props}
-                                finishedLoginCheck={this.state.finishedLoginCheck} />
+                                newQuote={this.state.newQuote}
+                                finishedLoginCheck={this.state.finishedLoginCheck} 
+                                finishAddQuote={this.finishAddQuote.bind( this )} />
                         } />
                     </Switch>
                 </Layout>
@@ -94,5 +99,21 @@ export default class App extends React.Component
     clearModalType()
     {
         this.setState( { "modalType" : undefined } );
+    }
+
+    handleAddQuote( newQuoteData )
+    {
+        console.log( "handleAddQuote" );
+        if ( newQuoteData.qid === undefined )
+        {
+            throw new Error( "newQuoteData qid is undefined for handleAddQuote" );
+        }
+
+        this.setState( { "newQuote" : newQuoteData } );
+    }
+
+    finishAddQuote( newQuoteData )
+    {
+        this.setState( { "newQuote" : undefined } );
     }
 }

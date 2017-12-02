@@ -11,12 +11,43 @@ export default class QuotePage extends React.Component
     {
         super( props );
         this.state = {};
+        if ( props.newQuote )
+        {
+            this.addQuote( props.newQuote );
+            props.finishAddQuote( props.newQuote );
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState)
+    {
+        if ( this.props.newQuote )
+        {
+            console.log( "NEW QUOTE" );
+            this.addQuote( this.props.newQuote );
+            this.props.finishAddQuote( this.props.newQuote );
+        }        
     }
 
     //rendering is to be handled by child classes
     render() 
     {
        throw new Error('render() must be handled by subclass,it is not implemented by QuotePage class');
+    }
+
+    addQuote( newQuote ) 
+    {
+        //TODO: need to actually put the quote in the right place based on its score
+        if ( this.shouldAddQuote( newQuote ) )
+        {
+            this.setState( { "quotes" : this.state.quotes.concat( [ newQuote ] ) } );
+        }
+    }
+
+    //shouldAddQuote is to be handled by child classes
+    //should return true if the quote can be added or false otherwise
+    shouldAddQuote( newQuote )
+    {
+       throw new Error('addQuote() must be handled by subclass,it is not implemented by QuotePage class');
     }
 
     //sends an ajax request for quotes with the parameters given

@@ -38,9 +38,9 @@ export default class Layout extends React.Component
             else if ( this.props.modalType === Constants.TXT_QUOTE_NEW )
             {
                 modalDiv = ( 
-                    <NewQuoteModal clearModal={this.props.clearModal} changeModal={this.props.changeModal}  />
+                    <NewQuoteModal clearModal={this.props.clearModal} changeModal={this.props.changeModal}  
+                        onAddQuote={this.props.onAddQuote} />
                 );                 
-                //quoteAdd={this.addQuote.bind( this )} />
             }
             else
             {

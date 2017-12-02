@@ -16,6 +16,7 @@ export default class MainQuotes extends QuotePage
 
     componentDidUpdate(prevProps, prevState)
     {
+        super.componentDidUpdate( prevProps, prevState );
         if ( prevProps.finishedLoginCheck != true && this.props.finishedLoginCheck )
         {
             this.getData( "/quotes" , {} );
@@ -33,6 +34,17 @@ export default class MainQuotes extends QuotePage
                     downvoteQuote={this.downvoteQuote.bind( this )} upvoteQuote={this.upvoteQuote.bind( this )} />
             </div>
         );
+    }
+
+    shouldAddQuote( newQuote )
+    {
+        if ( newQuote === undefined || newQuote.creatorId === undefined )
+        {
+            console.log( "newQuote undefined or newQuote.creatorId undefined" );
+            return false;
+        }
+
+        return true;
     }
 }
 
