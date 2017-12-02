@@ -57,14 +57,4 @@ export default class Layout extends React.Component
                 </div>
             );
     }
-
-/*
-    addQuote( newQuote )
-    {
-        var quotesCopy = this.state.quotes.slice();
-        quotesCopy.push( newQuote );
-        this.setState( { "quotes" : quotesCopy } );
-    }
-*/
-
 }

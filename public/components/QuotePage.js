@@ -39,7 +39,19 @@ export default class QuotePage extends React.Component
         //TODO: need to actually put the quote in the right place based on its score
         if ( this.shouldAddQuote( newQuote ) )
         {
-            this.setState( { "quotes" : this.state.quotes.concat( [ newQuote ] ) } );
+            //make a copy of the quotes for modification so as to update state later
+            var quotesCopy = this.state.quotes.slice();
+            for ( var i = 0; i < this.state.quotes.length; i++ )
+            {
+                if ( this.state.quotes[ i ].score < newQuote.score )
+                {
+                    break;
+                }
+            }
+
+            //insert the newQuote into the quotesCopy at position i
+            quotesCopy.splice( i, 0, newQuote );
+            this.setState( { "quotes" : quotesCopy } );
         }
     }
 

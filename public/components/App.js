@@ -10,7 +10,6 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //TODO BOARD
 //----------------------------
 //PRIORITY
-//need to put new quote in correct place based on its score when it is being added to list of quotes
 //
 //FUTURE:
 //admin panel to hide quotes
