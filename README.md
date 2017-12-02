@@ -5,15 +5,15 @@ A web application that allows users to post and view famous quotes.
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. 
-See deployment for notes on how to deploy the project on a live system.
 
 1. Clone this repository.
 2. Run 'npm install' to install dependencies.
 3. Make sure MongoDB is running, run 'mongod' if not.
+4. Run 'node buildPack.js' to build the index.js file from es6.
 4. Initialize database by running 'node server.js --setup'
 5. Host by running 'node server.js --serve'
 6. Site is now running at localhost:8081
-7. To clean database shutdown server.js and run 'node server.js --clean'
+7. To clean the database, shutdown server.js and run 'node server.js --clean'
 
 ### Prerequisites
 
