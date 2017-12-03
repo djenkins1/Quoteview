@@ -36,7 +36,7 @@ export default class QuotePage extends React.Component
 
     addQuote( newQuote ) 
     {
-        //TODO: need to actually put the quote in the right place based on its score
+        //put the quote in the right place based on its score
         if ( this.shouldAddQuote( newQuote ) )
         {
             //make a copy of the quotes for modification so as to update state later
