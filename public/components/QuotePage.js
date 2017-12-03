@@ -2,6 +2,12 @@ import React from "react";
 import QuoteList from "./QuoteList";
 import Constants from "./Constants";
 
+//for sorting quotes in descending order
+function compareQuotesByScore( a,b ) 
+{
+    return ( b.score - a.score );
+}
+
 /*
 This is meant as an abstract class for components that intend to request and keep track of quotes data.
 */
@@ -122,6 +128,7 @@ export default class QuotePage extends React.Component
         //update the state if and only if the for loop did not go to end of the quotes array
         if ( i < quotesCopy.length )
         {
+            quotesCopy.sort( compareQuotesByScore );
             this.setState( { "quotes" : quotesCopy } );
         }
     }

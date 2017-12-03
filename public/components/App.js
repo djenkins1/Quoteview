@@ -10,7 +10,6 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //TODO BOARD
 //----------------------------
 //PRIORITY
-//if there 2 or more quotes that have the same score and one gets voted on it doesn't bubble up to correct position,just switches place once?
 //
 //FUTURE:
 //admin panel to hide quotes
