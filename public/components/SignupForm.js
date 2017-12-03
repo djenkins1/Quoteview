@@ -28,13 +28,13 @@ export default class SignupForm extends React.Component
                     onKeyPress={this.handleEnterPress.bind( this )}
                     onChange={this.handleUserField.bind(this)} 
                     type='text' name='username' placeholder='Username' 
-                    className="form-control" />
+                    className="form-control" maxlength="100" required/>
                 <br />
                 <input 
                     size='30' type='password' name='password' 
                     onChange={this.handlePasswordField.bind( this )} 
                     onKeyPress={this.handleEnterPress.bind( this )}
-                    placeholder='Password' className="form-control" />
+                    placeholder='Password' className="form-control" maxlength="100" required/>
                 <br />
             </form>
         );

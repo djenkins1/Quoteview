@@ -229,7 +229,7 @@ function checkParameters( parameterSchema, queryObj )
         //if the query parameter given does not match the size given,then add to error
         if ( queryObj[ schemaObj.name ] != undefined && !checkLength( queryObj[ schemaObj.name ] , schemaObj.type, schemaObj.min , schemaObj.max ) )
         {
-            var objError = { "name" : schemaObj.name , "problem" : "invalid length,must be at least " + schemaObj.min + " and at most " + schemaObj.max };
+            var objError = { "name" : schemaObj.name , "problem" : "invalid length, must be at least " + schemaObj.min + " and at most " + schemaObj.max };
             toReturn.errors.push( objError );
             continue;
         }

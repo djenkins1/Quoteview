@@ -10,6 +10,11 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //TODO BOARD
 //----------------------------
 //PRIORITY
+//Search quotes by particular text string in author/body
+//  see text search mongodb bookmark
+//  would need to add search box to navbar
+//      having problems with navbar though
+//  OR: search modal with link on navbar that allows searching by title/author/created by...
 //
 //FUTURE:
 //admin panel to hide quotes
@@ -19,11 +24,6 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //  could also add confirm password field
 //  would also need to generalize Form fields onChange
 //if there is a problem with logout then error message must be shown to user somehow
-//Search quotes by particular text string in author/body
-//  see text search mongodb bookmark
-//  would need to add search box to navbar
-//      having problems with navbar though
-//  OR: search modal with link on navbar that allows searching by title/author/created by...
 //
 //POSSIBLE:
 //Convert to using express instead of custom middleware
