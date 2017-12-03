@@ -24,6 +24,7 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //  see text search mongodb bookmark
 //  would need to add search box to navbar
 //      having problems with navbar though
+//  OR: search modal with link on navbar that allows searching by title/author/created by...
 //
 //POSSIBLE:
 //Convert to using express instead of custom middleware

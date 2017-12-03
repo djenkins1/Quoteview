@@ -1,42 +1,48 @@
 import React from "react";
 import Constants from "./Constants";
 import { NavLink } from 'react-router-dom';
+import NavLinks from "./NavLinks";
 
 export default class NavBar extends React.Component
 {
     render()
     {
-        //if there is a user logged in, then show different NavBar for logged in user
-        if ( this.props.userName )
-        {
-            return (
-                <nav className="navbar sticky-top navbar-dark bg-primary justify-content-between navbar-expand-lg">
-                    <a className="navbar-brand"> {Constants.TXT_TITLE_APP} </a>
-                    <button type="button" className="navbar-toggler hidden-sm-up" data-toggle="collapse" data-target="#navBarTop" >
-                        <span className="navbar-toggler-icon"></span>
-                    </button>
-                    <div id="navBarTop" className="collapse navbar-collapse nav-tabs">
-                        <NavLink exact={true} to="/" className="nav-item nav-link" activeClassName="active"> {Constants.TXT_QUOTES_ALL} </NavLink>
-                        <NavLink to={"/quotes/" + this.props.userName.userId} className="nav-item nav-link" activeClassName="active" > {Constants.TXT_QUOTES_MY} </NavLink> 
-                        <a className="nav-item nav-link" href="#" onClick={this.handleClickLinkModal.bind( this )} > {Constants.TXT_QUOTE_NEW} </a>
-                        <a className="nav-item nav-link" href="#" onClick={this.handleLogout.bind( this )}> {Constants.TXT_NAV_LOGOUT} </a>
-                    </div>
-                </nav>
-            );
-        }
-
         return (
             <nav className="navbar sticky-top navbar-dark bg-primary justify-content-between navbar-expand-lg">
                 <a className="navbar-brand"> {Constants.TXT_TITLE_APP} </a>
                 <button type="button" className="navbar-toggler hidden-sm-up" data-toggle="collapse" data-target="#navBarTop" >
                     <span className="navbar-toggler-icon"></span>
                 </button>
-                <div className="collapse navbar-collapse nav-tabs" id="navBarTop" >
-                    <NavLink activeClassName="active" exact={true} to="/" className="nav-item nav-link" > {Constants.TXT_QUOTES_ALL} </NavLink>
-                    <a onClick={this.handleClickLinkModal.bind( this )} className="nav-item nav-link" href="#"> {Constants.TXT_NAV_SIGNIN} </a>
-                    <a onClick={this.handleClickLinkModal.bind( this )} className="nav-item nav-link" href="#"> {Constants.TXT_NAV_SIGNUP} </a>
-                </div>
+                {this.getNavLinks()}
             </nav>
+        );
+    }
+
+    navLinksIfLoggedIn()
+    {
+        return (
+            <NavLinks >
+                <NavLink exact={true} to="/" className="nav-item nav-link" activeClassName="active"> {Constants.TXT_QUOTES_ALL} </NavLink>
+                <NavLink to={"/quotes/" + this.props.userName.userId} className="nav-item nav-link" activeClassName="active" > {Constants.TXT_QUOTES_MY} </NavLink> 
+                <a className="nav-item nav-link" href="#" onClick={this.handleClickLinkModal.bind( this )} > {Constants.TXT_QUOTE_NEW} </a>
+                <a className="nav-item nav-link" href="#" onClick={this.handleLogout.bind( this )}> {Constants.TXT_NAV_LOGOUT} </a>
+            </NavLinks>
+        );
+    }
+
+    getNavLinks()
+    {
+        if ( this.props.userName )
+        {
+            return this.navLinksIfLoggedIn()
+        }
+        
+        return (
+            <NavLinks >
+                <NavLink activeClassName="active" exact={true} to="/" className="nav-item nav-link" > {Constants.TXT_QUOTES_ALL} </NavLink>
+                <a onClick={this.handleClickLinkModal.bind( this )} className="nav-item nav-link" href="#"> {Constants.TXT_NAV_SIGNIN} </a>
+                <a onClick={this.handleClickLinkModal.bind( this )} className="nav-item nav-link" href="#"> {Constants.TXT_NAV_SIGNUP} </a>
+            </NavLinks>
         );
     }
 
