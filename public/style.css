@@ -30,28 +30,6 @@ a.nav-link
     color: white;
 }
 
-.quoteBadge.disabled
-{
-    color: white !important;
-}
-
-.quoteBadge.disabled.bg-secondary
-{
-    background-color: gray !important;
-}
-
-.quoteBadge.disabled.bg-secondary:hover
-{
-    background-color: gray !important;
-}
-
-/*
-a.nav-link:hover
-{
-    color: lightgray;
-}
-*/
-
 div.badgeContain
 {
     position: absolute; 
@@ -62,9 +40,3 @@ div.badgeContain
     -ms-transform: translateY(-50%);
 }
 
-/*
-.navbar-text
-{
-    color: white !important;
-}
-*/
