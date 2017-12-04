@@ -10,16 +10,20 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //TODO BOARD
 //----------------------------
 //PRIORITY
+//admin panel to hide quotes
+//  quote collection in mongodb will need hidden field
+//  will need to use role of user to determine if admin panel is actually shown
+//More unit testing of database: 
+//  to run tests: mocha -t 100000 testDB.js 
+//  getAllQuotesFromUser,getUserData,getQuoteById,downvoteQuote,upvoteQuote,createQuote,createQuoteWithUsername
+//      getAllQuotes,getRecentQuotes,getPagedQuotes
+//
+//FUTURE:
 //Search quotes by particular text string in author/body
 //  see text search mongodb bookmark
 //  would need to add search box to navbar
 //      having problems with navbar though
 //  OR: search modal with link on navbar that allows searching by title/author/created by...
-//
-//FUTURE:
-//admin panel to hide quotes
-//  quote collection in mongodb will need hidden field
-//  will need to use role of user to determine if admin panel is actually shown
 //Add email field to signup form
 //  could also add confirm password field
 //  would also need to generalize Form fields onChange
@@ -32,7 +36,7 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //keep track of quotes that user has voted on and stop them from voting more than once on the same quote
 //  what if they want to reverse their vote?
 //(?)pagination on quotes by using after field
-//(?)scrolling down on page should get another page of quotes
+//   scrolling down on page should get another page of quotes
 //(?)use hash table to keep track of position of quotes on quoteList for faster updating
 //----------------------------
 */
