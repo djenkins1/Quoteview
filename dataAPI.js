@@ -112,7 +112,15 @@ function createQuoteWithUsername( author, body, creatorId, creatorName, onFinish
 
     getDefaultConn( function( db )
     {
-        var toInsert = { "author" : author, "body" : body, "creatorId" : creatorIdObj, "creatorName" : creatorName, "score" : 0 };
+        var toInsert = { 
+            "author" : author, 
+            "body" : body, 
+            "creatorId" : creatorIdObj, 
+            "creatorName" : creatorName, 
+            "score" : 0 ,
+            "flagged" : false 
+        };
+
         db.collection( QUOTE_TABLE ).insertOne( toInsert, function(err, result ) 
         {
             if (err) throw err;
@@ -566,12 +574,18 @@ function setupDatabase( onFinish )
                     if ( err ) throw err;
 
                     console.log( "Index created for username on " + USER_TABLE );
-                    db.collection( QUOTE_TABLE ).createIndex( "score" , function( err, res )
+                    db.collection( QUOTE_TABLE ).createIndex( "flagged" , function( err, res )
                     {
                         if ( err ) throw err;
 
-                        console.log( "Index created for score on " + QUOTE_TABLE );
-                        onFinish();
+                        console.log( "Index created for flagged on " + QUOTE_TABLE );
+                        db.collection( QUOTE_TABLE ).createIndex( "score" , function( err, res )
+                        {
+                            if ( err ) throw err;
+
+                            console.log( "Index created for score on " + QUOTE_TABLE );
+                            onFinish();
+                        });
                     });
                 });
             });
@@ -612,6 +626,68 @@ function getAllQuotesFromUser( userId, onFinish )
     });
 }
 
+/*
+function: _setQuoteFlagged
+info:
+    This is a helper function for setting a quote to be flagged/not flagged.
+parameters:
+    qid, string/objectId, the id of the quote
+    flagValue, boolean, what the quote's flagged field should be set to
+    onFinish, function, the function called when the update has finished
+returns:
+    nothing
+*/
+function _setQuoteFlagged( qid, flagValue, onFinish )
+{
+    var newValues = { $set: { "flagged" : !!flagValue } };
+    var myQuery = { "_id" : qid };
+    if ( typeof qid === "string" )
+    {
+        myQuery._id = ObjectId( qid );
+    }
+
+    getDefaultConn( function( db )
+    {
+        db.collection( QUOTE_TABLE ).updateOne( myQuery, newValues, function(err, resultObj ) 
+        {
+            if (err) throw err;
+
+            var passedObj = { "affectedRows" : resultObj.result.nModified };
+            onFinish( passedObj );
+        });
+    });   
+}
+
+/*
+function: flagQuote
+info:
+    This function sets flagged to true for the quote with qid given.
+parameters:
+    qid, string/objectId, the unique identifier for the quote
+    onFinish, function, the function to be called when the query finishes.
+returns:
+    nothing
+*/
+function flagQuote( qid, onFinish )
+{
+    _setQuoteFlagged( qid, true, onFinish );
+}
+
+/*
+function: unflagQuote
+info:
+    This function sets flagged to false for the quote with qid given.
+parameters:
+    qid, string/objectId, the unique identifier for the quote
+    onFinish, function, the function to be called when the query finishes.
+returns:
+    nothing
+*/
+function unflagQuote( qid, onFinish )
+{
+    _setQuoteFlagged( qid, false, onFinish );
+}
+
 
 //add the functions above to this module so that they are usable outside of the module
 exports.getAllQuotes = getAllQuotes;
@@ -628,4 +704,6 @@ exports.closeConnection = closeConnection;
 exports.setupDatabase = setupDatabase;
 exports.createQuoteWithUsername = createQuoteWithUsername;
 exports.getAllQuotesFromUser = getAllQuotesFromUser;
+exports.flagQuote = flagQuote;
+exports.unflagQuote = unflagQuote;
 

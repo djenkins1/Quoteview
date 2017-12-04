@@ -13,10 +13,9 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //admin panel to hide quotes
 //  quote collection in mongodb will need hidden field
 //  will need to use role of user to determine if admin panel is actually shown
-//More unit testing of database: 
-//  to run tests: mocha -t 100000 testDB.js 
 //Need unit testing of endpoints for server
-//  somehow need to do RESTless
+//  create dummy accounts and quotes using only dataAPI in before()
+//  somehow need to do RESTless,look into Sails js
 //
 //FUTURE:
 //Search quotes by particular text string in author/body
@@ -28,6 +27,8 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //  could also add confirm password field
 //  would also need to generalize Form fields onChange
 //if there is a problem with logout then error message must be shown to user somehow
+//update readme to include Mocha and unit testing info
+//  to run database unit tests: mocha -t 100000 testDB.js 
 //
 //POSSIBLE:
 //Convert to using express instead of custom middleware

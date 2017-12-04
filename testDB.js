@@ -241,6 +241,32 @@ describe('TestDatabase', function()
         });
     });
 
+    it( 'test good flagQuote' , function( done )
+    {
+        dataAPI.flagQuote( myQuotes[ 0 ], function( updateResult )
+        {
+            assert.equal( updateResult.affectedRows , 1 );
+            dataAPI.getQuoteById( myQuotes[ 0 ] , function( quoteObj )
+            {
+                assert.equal( quoteObj.flagged, true );
+                done();
+            });
+        });
+    });
+
+    it( 'test good unflagQuote' , function( done )
+    {
+        dataAPI.unflagQuote( myQuotes[ 0 ], function( updateResult )
+        {
+            assert.equal( updateResult.affectedRows , 1 );
+            dataAPI.getQuoteById( myQuotes[ 0 ] , function( quoteObj )
+            {
+                assert.equal( quoteObj.flagged, false );
+                done();
+            });
+        });
+    });
+
     //after() is run after all tests have completed.
     //close down the database connection
     after( function( done ) 
