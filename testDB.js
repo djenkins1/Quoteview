@@ -1,7 +1,10 @@
 const dataAPI = require( "./dataAPI" );
 const assert = require('assert');
 const myUsername = "jenkins";
+const myQuoteAuthor = "Dilan Jenkins";
+const myQuoteBody = "Dilan was here!";
 var myUserId = undefined;
+var myQuotes = [];
 
 describe('TestDatabase', function() 
 {
@@ -110,6 +113,134 @@ describe('TestDatabase', function()
         });        
     });
 
+    //test that createQuote returns insertId for a newly created quote
+    it( 'test good createQuote' , function( done )
+    {
+        dataAPI.createQuote( myQuoteAuthor, myQuoteBody, myUserId, function( quoteResult )
+        {
+            assert.ok( quoteResult.insertId );
+            myQuotes.push( quoteResult.insertId );
+            done();
+        });
+    });
+
+    //tests that createQuoteWithUsername returns insertId for a newly created quote
+    it( 'test good createQuoteWithUsername' , function( done )
+    {
+        dataAPI.createQuoteWithUsername( myQuoteAuthor, myQuoteBody, myUserId, myUsername, function( quoteResult )
+        {
+            assert.ok( quoteResult.insertId );
+            myQuotes.push( quoteResult.insertId );
+            done();
+        });
+    });
+
+    //tests that getQuoteById returns correct information for valid qid
+    it( 'test good getQuoteById', function( done )
+    {
+        dataAPI.getQuoteById( myQuotes[ 0 ], function( quoteObj )
+        {
+            assert.deepEqual( quoteObj.qid, myQuotes[ 0 ]  );
+            assert.equal( quoteObj.author, myQuoteAuthor );
+            assert.equal( quoteObj.body, myQuoteBody );
+            assert.deepEqual( quoteObj.creatorId , myUserId );
+            assert.equal( quoteObj.creatorName, myUsername );
+            assert.equal( quoteObj.score, 0 );
+            done();
+        });
+    });
+
+    //tests that upvoteQuote successfully increments the score for a valid qid
+    it( 'test good upvoteQuote' , function( done )
+    {
+        dataAPI.upvoteQuote( myQuotes[ 0 ], function( resultObj )
+        {
+            assert.equal( resultObj.affectedRows , 1 );
+            dataAPI.getQuoteById( myQuotes[ 0 ], function( quoteObj )
+            {
+                assert.equal( quoteObj.score, 1 );
+                done();
+            });
+        });
+    });
+
+    //tests that downvoteQuote successfully decrements the score for a valid qid
+    it( 'test good downvoteQuote' , function( done )
+    {
+        dataAPI.downvoteQuote( myQuotes[ 0 ], function( resultObj )
+        {
+            assert.equal( resultObj.affectedRows , 1 );
+            dataAPI.getQuoteById( myQuotes[ 0 ], function( quoteObj )
+            {
+                assert.equal( quoteObj.score, 0 );
+                done();
+            });
+        });
+    });
+
+    //tests that downvoteQuote successfully decrements the score for a valid qid
+    it( 'test good from zero downvoteQuote' , function( done )
+    {
+        dataAPI.downvoteQuote( myQuotes[ 1 ], function( resultObj )
+        {
+            assert.equal( resultObj.affectedRows , 1 );
+            dataAPI.getQuoteById( myQuotes[ 1 ], function( quoteObj )
+            {
+                assert.equal( quoteObj.score, -1 );
+                done();
+            });
+        });
+    });
+
+    //tests that upvoteQuote successfully increments the score for a valid qid
+    it( 'test good from negative upvoteQuote' , function( done )
+    {
+        dataAPI.upvoteQuote( myQuotes[ 1 ], function( resultObj )
+        {
+            assert.equal( resultObj.affectedRows , 1 );
+            dataAPI.getQuoteById( myQuotes[ 1 ], function( quoteObj )
+            {
+                assert.equal( quoteObj.score, 0 );
+                done();
+            });
+        });
+    });
+    
+    //tests that getAllQuotesFromUser returns the correct results
+    it( 'test good getAllQuotesFromUser' , function( done )
+    {
+        dataAPI.getAllQuotesFromUser( myUserId, function( results )
+        {
+            assert.equal( results.length, myQuotes.length );
+            for( var i = 0; i < results.length; i++ )
+            {
+                assert.deepEqual( results[ i ].creatorId , myUserId );
+                assert.equal( results[ i ].creatorName, myUsername );
+            }
+            done();
+        });
+    });
+
+    //creates a new user and a new quote and tests that all quotes are returned successfully from getAllQuotes
+    it( 'test good getAllQuotes' , function( done )
+    {
+        const otherUsername = "badmoon";
+        dataAPI.createUser( otherUsername, otherUsername, function( userResult )
+        {
+            assert.ok( userResult.insertId );
+            var otherUserId = userResult.insertId;
+            dataAPI.createQuote( "Dummy Author" , "Dummy Body" , otherUserId, function( quoteResult )
+            {
+                assert.ok( quoteResult.insertId );
+                dataAPI.getAllQuotes( function( results )
+                {
+                    assert.equal( results.length, myQuotes.length + 1 );
+                    done();
+                });
+            });
+        });
+    });
+
     //after() is run after all tests have completed.
     //close down the database connection
     after( function( done ) 
@@ -117,5 +248,6 @@ describe('TestDatabase', function()
         dataAPI.closeConnection();
         done();
     });
+
 });
 
