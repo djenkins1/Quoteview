@@ -15,8 +15,10 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //  will need to use role of user to determine if admin panel is actually shown
 //More unit testing of database: 
 //  to run tests: mocha -t 100000 testDB.js 
-//  getAllQuotesFromUser,getUserData,getQuoteById,downvoteQuote,upvoteQuote,createQuote,createQuoteWithUsername
+//  getAllQuotesFromUser,getQuoteById,downvoteQuote,upvoteQuote,createQuote,createQuoteWithUsername
 //      getAllQuotes,getRecentQuotes,getPagedQuotes
+//Need unit testing of endpoints for server
+//  somehow need to do RESTless
 //
 //FUTURE:
 //Search quotes by particular text string in author/body

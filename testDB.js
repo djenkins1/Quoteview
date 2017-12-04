@@ -1,6 +1,7 @@
 const dataAPI = require( "./dataAPI" );
 const assert = require('assert');
 const myUsername = "jenkins";
+var myUserId = undefined;
 
 describe('TestDatabase', function() 
 {
@@ -38,6 +39,7 @@ describe('TestDatabase', function()
         dataAPI.createUser( myUsername, myUsername, function( resultObj )
         {
             assert.ok( resultObj.insertId );
+            myUserId = resultObj.insertId;
             done();
         } );
     });
@@ -86,6 +88,27 @@ describe('TestDatabase', function()
         });
     });
 
+    //test that getUserData returns correct information for valid user id
+    it( 'test good getUserData' , function( done )
+    {
+        dataAPI.getUserData( myUserId, function( userObj )
+        {
+            assert.ok( userObj );
+            assert.deepEqual( myUserId, userObj.userId );
+            assert.equal( myUsername, userObj.username );
+            done();
+        });
+    });
+
+    //test that getUserData returns nothing for invalid user id
+    it( 'test bad id getUserData' , function( done )
+    {
+        dataAPI.getUserData( "123456789ABC", function( userObj )
+        {
+            assert.equal( userObj , null );
+            done();
+        });        
+    });
 
     //after() is run after all tests have completed.
     //close down the database connection

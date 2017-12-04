@@ -360,7 +360,7 @@ function setupHandlers()
     urlHandler.registerObserver( "GET" , "/sessionDelete" , [] , testDeleteSession, standardErrorCall );
     */
     //setup the observer for getting all quotes
-    urlHandler.registerObserver( "GET" , "/quotes" , [ urlHandler.createParameter( "creator" , "string" , false , 1 , 256 ) ] , returnAllQuotes, outputErrorAsJson );
+    urlHandler.registerObserver( "GET" , "/quotes" , [ urlHandler.createParameter( "creator" , "ObjectId" , false , 1 , 256 ) ] , returnAllQuotes, outputErrorAsJson );
     urlHandler.registerObserver( "POST" , "/newQuote" , [ urlHandler.createParameter( "author" , "string" , true, 5, 60 ) , urlHandler.createParameter( "body" , "string" , true, 5, 3000 ) ], postQuote, outputErrorAsJson );
     urlHandler.registerObserver( "POST" , "/upvoteQuote" , [ urlHandler.createParameter( "qid" , "string" , true , 1 , 256 ) ], postUpvoteQuote, outputErrorAsJson );
     urlHandler.registerObserver( "POST" , "/downvoteQuote" , [ urlHandler.createParameter( "qid" , "string" , true , 1, 256 ) ], postDownvoteQuote, outputErrorAsJson );

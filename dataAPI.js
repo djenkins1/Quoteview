@@ -469,8 +469,11 @@ function getUserData( userId, onFinish )
         db.collection( USER_TABLE ).findOne( myQuery , function( err, result ) 
         {
             if ( err ) throw err;
+            if ( result && result._id )
+            {
+                result.userId = result._id;
+            }
 
-            result.userId = result._id;
             onFinish( result );
         });
     });
