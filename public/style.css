@@ -3,14 +3,15 @@
     padding: 1rem;
 }
 
-.navbar-brand
+nav.navbar a.navbar-brand
+,nav.navbar a.navbar-brand:hover
 {
-    color: #fff !important;
+    color: #fff;
 }
 
-.quoteBadge
+a.quoteBadge , span.quoteBadge
 {
-    padding: 1.1em !important;
+    padding: 1.1em;
     margin-right: 0.25em;
     font-family: monospace;
 }

@@ -11,8 +11,10 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //TODO BOARD
 //----------------------------
 //PRIORITY
-//(SECOND)admin panel to flag/unflag quotes
-//  will need to use role of user to determine if admin panel is actually shown
+//admin panel to flag/unflag quotes
+//  score badge should include button to flag quote instead of upvote/downvote if admin role
+//      replace upvote/downvote with flag/unflag
+//  quote should give some indication of flagged status on admin page(in general)
 //Need unit testing of endpoints for server
 //  create dummy accounts and quotes using only dataAPI in before()
 //  somehow need to do RESTless,look into Sails js
@@ -30,8 +32,10 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //update readme to include Mocha and unit testing info
 //  to run database unit tests: mocha -t 100000 testDB.js 
 // my account page where password can be changed
+//add more aria compatibility/concerns
 //
 //POSSIBLE:
+//flagged quotes should not be able to be voted on by anyone(endpoint protection only)
 //ability to edit quotes that were created by the logged in user
 //Convert to using express instead of custom middleware
 //  need to have endpoint unit testing in place before this conversion
