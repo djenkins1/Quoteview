@@ -6,7 +6,6 @@ Info:
     It is used as an API for accessing the quotes database.
 */
 
-//var mysql = require('mysql');
 var bcrypt = require('bcrypt');
 
 var ObjectId = require('mongodb').ObjectID;
@@ -154,15 +153,6 @@ function createQuoteWithUsername( author, body, creatorId, creatorName, onFinish
         
         });
     });
-    /*
-    var conn = getDefaultConn();
-    conn.query("INSERT INTO QUOTE( author, body, score, creatorId ) VALUES( ? , ? , 0 , ? )", [ author, body, creatorId ] , function (err, result, fields) 
-    {
-        if (err) throw err;
-
-        onFinish( result ); 
-    });
-    */
 }
 
 /*
@@ -250,15 +240,6 @@ returns:
 function upvoteQuote( qid, onFinish )
 {
     _updateQuoteScore( qid, true, onFinish );
-    /*
-    var conn = getDefaultConn();
-    conn.query("UPDATE QUOTE SET score=score+1 WHERE qid=?", [ qid ] , function (err, result, fields) 
-    {
-        if (err) throw err;
-
-        onFinish( result ); 
-    });
-    */
 }
 
 /*
@@ -276,15 +257,6 @@ returns:
 function downvoteQuote( qid, onFinish )
 {
     _updateQuoteScore( qid, false, onFinish );
-    /*
-    var conn = getDefaultConn();
-    conn.query("UPDATE QUOTE SET score=score-1 WHERE qid=?", [ qid ] , function (err, result, fields) 
-    {
-        if (err) throw err;
-
-        onFinish( result ); 
-    });
-    */
 }
 
 /*
@@ -320,22 +292,6 @@ function getQuoteById( qid, onFinish )
         
         });
     });
-    /*
-    var conn = getDefaultConn();
-    conn.query("SELECT * FROM QUOTE WHERE qid=? LIMIT 1", [ qid ] , function (err, result, fields) 
-    {
-        if (err) throw err;
-
-        //send back exactly one row,or if no rows were in the result then send back empty object
-        var resultObj = {};
-        if ( result.length > 0 )
-        {
-            resultObj = result[ 0 ];
-        }
-
-        onFinish( resultObj ); 
-    });
-    */
 }
 
 /*
@@ -366,19 +322,6 @@ function createUser( username, password, onFinish )
             });
         });
     });
-    /*
-    var conn = getDefaultConn();
-    bcrypt.hash( password, SALT_ROUNDS, function(err, hash) 
-    {
-        // Store hash in your password DB.
-        conn.query("INSERT INTO USERS( username, password, role ) VALUES( ? , ? , 'user' )", [ username, hash ] , function (err, result, fields) 
-        {
-            if (err) throw err;
-
-            onFinish( result ); 
-        });
-    });
-    */
 }
 
 /*
@@ -407,22 +350,6 @@ function isUsernameTaken( username, onFinish )
             onFinish( isTaken );
         });
     });
-    /*
-    var conn = getDefaultConn();
-    conn.query("SELECT * FROM users WHERE username=? LIMIT 1", [ username ] , function (err, result, fields) 
-    {
-        if (err) throw err;
-
-        var alreadyExists = false;
-        //if there were any users in the result then the username already exists
-        if ( result.length > 0 )
-        {
-            alreadyExists = true;
-        }
-
-        onFinish( alreadyExists ); 
-    });
-    */
 }
 
 /*
@@ -456,22 +383,6 @@ function getUserData( userId, onFinish )
             onFinish( result );
         });
     });
-    /*
-    var conn = getDefaultConn();
-    conn.query("SELECT * FROM users WHERE userId=? LIMIT 1", [ userId ] , function (err, result, fields) 
-    {
-        if (err) throw err;
-
-        //send back exactly one row,or if no rows were in the result then send back empty object
-        var resultObj = {};
-        if ( result.length > 0 )
-        {
-            resultObj = result[ 0 ];
-        }
-
-        onFinish( resultObj ); 
-    });
-    */
 }
 
 /*
@@ -505,36 +416,6 @@ function verifyUserCredentials( username, password, onFinish )
             }
         });
     });
-    /*
-    var conn = getDefaultConn();
-    conn.query("SELECT * FROM users WHERE username=? LIMIT 1", [ username ] , function (err, result, fields) 
-    {
-        if (err) throw err;
-
-        //send back exactly one row,or if no rows were in the result then send back empty object
-        var resultObj = {};
-        if ( result.length > 0 )
-        {
-            resultObj = result[ 0 ];
-        }
-
-        if ( resultObj.password )
-        {
-            // Load hash from your password DB.
-            bcrypt.compare( password, resultObj.password, function(err, res) 
-            {
-                if ( err ) throw err;
-
-                resultObj.password = undefined;
-                onFinish( res, resultObj );
-            });
-        }
-        else
-        {
-            onFinish( false, resultObj ); 
-        }
-    });
-    */
 }
 
 /*
