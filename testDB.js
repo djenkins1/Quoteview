@@ -1,8 +1,10 @@
+var Constants = require( "./public/components/Constants" );
 const dataAPI = require( "./dataAPI" );
 const assert = require('assert');
 const myUsername = "jenkins";
 const myQuoteAuthor = "Dilan Jenkins";
 const myQuoteBody = "Dilan was here!";
+const adminUser = "djenkins1";
 var myUserId = undefined;
 var myQuotes = [];
 
@@ -275,6 +277,20 @@ describe('TestDatabase', function()
             dataAPI.getQuoteById( myQuotes[ 0 ] , function( quoteObj )
             {
                 assert.equal( quoteObj.flagged, true );
+                done();
+            });
+        });
+    });
+
+    it( 'test good admin createUserWithRole' , function( done )
+    {
+        dataAPI.createUserWithRole( adminUser, adminUser, Constants.ROLE_USER_ADMIN , function( resultObj )
+        {
+            assert.ok( resultObj.insertId );
+            let adminId = resultObj.insertId;
+            dataAPI.getUserData( adminId, function( userObj )
+            {
+                assert.equal( userObj.role, Constants.ROLE_USER_ADMIN );
                 done();
             });
         });

@@ -3,6 +3,7 @@ var url = require('url');
 var urlHandler = require('./urlHandler');
 var execsql = require('execsql');
 var dataAPI = require( "./dataAPI" );
+var Constants = require( "./public/components/Constants" );
 
 //simple error function that displays whatever errors occurred
 function standardErrorCall( errorList, queryObj, response, sessionObj, onFinish )
@@ -22,46 +23,6 @@ function outputErrorAsJson( errorList ,queryObj, response, sessionObj, onFinish 
     response.writeHead( 200, {'Content-Type': 'text/json'});
     var errorObj = { "error" : true , "errors" : errorList };
     response.write( JSON.stringify( errorObj ) );
-    onFinish( sessionObj );
-}
-
-//test function for required parameters of specific type
-function squareNumber( queryObj, response, sessionObj, onFinish )
-{
-    response.writeHead(200, {'Content-Type': 'text/plain'});
-    //sanity test to make sure required parameter can not be undefined
-    if ( queryObj.number == undefined )
-    {
-        console.log( "Problem squareNumber, required number undefined" );
-        respondServerError( queryObj, response, sessionObj, onFinish );
-        return;
-    }
-
-    var squared = Number( queryObj.number ) * Number( queryObj.number );
-    response.write( queryObj.number + " squared is " + squared +  "\n" );  
-    onFinish( sessionObj ); 
-}
-
-//test function for mix of required and optional parameters of specific type
-function exponentNumber( queryObj, response, sessionObj, onFinish )
-{
-    response.writeHead(200, {'Content-Type': 'text/plain'});
-    //sanity test to make sure required parameter can not be undefined
-    if ( queryObj.number == undefined )
-    {
-        console.log( "Problem exponentNumber, required number undefined" );
-        respondServerError( queryObj, response, sessionObj, onFinish );
-        return;
-    }
-
-    var toPower = 2;
-    if ( queryObj.exp != undefined )
-    {
-        toPower = Number( queryObj.exp );
-    }
-
-    var result = Math.pow( Number( queryObj.number ) , toPower );
-    response.write( queryObj.number + " to the power of " + toPower + " is " + result +  "\n" );  
     onFinish( sessionObj );
 }
 
@@ -91,23 +52,6 @@ function respondServerError( queryObj, response, sessionObj, onFinish )
 {
     response.writeHead( 500, {'Content-Type': 'text/plain'});
     response.write( "500 Internal Server Error" );
-    onFinish( sessionObj );
-}
-
-//tests session handling
-function testSession( queryObj, response, sessionObj, onFinish )
-{
-    if ( sessionObj.data.whale )
-    {
-        sessionObj.data.whale = "NO";
-    }
-    else
-    {
-        sessionObj.data.whale = "yes";
-    }
-
-    response.writeHead( 200, {'Content-Type': 'text/plain'});
-    response.write( "SESSION " + sessionObj.data.whale );
     onFinish( sessionObj );
 }
 
@@ -182,8 +126,9 @@ function testCreateUser( queryObj, response, sessionObj, onFinish )
         {
             sessionObj.data.user = result.insertId;
             sessionObj.data.username = queryObj.username;
+            sessionObj.data.role = Constants.ROLE_USER_DEFAULT;
             response.writeHead(200, {'Content-Type': 'text/json'});
-            var userObj = { "userId" : result.insertId , "username" : queryObj.username, "role" : "user" };
+            var userObj = { "userId" : result.insertId , "username" : queryObj.username, "role" : Constants.ROLE_USER_DEFAULT };
             response.write( JSON.stringify( userObj ) );
             onFinish( sessionObj ); 
         });
@@ -226,15 +171,10 @@ function loginUser( queryObj, response, sessionObj, onFinish )
         response.writeHead(200, {'Content-Type': 'text/json'});
         sessionObj.data.user = resultObj.userId;
         sessionObj.data.username = resultObj.username;
+        sessionObj.data.role = resultObj.role;
         response.write( JSON.stringify( resultObj ) );
         onFinish( sessionObj );         
     });
-}
-
-//function to be called whenever someone needs to be logged in and is not
-function needLoginRedirect( queryObj, response, sessionObj, onFinish )
-{
-    redirectIndex( queryObj, response, sessionObj, onFinish );    
 }
 
 //creates a quote with the parameters given and responds with json representation of the new quote
@@ -350,15 +290,6 @@ function setupHandlers()
 {
     //sets up a simple redirect to index.html when empty path is given
     urlHandler.registerObserver( "GET" , "/" , [] , redirectIndex, standardErrorCall );
-    //setups the other observers to test various functionality
-    /*
-    urlHandler.registerObserver( "GET", "/hello" , [] , helloWorld, standardErrorCall );
-    urlHandler.registerObserver( "GET" , "/square" , [ { "name" : "number" , "type" : "float" , "required" : true } ], squareNumber, standardErrorCall );
-    urlHandler.registerObserver( "GET" , "/exponent" , [ { "name" : "number" , "type" : "float" , "required" : true } , { "name" : "exp" , "type" : "float" , "required" : false } ], exponentNumber, standardErrorCall );
-    urlHandler.registerObserver( "GET" , "/errorTest" , [] , respondServerError , standardErrorCall );
-    urlHandler.registerObserver( "GET" , "/sessionTest" , [] , testSession, standardErrorCall );
-    urlHandler.registerObserver( "GET" , "/sessionDelete" , [] , testDeleteSession, standardErrorCall );
-    */
     //setup the observer for getting all quotes
     urlHandler.registerObserver( "GET" , "/quotes" , [ urlHandler.createParameter( "creator" , "ObjectId" , false , 1 , 256 ) ] , returnAllQuotes, outputErrorAsJson );
     urlHandler.registerObserver( "POST" , "/newQuote" , [ urlHandler.createParameter( "author" , "string" , true, 5, 60 ) , urlHandler.createParameter( "body" , "string" , true, 5, 3000 ) ], postQuote, outputErrorAsJson );

@@ -28,6 +28,7 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //if there is a problem with logout then error message must be shown to user somehow
 //update readme to include Mocha and unit testing info
 //  to run database unit tests: mocha -t 100000 testDB.js 
+// my account page where password can be changed
 //
 //POSSIBLE:
 //ability to edit quotes that were created by the logged in user

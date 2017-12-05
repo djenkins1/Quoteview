@@ -5,6 +5,7 @@ Info:
     This is a module for node js.
     It is used as an API for accessing the quotes database.
 */
+var Constants = require( "./public/components/Constants" );
 
 var bcrypt = require('bcrypt');
 
@@ -52,7 +53,7 @@ function getDefaultConn( onFinish )
 }
 
 /*
-function: _getQuotesByFlag
+function: getQuotesByFlag
 info:
     This function is a helper function for getting quotes.
     It calls onFinish with the results from the query when finished.
@@ -63,7 +64,7 @@ parameters:
 returns:
     nothing
 */
-function _getQuotesByFlag( onFinish, isFlagged , creatorId )
+function getQuotesByFlag( onFinish, isFlagged , creatorId )
 {
     var myQuery = {};
     if ( isFlagged !== undefined )
@@ -107,7 +108,7 @@ returns:
 */
 function getAllQuotes( onFinish )
 {
-    _getQuotesByFlag( onFinish, false, undefined );
+    getQuotesByFlag( onFinish, false, undefined );
 }
 
 /*
@@ -295,6 +296,37 @@ function getQuoteById( qid, onFinish )
 }
 
 /*
+function: createUserWithRole
+info:
+    This function uses the database to create a row in the users table.
+parameters:
+    username, string, the username for the new user
+    password, string, the password for the new user
+    role, string, the role for the new user
+    onFinish, function, the function to be called when the user has been created
+returns:
+    nothing
+*/
+function createUserWithRole( username, password, role, onFinish )
+{
+    bcrypt.hash( password, SALT_ROUNDS, function(err, hash) 
+    {
+        getDefaultConn( function( db )
+        {
+            var toInsert = { "username" : username.toLowerCase(), "password" : hash, "role" : role };
+            db.collection( USER_TABLE ).insertOne( toInsert, function(err, result ) 
+            {
+                if (err) throw err;
+
+                var passedObj = { "insertId" : result.insertedId };
+                onFinish( passedObj );
+            
+            });
+        });
+    });
+}
+
+/*
 function: createUser
 info:
     This function uses the database to create a row in the users table.
@@ -307,21 +339,7 @@ returns:
 */
 function createUser( username, password, onFinish )
 {
-    bcrypt.hash( password, SALT_ROUNDS, function(err, hash) 
-    {
-        getDefaultConn( function( db )
-        {
-            var toInsert = { "username" : username.toLowerCase(), "password" : hash, "role" : "user" };
-            db.collection( USER_TABLE ).insertOne( toInsert, function(err, result ) 
-            {
-                if (err) throw err;
-
-                var passedObj = { "insertId" : result.insertedId };
-                onFinish( passedObj );
-            
-            });
-        });
-    });
+    createUserWithRole( username, password, Constants.ROLE_USER_DEFAULT, onFinish );
 }
 
 /*
@@ -510,7 +528,7 @@ returns:
 */
 function getAllQuotesFromUser( userId, onFinish )
 {
-    _getQuotesByFlag( onFinish, false, userId );
+    getQuotesByFlag( onFinish, false, userId );
 }
 
 /*
@@ -593,4 +611,6 @@ exports.createQuoteWithUsername = createQuoteWithUsername;
 exports.getAllQuotesFromUser = getAllQuotesFromUser;
 exports.flagQuote = flagQuote;
 exports.unflagQuote = unflagQuote;
+exports.getQuotesByFlag = getQuotesByFlag;
+exports.createUserWithRole = createUserWithRole;
 

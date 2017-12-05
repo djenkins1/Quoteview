@@ -18,12 +18,23 @@ export default class NavBar extends React.Component
         );
     }
 
+    navLinksIfAdmin()
+    {
+        if ( this.props.userName && this.props.userName.role && this.props.userName.role === Constants.ROLE_USER_ADMIN )
+        {
+            return (
+                <NavLink to="/flagged" className="nav-item nav-link" activeClassName="active" > {Constants.TXT_QUOTES_FLAGGED} </NavLink> 
+            );
+        }
+    }
+
     navLinksIfLoggedIn()
     {
         return (
             <NavLinks >
                 <NavLink exact={true} to="/" className="nav-item nav-link" activeClassName="active"> {Constants.TXT_QUOTES_ALL} </NavLink>
                 <NavLink to={"/quotes/" + this.props.userName.userId} className="nav-item nav-link" activeClassName="active" > {Constants.TXT_QUOTES_MY} </NavLink> 
+                {this.navLinksIfAdmin()}
                 <a className="nav-item nav-link" href="#" onClick={this.handleClickLinkModal.bind( this )} > {Constants.TXT_QUOTE_NEW} </a>
                 <a className="nav-item nav-link" href="#" onClick={this.handleLogout.bind( this )}> {Constants.TXT_NAV_LOGOUT} </a>
             </NavLinks>
