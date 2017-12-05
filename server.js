@@ -47,6 +47,34 @@ function returnAllQuotes( queryObj , response, sessionObj, onFinish )
     }
 }
 
+//returns list of flagged quotes if logged in
+function returnFlaggedQuotes( queryObj, response, sessionObj, onFinish )
+{
+    //if the user is not logged in then stop them from getting the flagged quotes
+    if ( sessionObj.data.user === undefined )
+    {
+        var errorList = [ { "name" : "user" , "problem" : "not logged in" } ];
+        outputErrorAsJson( errorList, queryObj, response, sessionObj, onFinish );
+        return;
+    }
+
+    //if the user is not an admin then stop them from getting the flagged quotes
+    if ( sessionObj.data.role !== Constants.ROLE_USER_ADMIN )
+    {
+        var errorList = [ { "name" : "user" , "problem" : "not admin" } ];
+        outputErrorAsJson( errorList, queryObj, response, sessionObj, onFinish );
+        return;
+    }
+
+    dataAPI.getQuotesByFlag( function( results ) 
+    {
+        response.writeHead(200, {'Content-Type': 'text/json'});
+        response.write( JSON.stringify( results ) );
+        onFinish( sessionObj );
+    } 
+    , true, queryObj.creator );
+}
+
 //sends back a 500 error
 function respondServerError( queryObj, response, sessionObj, onFinish )
 {
@@ -63,15 +91,6 @@ function logoutUser( queryObj, response, sessionObj, onFinish )
     var resultObj = { "status" : "logged out" };
     response.write( JSON.stringify( resultObj ) );
     onFinish( sessionObj );    
-}
-
-//test that a session gets deleted correctly
-function testDeleteSession( queryObj, response, sessionObj, onFinish )
-{
-    sessionObj.deleted = true;
-    response.writeHead( 200, {'Content-Type': 'text/plain'});
-    response.write( "DELETING SESSION" );
-    onFinish( sessionObj );
 }
 
 //endpoint for seeing which user is logged in on this session
@@ -302,6 +321,7 @@ function setupHandlers()
     urlHandler.registerObserver( "POST" , "/login" , [ userSchema , urlHandler.createParameter( "password" , "string" , true, 5, 100 ) ],  loginUser, outputErrorAsJson );
     urlHandler.registerObserver( "GET" , "/userData" , [] , loggedInAs, outputErrorAsJson );
     urlHandler.registerObserver( "GET" , "/logout" , [] , logoutUser , outputErrorAsJson );
+    urlHandler.registerObserver( "GET" , "/flagged" , [ urlHandler.createParameter( "creator" , "ObjectId" , false , 1 , 256 ) ] , returnFlaggedQuotes , outputErrorAsJson );
 }
 
 //grab the command line arguments

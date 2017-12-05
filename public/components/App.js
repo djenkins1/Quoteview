@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import Layout from "./Layout";
 import MainQuotes from "./MainQuotes";
 import CreatorQuotes from "./CreatorQuotes";
+import AdminQuotes from "./AdminQuotes";
 import { HashRouter, Route , Switch } from "react-router-dom";
 
 /*
@@ -66,6 +67,13 @@ export default class App extends React.Component
                     <Switch >
                         <Route path="/quotes/:creator" render={(props)=>
                             <CreatorQuotes userName={this.state.userName}
+                                {...props}
+                                newQuote={this.state.newQuote}
+                                finishedLoginCheck={this.state.finishedLoginCheck} 
+                                finishAddQuote={this.finishAddQuote.bind( this )} />
+                        } />
+                       <Route path="/flagged" render={(props)=>
+                            <AdminQuotes userName={this.state.userName} 
                                 {...props}
                                 newQuote={this.state.newQuote}
                                 finishedLoginCheck={this.state.finishedLoginCheck} 
