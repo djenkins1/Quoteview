@@ -267,6 +267,19 @@ describe('TestDatabase', function()
         });
     });
 
+    it( 'test good flagQuote 2' , function( done )
+    {
+        dataAPI.flagQuote( myQuotes[ 0 ], function( updateResult )
+        {
+            assert.equal( updateResult.affectedRows , 1 );
+            dataAPI.getQuoteById( myQuotes[ 0 ] , function( quoteObj )
+            {
+                assert.equal( quoteObj.flagged, true );
+                done();
+            });
+        });
+    });
+
     //after() is run after all tests have completed.
     //close down the database connection
     after( function( done ) 

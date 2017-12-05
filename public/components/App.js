@@ -10,8 +10,7 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //TODO BOARD
 //----------------------------
 //PRIORITY
-//admin panel to hide quotes
-//  quote collection in mongodb will need hidden field
+//(SECOND)admin panel to flag/unflag quotes
 //  will need to use role of user to determine if admin panel is actually shown
 //Need unit testing of endpoints for server
 //  create dummy accounts and quotes using only dataAPI in before()
@@ -31,7 +30,9 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //  to run database unit tests: mocha -t 100000 testDB.js 
 //
 //POSSIBLE:
+//ability to edit quotes that were created by the logged in user
 //Convert to using express instead of custom middleware
+//  need to have endpoint unit testing in place before this conversion
 //Maybe move to using react-bootstrap and update modal code properly
 //Server Sessions: delete session files periodically
 //keep track of quotes that user has voted on and stop them from voting more than once on the same quote

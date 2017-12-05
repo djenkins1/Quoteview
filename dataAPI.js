@@ -53,6 +53,50 @@ function getDefaultConn( onFinish )
 }
 
 /*
+function: _getQuotesByFlag
+info:
+    This function is a helper function for getting quotes.
+    It calls onFinish with the results from the query when finished.
+parameters:
+    onFinish, function, the function to be called when the query is done
+    isFlagged, boolean, optional: if defined then the function only gets quotes with the same flagged value
+    creatorId, string/ObjectId, optional: if defined then the function only gets quotes that have creatorId given
+returns:
+    nothing
+*/
+function _getQuotesByFlag( onFinish, isFlagged , creatorId )
+{
+    var myQuery = {};
+    if ( isFlagged !== undefined )
+    {
+        myQuery.flagged = !!isFlagged;
+    }
+
+    if ( creatorId !== undefined )
+    {
+        myQuery.creatorId = creatorId;
+        if ( typeof creatorId === "string" )
+        {
+            myQuery.creatorId = ObjectId( creatorId );
+        }
+    }
+
+    getDefaultConn( function( db )
+    {
+        db.collection( QUOTE_TABLE ).find( myQuery ).sort( { score : -1 } ).toArray( function(err, results ) 
+        {
+            if (err) throw err;
+            for ( var i = 0; i < results.length; i++ )
+            {
+                results[ i ].qid = results[ i ]._id;
+            }
+            onFinish( results );
+        
+        });
+    });
+}
+
+/*
 function: getAllQuotes
 info:
     Queries the database for an array of all the quotes that are in the database.
@@ -64,27 +108,7 @@ returns:
 */
 function getAllQuotes( onFinish )
 {
-    getDefaultConn( function( db )
-    {
-        db.collection( QUOTE_TABLE ).find({}).sort( { score : -1 } ).toArray( function(err, results ) 
-        {
-            if (err) throw err;
-            for ( var i = 0; i < results.length; i++ )
-            {
-                results[ i ].qid = results[ i ]._id;
-            }
-            onFinish( results );
-        
-        });
-    });
-    /*
-    conn.query("SELECT * FROM QUOTE ORDER BY SCORE DESC", function (err, result, fields) 
-    {
-        if (err) throw err;
-
-        onFinish( result ); 
-    });
-    */
+    _getQuotesByFlag( onFinish, false, undefined );
 }
 
 /*
@@ -605,25 +629,7 @@ returns:
 */
 function getAllQuotesFromUser( userId, onFinish )
 {
-    var myQuery = { "creatorId" : userId };
-    if ( typeof userId === "string" )
-    {
-        myQuery.creatorId = ObjectId( userId );
-    }
-
-    getDefaultConn( function( db )
-    {
-        db.collection( QUOTE_TABLE ).find( myQuery ).sort( { score : -1 } ).toArray( function(err, results ) 
-        {
-            if (err) throw err;
-            for ( var i = 0; i < results.length; i++ )
-            {
-                results[ i ].qid = results[ i ]._id;
-            }
-            onFinish( results );
-        
-        });
-    });
+    _getQuotesByFlag( onFinish, false, userId );
 }
 
 /*
