@@ -21,12 +21,23 @@ export default class Quote extends React.Component
                         <Link to={"/quotes/" + this.props.quoteObj.creatorId} >{this.props.quoteObj.creatorName}</Link> 
                         <span> on </span>
                         <span>{quoteDate} at {quoteTime}</span>
+                        {this.showTextIfFlagged()}
                     </div>
                 </div>
                 <QuoteScore score={this.props.quoteObj.score} qid={this.props.quoteObj.qid} upvoteFunc={this.props.upvoteFunc}
                     downvoteFunc={this.props.downvoteFunc} loggedInAs={this.props.loggedInAs} />
             </div>
         );
+    }
+
+    showTextIfFlagged()
+    {
+        if ( this.props.quoteObj.flagged )
+        {
+            return (
+                <span> - Flagged</span>
+            );
+        }
     }
 }
 
