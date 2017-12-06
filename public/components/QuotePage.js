@@ -89,8 +89,38 @@ export default class QuotePage extends React.Component
         });
     }
 
+    removeQuote( qid )
+    {
+        for ( var i = 0; i < this.state.quotes.length; i++ )
+        {
+            if ( this.state.quotes[ i ].qid === qid )
+            {
+                break;
+            }
+        }
+
+        if ( i >= this.state.quotes.length )
+        {
+            console.log( "Could not find quote with qid: " + qid );
+            return;
+        }
+
+        //make a copy of the quotes for modification so as to update state later
+        var quotesCopy = this.state.quotes.slice();        
+        //remove the quote from the list
+        quotesCopy.splice( i , 1 );
+
+        this.setState( { "quotes" : quotesCopy } );
+    }
+
     updateQuote( qid, newData )
     {
+        if ( newData.flagged )
+        {
+            this.removeQuote( qid );
+            return;
+        }
+
         //make a copy of the quotes for modification so as to update state later
         var quotesCopy = this.state.quotes.slice();
         //go through all the quotes,find the quote that has the updated quote's qid

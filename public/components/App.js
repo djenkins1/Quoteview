@@ -11,7 +11,6 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //TODO BOARD
 //----------------------------
 //PRIORITY
-//remove any quotes from the list when they are updated with a flagged set to true
 //Need unit testing of endpoints for server
 //  create dummy accounts and quotes using only dataAPI in before()
 //  somehow need to do RESTless,look into Sails js
@@ -32,6 +31,7 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //add more aria compatibility/concerns
 //
 //POSSIBLE:
+//flagged quotes should disappear from AdminQuotes page if they are unflagged in update
 //flagged quotes should not be able to be voted on by anyone(endpoint protection only)
 //ability to edit quotes that were created by the logged in user
 //Convert to using express instead of custom middleware
