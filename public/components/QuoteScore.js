@@ -15,7 +15,6 @@ export default class QuoteScore extends React.Component
         if ( this.props.loggedInAs )
         {
             loggedInEnableClass = "";
-            loggedInTitle = "";
             if ( this.props.loggedInAs.role === Constants.ROLE_USER_ADMIN )
             {
                 add_symbol = "\u2691";
@@ -23,6 +22,11 @@ export default class QuoteScore extends React.Component
                 add_title = "Flag";
                 sub_title = "Unflag";
             }
+        }
+        else
+        {
+            add_title = loggedInTitle;
+            sub_title = loggedInTitle;
         }
 
         return (
@@ -32,46 +36,38 @@ export default class QuoteScore extends React.Component
                     href="#"
                     title={add_title}
                     data-container="body" 
-                    data-toggle="popover" 
+                    data-toggle="tooltip" 
                     data-placement="top" 
-                    data-content={loggedInTitle}> {add_symbol} </a>
+                    data-content={add_title}> {add_symbol} </a>
                 <span className='badge badge-primary badge-pill quoteBadge quoteScore'> {this.props.score} </span>
                 <a className={'badge badge-primary badge-pill quoteBadge' + loggedInEnableClass }
                     onClick={this.handleDownvote.bind( this )}
                     title={sub_title}
                     href="#"                     
                     data-container="body" 
-                    data-toggle="popover" 
+                    data-toggle="tooltip" 
                     data-placement="top" 
-                    data-content={loggedInTitle}> {sub_symbol} </a>
+                    data-content={sub_title}> {sub_symbol} </a>
             </div>
         );
     }
 
     componentDidUpdate(prevProps, prevState)
     {
-        //if was logged in but no more than reenable the poppers
-        if ( prevProps.loggedInAs && this.props.loggedInAs == undefined )
-        {
-            $( ".quoteBadge" ).popover( {"container": 'body' } );
-        }
-        //if logged in now then disable the poppers
-        else if ( this.props.loggedInAs !== undefined )
-        {
-            $( ".quoteBadge" ).popover( "dispose" );
-        }
+        $( ".quoteBadge" ).tooltip( "dispose" );
+        $( ".quoteBadge" ).tooltip( {"container": 'body' } );
     }
 
     componentDidMount()
     {
         //enable popper for upvote/downvote buttons
-        $( ".quoteBadge" ).popover( {"container": 'body' } );
+        $( ".quoteBadge" ).tooltip( {"container": 'body' } );
     }
 
     componentWillUnmount()
     {
         //disable and dispose of popper for upvote/downvote buttons
-        $( ".quoteBadge" ).popover( "dispose" );
+        $( ".quoteBadge" ).tooltip( "dispose" );
     }
 
     handleUpvote( e )
