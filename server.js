@@ -285,7 +285,7 @@ function postDownvoteQuote( queryObj, response, sessionObj, onFinish )
     {
         if ( result.affectedRows == 0 )
         {
-            outputErrorAsJson( {"error": true , "errors": [{"name":"qid","problem":"invalid quote" }]}, queryObj, response );
+            outputErrorAsJson( {"error": true , "errors": [{"name":"qid","problem":"invalid quote" }]}, queryObj, response , sessionObj, onFinish );
             return;          
         }
 
@@ -296,6 +296,61 @@ function postDownvoteQuote( queryObj, response, sessionObj, onFinish )
             onFinish( sessionObj );       
         });
     });  
+}
+
+//helper function for handling flag/unflag of a quote
+function _changeFlagQuote( changeQuoteFunc, queryObj, response, sessionObj, onFinish )
+{
+    //in this case,respond with a 500 error
+    if ( queryObj.qid == undefined )
+    {
+        console.log( "Problem postFlagQuote, required parameters undefined" );
+        respondServerError( queryObj, response, sessionObj, onFinish );
+        return;
+    }
+
+    //if the user is not logged in then output error
+    if ( sessionObj.data.user == undefined )
+    {
+        outputErrorAsJson( {"error": true , "errors": [{"name":"user","problem":"Must be logged in to vote on quote." }]}, queryObj, response, sessionObj, onFinish );
+        return;           
+    }
+
+    //if the user is not an admin then respond with an error and stop the request
+    if ( sessionObj.data.role !== Constants.ROLE_USER_ADMIN )
+    {
+        var errorList = [ { "name" : "user" , "problem" : "not admin" } ];
+        outputErrorAsJson( errorList, queryObj, response, sessionObj, onFinish );
+        return;
+    }
+
+    changeQuoteFunc( queryObj.qid, function( result )
+    {
+        if ( result.affectedRows == 0 )
+        {
+            outputErrorAsJson( {"error": true , "errors": [{"name":"qid","problem":"invalid quote" }]}, queryObj, response , sessionObj, onFinish );
+            return;          
+        }
+
+        dataAPI.getQuoteById( queryObj.qid, function( result ) 
+        {
+            response.writeHead( 200, {'Content-Type': 'text/json'});
+            response.write( JSON.stringify( result ) );
+            onFinish( sessionObj );       
+        });
+    });
+}
+
+//handles a quote being flagged,need to make sure logged in and user is admin
+function postFlagQuote( queryObj, response, sessionObj, onFinish )
+{
+    _changeFlagQuote( dataAPI.flagQuote, queryObj, response, sessionObj, onFinish );
+}
+
+//handles a quote being unflagged,need to make sure logged in and user is admin
+function postUnflagQuote( queryObj, response, sessionObj, onFinish )
+{
+    _changeFlagQuote( dataAPI.unflagQuote, queryObj, response, sessionObj, onFinish );
 }
 
 //redirects to the index.html file
@@ -314,6 +369,8 @@ function setupHandlers()
     urlHandler.registerObserver( "POST" , "/newQuote" , [ urlHandler.createParameter( "author" , "string" , true, 5, 60 ) , urlHandler.createParameter( "body" , "string" , true, 5, 3000 ) ], postQuote, outputErrorAsJson );
     urlHandler.registerObserver( "POST" , "/upvoteQuote" , [ urlHandler.createParameter( "qid" , "string" , true , 1 , 256 ) ], postUpvoteQuote, outputErrorAsJson );
     urlHandler.registerObserver( "POST" , "/downvoteQuote" , [ urlHandler.createParameter( "qid" , "string" , true , 1, 256 ) ], postDownvoteQuote, outputErrorAsJson );
+    urlHandler.registerObserver( "POST" , "/flagQuote" , [ urlHandler.createParameter( "qid" , "string" , true , 1, 256 ) ] , postFlagQuote, outputErrorAsJson );
+    urlHandler.registerObserver( "POST" , "/unflagQuote" , [ urlHandler.createParameter( "qid" , "string" , true , 1, 256 ) ] , postUnflagQuote, outputErrorAsJson );
 
     var userSchema = urlHandler.createParameter( "username" , "string" , true, 5, 100 );
     userSchema.finalValidate = urlHandler.validateUsername;
@@ -322,6 +379,7 @@ function setupHandlers()
     urlHandler.registerObserver( "GET" , "/userData" , [] , loggedInAs, outputErrorAsJson );
     urlHandler.registerObserver( "GET" , "/logout" , [] , logoutUser , outputErrorAsJson );
     urlHandler.registerObserver( "GET" , "/flagged" , [ urlHandler.createParameter( "creator" , "ObjectId" , false , 1 , 256 ) ] , returnFlaggedQuotes , outputErrorAsJson );
+    
 }
 
 //grab the command line arguments

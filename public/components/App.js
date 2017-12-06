@@ -12,9 +12,9 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //----------------------------
 //PRIORITY
 //admin panel to flag/unflag quotes
-//  score badge should include button to flag quote instead of upvote/downvote if admin role
-//      replace upvote/downvote with flag/unflag
 //  quote should give some indication of flagged status on admin page(in general)
+//  titles are not showing up when hovering over upvote/downvote because of popper.js
+//remove any quotes from the list when they are updated with a flagged set to true
 //Need unit testing of endpoints for server
 //  create dummy accounts and quotes using only dataAPI in before()
 //  somehow need to do RESTless,look into Sails js

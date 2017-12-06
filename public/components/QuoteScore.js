@@ -1,16 +1,28 @@
 import React from "react";
+import Constants from "./Constants";
 
 //contains the score for a quote
 export default class QuoteScore extends React.Component
 {
     render()
     {
+        var add_symbol = "+";
+        var sub_symbol = "-";
+        var add_title = "Upvote";
+        var sub_title = "Downvote";
         var loggedInEnableClass = " disabled bg-secondary";
         var loggedInTitle = "You must be logged in to vote.";
         if ( this.props.loggedInAs )
         {
             loggedInEnableClass = "";
             loggedInTitle = "";
+            if ( this.props.loggedInAs.role === Constants.ROLE_USER_ADMIN )
+            {
+                add_symbol = "\u2691";
+                sub_symbol = "\u2690";
+                add_title = "Flag";
+                sub_title = "Unflag";
+            }
         }
 
         return (
@@ -18,18 +30,20 @@ export default class QuoteScore extends React.Component
                 <a className={'badge badge-primary badge-pill quoteBadge' + loggedInEnableClass }
                     onClick={this.handleUpvote.bind( this )}
                     href="#"
+                    title={add_title}
                     data-container="body" 
                     data-toggle="popover" 
                     data-placement="top" 
-                    data-content={loggedInTitle}> + </a>
+                    data-content={loggedInTitle}> {add_symbol} </a>
                 <span className='badge badge-primary badge-pill quoteBadge quoteScore'> {this.props.score} </span>
                 <a className={'badge badge-primary badge-pill quoteBadge' + loggedInEnableClass }
                     onClick={this.handleDownvote.bind( this )}
+                    title={sub_title}
                     href="#"                     
                     data-container="body" 
                     data-toggle="popover" 
                     data-placement="top" 
-                    data-content={loggedInTitle}> - </a>
+                    data-content={loggedInTitle}> {sub_symbol} </a>
             </div>
         );
     }

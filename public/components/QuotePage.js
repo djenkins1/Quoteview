@@ -152,11 +152,21 @@ export default class QuotePage extends React.Component
 
     upvoteQuote( qid )
     {
-        this.voteQuote( qid, "/upvoteQuote" );
+        var send_url = "/upvoteQuote";
+        if ( this.props.userName && this.props.userName.role === Constants.ROLE_USER_ADMIN )
+        {
+            send_url = "/flagQuote";
+        }
+        this.voteQuote( qid, send_url );
     }
 
     downvoteQuote( qid )
     {
-        this.voteQuote( qid, "/downvoteQuote" );
+        var send_url = "/downvoteQuote";
+        if ( this.props.userName && this.props.userName.role === Constants.ROLE_USER_ADMIN )
+        {
+            send_url = "/unflagQuote";
+        }
+        this.voteQuote( qid, send_url );
     }
 }
