@@ -12,8 +12,9 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //----------------------------
 //PRIORITY
 //Need unit testing of endpoints for server
-//  create dummy accounts and quotes using only dataAPI in before()
-//  somehow need to do RESTless,look into Sails js
+//  error testing for: quotes,newQuote,upvoteQuote,downvoteQuote,flagQuote,unflagQuote,newUser,login,userData,logout,flagged
+//  actual testing for: newQuote,upvoteQuote,downvoteQuote,flagQuote,unflagQuote,newUser,login,userData,logout,flagged
+//  already finished actual testing for quotes for both all quotes and quotes from specific user
 //
 //FUTURE:
 //Search quotes by particular text string in author/body
