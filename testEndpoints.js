@@ -4,11 +4,54 @@ const assert = require('assert');
 var http = require('http');
 const normalUsername = "jenkins";
 const adminUsername = "djenkins1";
+var querystring = require('querystring');
 var adminId = undefined;
 var normalUserId = undefined;
 var cookieList = undefined;
 
-//TODO: need to send post requests
+function sendPostRequest( urlPath, postData, onFinish )
+{
+    // An object of options to indicate where to post to
+    var options = {
+        port: '8081',
+        path: urlPath,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Length': Buffer.byteLength( postData )
+        }
+    };
+
+    //if the cookie list is defined then add the cookies to the headers
+    if ( cookieList )
+    {
+        options.headers.Cookie = cookieList;
+    }
+
+    // Set up the request
+    var postRequest = http.request( options, function( res ) 
+    {
+        var data = "";
+        res.setEncoding('utf8');
+        res.on( 'data', function( chunk ) 
+        {
+            data += chunk;
+        });
+
+        res.on( 'end', function () 
+        {
+            if ( cookieList === undefined || res.headers[ 'set-cookie'] )
+            {
+                cookieList = res.headers['set-cookie'];
+            }
+            onFinish( res, data );
+        });
+    });
+
+    // post the data
+    postRequest.write( postData );
+    postRequest.end();
+}
 
 //sends a get request to the url given and passes along the response and it's data
 function sendGetRequest( urlPath,  onFinish )
@@ -20,7 +63,6 @@ function sendGetRequest( urlPath,  onFinish )
 
     if ( cookieList )
     {
-        console.log( cookieList );
         options.headers = {'Cookie': cookieList };
     }
 
@@ -34,7 +76,7 @@ function sendGetRequest( urlPath,  onFinish )
 
         res.on('end', function () 
         {
-            if ( cookieList === undefined )
+            if ( cookieList === undefined || res.headers[ 'set-cookie'] )
             {
                 cookieList = res.headers['set-cookie'];
             }
@@ -166,6 +208,72 @@ describe('TestEndpoints', function()
         });
     });
 
+    //test that /newUser endpoint returns correct username in response
+    it( 'Test Signup' , function( done )
+    {
+        var userObj = { "username" : "newusername" , "password" : "newusername" };
+        sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var userData = JSON.parse( data );
+            assert.ok( userData.username );
+            assert.ok( userData.userId );
+            assert.equal( userData.username, userObj.username );
+            done();
+        });
+    });
+
+    //test that /logout endpoint returns 200 status
+    it( 'Test Logout' , function( done )
+    {
+        sendGetRequest( "/logout" , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            done();
+        });
+    });
+
+    //test that /login endpoint returns correct username in response
+    it( 'Test Login' , function( done )
+    {
+        var userObj = { "username" : normalUsername , "password" : normalUsername };
+        sendPostRequest( "/login" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var userData = JSON.parse( data );
+            assert.ok( userData.username );
+            assert.ok( userData.userId );
+            assert.equal( userData.username, userObj.username );
+            done();
+        });
+    });
+
+    //test that /userData returns correct data in response when logged in
+    it( 'Test UserData' , function( done )
+    {
+        sendGetRequest( "/userData" , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var userData = JSON.parse( data );
+            assert.ok( userData.username );
+            assert.ok( userData.userId );
+            assert.ok( userData.role );
+            assert.equal( userData.username, normalUsername );
+            assert.equal( userData.role, Constants.ROLE_USER_DEFAULT );
+            done();
+        });
+    });
+
+    //test that /logout endpoint returns 200 status
+    it( 'Test Logout 2' , function( done )
+    {
+        sendGetRequest( "/logout" , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            done();
+        });
+    });
+
     //after() is run after all tests have completed.
     //close down the database connection
     after( function( done ) 
@@ -173,5 +281,6 @@ describe('TestEndpoints', function()
         dataAPI.closeConnection();
         done();
     });
+
 });
 

@@ -12,9 +12,9 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //----------------------------
 //PRIORITY
 //Need unit testing of endpoints for server
-//  error testing for: quotes,newQuote,upvoteQuote,downvoteQuote,flagQuote,unflagQuote,newUser,login,userData,logout,flagged
-//  actual testing for: newQuote,upvoteQuote,downvoteQuote,flagQuote,unflagQuote,newUser,login,userData,logout,flagged
-//  already finished actual testing for quotes for both all quotes and quotes from specific user
+//  error testing for: quotes,newQuote,upvoteQuote,downvoteQuote,flagQuote,unflagQuote,newUser,login,userData,flagged
+//      do not do error testing for: logout
+//  actual testing for: newQuote,upvoteQuote,downvoteQuote,flagQuote,unflagQuote,flagged
 //
 //FUTURE:
 //Search quotes by particular text string in author/body
