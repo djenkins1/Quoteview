@@ -1,18 +1,30 @@
 var Constants = require( "./public/components/Constants" );
 const dataAPI = require( "./dataAPI" );
 const assert = require('assert');
-http = require('http');
+var http = require('http');
 const normalUsername = "jenkins";
 const adminUsername = "djenkins1";
 var adminId = undefined;
 var normalUserId = undefined;
-const baseUrl = "http://localhost:8081/";
+var cookieList = undefined;
+
+//TODO: need to send post requests
 
 //sends a get request to the url given and passes along the response and it's data
-//TODO: url parameters
-function sendGetRequest( url, onFinish )
+function sendGetRequest( urlPath,  onFinish )
 {
-    http.get( url, function(res ) 
+    var options = { 
+        port: 8081,
+        path: urlPath,
+    };
+
+    if ( cookieList )
+    {
+        console.log( cookieList );
+        options.headers = {'Cookie': cookieList };
+    }
+
+    http.get( options, function( res ) 
     {
         var data = '';
         res.on('data', function (chunk) 
@@ -22,6 +34,10 @@ function sendGetRequest( url, onFinish )
 
         res.on('end', function () 
         {
+            if ( cookieList === undefined )
+            {
+                cookieList = res.headers['set-cookie'];
+            }
             onFinish( res, data );
         });
     });
@@ -37,10 +53,9 @@ function assertQuotesEqual( actual , expected )
     assert.equal( expected.flagged, actual.flagged );
 }
 
-//TODO: create a quote with random author/body
-//TODO: use userId as creator of quote
-//TODO: call onFinish when quotes have been created
-//TODO: when a quote is created add it's info to the quoteDict with key being qid
+//create a quote with random author/body
+//use userId as creator of quote
+//call onFinish when quotes have been created
 function createRandomQuote( userId )
 {
     var quoteObj = {};
@@ -112,7 +127,7 @@ describe('TestEndpoints', function()
     //test that /quotes endpoint returns the same thing as dataAPI.getAllQuotes
     it('Test All Quotes', function (done) 
     {
-        sendGetRequest( baseUrl + "quotes" , function( res, data )
+        sendGetRequest( "/quotes" , function( res, data )
         {
             assert.equal( res.statusCode , 200 );
             //convert data to object using JSON.parse and verify quotes one by one
@@ -133,7 +148,7 @@ describe('TestEndpoints', function()
     //test that /quotes endpoint returns the same thing as dataAPI.getAllQuotes
     it('Test Creator Quotes', function (done) 
     {
-        sendGetRequest( baseUrl + "quotes?creator=" + normalUserId , function( res, data )
+        sendGetRequest( "/quotes?creator=" + normalUserId , function( res, data )
         {
             assert.equal( res.statusCode , 200 );
             //convert data to object using JSON.parse and verify quotes one by one
