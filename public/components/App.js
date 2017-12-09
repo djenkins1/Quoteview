@@ -12,9 +12,17 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //----------------------------
 //PRIORITY
 //Need unit testing of endpoints for server
-//  error testing for: quotes,newQuote,upvoteQuote,downvoteQuote,flagQuote,unflagQuote,newUser,login,userData,flagged
+//  error testing
+//      test not being logged in on privileged endpoints(upvoteQuote,downvoteQuote,newQuote)
+//      test invalid ids for users/quotes(upvoteQuote(qid),downvoteQuote(qid),newQuote(creatorId),quotes(creatorId))
+//      test length requirements for strings such as body/author(newQuote,newUser,login)
+//      test username not taken for newUser
+//      test username/password incorrect match for login
+//      test not being logged in for /userData
+//      test not being logged in as admin for administrator endpoints(flagQuote/unflagQuote/flagged)
+//      test invalid ids on administrator endpoints(flagQuote(qid),unflagQuote(qid),flagged(creatorId))
 //      do not do error testing for: logout
-//  actual testing for: newQuote,upvoteQuote,downvoteQuote,flagQuote,unflagQuote,flagged
+//  actual testing for: flagQuote,unflagQuote,flagged
 //
 //FUTURE:
 //Search quotes by particular text string in author/body

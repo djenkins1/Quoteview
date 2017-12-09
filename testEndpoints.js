@@ -8,6 +8,7 @@ var querystring = require('querystring');
 var adminId = undefined;
 var normalUserId = undefined;
 var cookieList = undefined;
+var myQuoteId = undefined;
 
 function sendPostRequest( urlPath, postData, onFinish )
 {
@@ -264,6 +265,82 @@ describe('TestEndpoints', function()
         });
     });
 
+    //test that /newQuote actually creates a quote and it matches what is in the database after creation
+    it( 'Test newQuote good' , function( done )
+    {
+        var quoteBody = "Testing...";
+        var quoteAuthor = "Tester";
+        var newQuoteForm = { "author" : quoteAuthor , body : quoteBody };
+        sendPostRequest( "/newQuote" , querystring.stringify( newQuoteForm ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var quoteDataFromServer = JSON.parse( data );
+            assert.ok( quoteDataFromServer.qid );
+            assert.ok( quoteDataFromServer.author );
+            assert.ok( quoteDataFromServer.body );
+            assert.ok( quoteDataFromServer.creatorId );
+            assert.equal( quoteDataFromServer.author, quoteAuthor );
+            assert.equal( quoteDataFromServer.body, quoteBody );
+            dataAPI.getQuoteById( quoteDataFromServer.qid , function( quoteResult )
+            {
+                var quoteJson = JSON.parse( JSON.stringify( quoteResult ) );
+                assertQuotesEqual( quoteDataFromServer, quoteJson );
+                myQuoteId = quoteDataFromServer.qid;
+                done();
+            });
+        });        
+    });
+
+    //test that /downvoteQuote actually results in the database downvoting the quote
+    it( 'Test downvoteQuote good' , function( done )
+    {
+        sendGetRequest( "/downvoteQuote?qid=" + myQuoteId , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var quoteDataFromServer = JSON.parse( data );
+            assert.ok( quoteDataFromServer.qid );
+            assert.ok( quoteDataFromServer.author );
+            assert.ok( quoteDataFromServer.body );
+            assert.ok( quoteDataFromServer.creatorId ); 
+            assert.equal( quoteDataFromServer.qid, myQuoteId );
+            assert.equal( quoteDataFromServer.creatorId, JSON.parse( JSON.stringify( normalUserId ) ) );
+            assert.equal( quoteDataFromServer.score, -1 );
+            dataAPI.getQuoteById( myQuoteId , function( quoteResult )
+            {
+                var quoteJson = JSON.parse( JSON.stringify( quoteResult ) );
+                assertQuotesEqual( quoteDataFromServer, quoteJson );
+                myQuoteId = quoteDataFromServer.qid;
+                done();
+            });            
+        });
+    });
+
+    //test that /upvoteQuote actually results in the database upvoting the quote
+    it( 'Test upvoteQuote good' , function( done )
+    {
+        sendGetRequest( "/upvoteQuote?qid=" + myQuoteId , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var quoteDataFromServer = JSON.parse( data );
+            assert.ok( quoteDataFromServer.qid );
+            assert.ok( quoteDataFromServer.author );
+            assert.ok( quoteDataFromServer.body );
+            assert.ok( quoteDataFromServer.creatorId ); 
+            assert.equal( quoteDataFromServer.qid, myQuoteId );
+            assert.equal( quoteDataFromServer.creatorId, JSON.parse( JSON.stringify( normalUserId ) ) );
+            assert.equal( quoteDataFromServer.score, 0 );
+            dataAPI.getQuoteById( myQuoteId , function( quoteResult )
+            {
+                var quoteJson = JSON.parse( JSON.stringify( quoteResult ) );
+                assertQuotesEqual( quoteDataFromServer, quoteJson );
+                myQuoteId = quoteDataFromServer.qid;
+                done();
+            });            
+        });
+    });
+
+    //TODO: test more errors as normal user before logout
+
     //test that /logout endpoint returns 200 status
     it( 'Test Logout 2' , function( done )
     {
@@ -273,6 +350,10 @@ describe('TestEndpoints', function()
             done();
         });
     });
+
+    //TODO: error testing for functions that require authenticated user such as newQuote...
+
+    //TODO: login as admin and test flag/unflag quotes
 
     //after() is run after all tests have completed.
     //close down the database connection
