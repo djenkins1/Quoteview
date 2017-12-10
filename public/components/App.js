@@ -22,7 +22,6 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //      test not being logged in as admin for administrator endpoints(flagQuote/unflagQuote/flagged)
 //      test invalid ids on administrator endpoints(flagQuote(qid),unflagQuote(qid),flagged(creatorId))
 //      do not do error testing for: logout
-//  actual testing for: flagQuote,unflagQuote,flagged
 //
 //FUTURE:
 //Search quotes by particular text string in author/body

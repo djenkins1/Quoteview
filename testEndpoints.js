@@ -154,7 +154,7 @@ describe('TestEndpoints', function()
         {
             dataAPI.setupDatabase( function()
             {
-                dataAPI.createUser( adminUsername, adminUsername, function( result )
+                dataAPI.createUserWithRole( adminUsername, adminUsername, Constants.ROLE_USER_ADMIN, function( result )
                 {
                     adminId = result.insertId;
                     dataAPI.createUser( normalUsername, normalUsername, function( res2 )
@@ -351,9 +351,79 @@ describe('TestEndpoints', function()
         });
     });
 
-    //TODO: error testing for functions that require authenticated user such as newQuote...
+    //TODO: ERROR testing for functions that require authenticated user such as newQuote...
 
-    //TODO: login as admin and test flag/unflag quotes
+    //test that /login endpoint returns correct username/role in response for admin user
+    it( 'Test Login Admin' , function( done )
+    {
+        var userObj = { "username" : adminUsername , "password" : adminUsername };
+        sendPostRequest( "/login" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var userData = JSON.parse( data );
+            assert.ok( userData.username );
+            assert.ok( userData.userId );
+            assert.ok( userData.role );
+            assert.equal( userData.username, userObj.username );
+            assert.equal( userData.role, Constants.ROLE_USER_ADMIN );
+            done();
+        });
+    });
+
+    //test that /flagQuote endpoint actually results in the quote being flagged as true
+    it( 'Test FlagQuote' , function( done )
+    {
+        var quoteObj = { "qid" : myQuoteId };
+        sendPostRequest( "/flagQuote" , querystring.stringify( quoteObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var quoteData = JSON.parse( data );
+            assert.ok( quoteData.qid );
+            assert.ok( quoteData.flagged );
+            assert.equal( quoteData.qid, quoteObj.qid );
+            dataAPI.getQuoteById( myQuoteId , function( quoteResult )
+            {
+                var quoteJson = JSON.parse( JSON.stringify( quoteResult ) );
+                assertQuotesEqual( quoteData, quoteJson );
+                done();
+            }); 
+        });
+    });
+
+    //test that /flagged endpoint actually returns flagged quotes
+    it( 'Test Flagged' , function( done )
+    {
+        sendGetRequest( "/flagged" , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var quotesData = JSON.parse( data );
+            assert.equal( quotesData.length , 1 );
+            assert.ok( quotesData[ 0 ].qid );
+            assert.ok( quotesData[ 0 ].flagged );
+            assert.equal( quotesData[ 0 ].qid, myQuoteId );
+            done();
+        });
+    });
+
+    //test that /unflagQuote endpoint actually results in the quote being flagged false
+    it( 'Test UnflagQuote' , function( done )
+    {
+        var quoteObj = { "qid" : myQuoteId };
+        sendPostRequest( "/unflagQuote" , querystring.stringify( quoteObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var quoteData = JSON.parse( data );
+            assert.ok( quoteData.qid );
+            assert.equal( quoteData.qid, quoteObj.qid );
+            assert.equal( quoteData.flagged, false );
+            dataAPI.getQuoteById( myQuoteId , function( quoteResult )
+            {
+                var quoteJson = JSON.parse( JSON.stringify( quoteResult ) );
+                assertQuotesEqual( quoteData, quoteJson );
+                done();
+            }); 
+        });
+    });
 
     //after() is run after all tests have completed.
     //close down the database connection
