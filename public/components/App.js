@@ -19,7 +19,6 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //      test username not taken for newUser
 //      test username/password incorrect match for login
 //      test not being logged in for /userData
-//      test not being logged in as admin for administrator endpoints(flagQuote/unflagQuote/flagged)
 //      test invalid ids on administrator endpoints(flagQuote(qid),unflagQuote(qid),flagged(creatorId))
 //      do not do error testing for: logout
 //

@@ -10,6 +10,16 @@ var normalUserId = undefined;
 var cookieList = undefined;
 var myQuoteId = undefined;
 
+function assertAdminError( errorObj, onFinish )
+{
+    assert.ok( errorObj.error );
+    assert.ok( errorObj.errors );
+    assert.equal( errorObj.errors.length, 1 );
+    assert.equal( errorObj.errors[ 0 ].name , "user" );
+    assert.equal( errorObj.errors[ 0 ].problem , "not admin" );
+    onFinish();
+}
+
 function sendPostRequest( urlPath, postData, onFinish )
 {
     // An object of options to indicate where to post to
@@ -340,6 +350,41 @@ describe('TestEndpoints', function()
     });
 
     //TODO: test more errors as normal user before logout
+
+    //test that /flagged endpoint returns error if the user is not an admin
+    it( 'Test Error Flagged As User' , function( done )
+    {
+        sendGetRequest( "/flagged" , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertAdminError( errorObj, done );
+        });
+    });
+
+    //test that /flagQuote endpoint returns error if the user is not an admin
+    it( 'Test Error FlagQuote As User' , function( done )
+    {
+        var quoteObj = { "qid" : myQuoteId };
+        sendPostRequest( "/flagQuote" , querystring.stringify( quoteObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertAdminError( errorObj, done );
+        });
+    });
+
+    //test that /unflagQuote endpoint returns error if the user is not an admin
+    it( 'Test Error UnflagQuote As User' , function( done )
+    {
+        var quoteObj = { "qid" : myQuoteId };
+        sendPostRequest( "/unflagQuote" , querystring.stringify( quoteObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertAdminError( errorObj, done );
+        });
+    });
 
     //test that /logout endpoint returns 200 status
     it( 'Test Logout 2' , function( done )
