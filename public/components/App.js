@@ -13,7 +13,6 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //PRIORITY
 //Need unit testing of endpoints for server
 //  error testing
-//      test not being logged in on privileged endpoints(upvoteQuote,downvoteQuote,newQuote)
 //      test invalid ids for users/quotes(upvoteQuote(qid),downvoteQuote(qid),newQuote(creatorId),quotes(creatorId))
 //      test length requirements for strings such as body/author(newQuote,newUser,login)
 //      test username not taken for newUser

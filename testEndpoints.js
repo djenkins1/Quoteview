@@ -10,14 +10,27 @@ var normalUserId = undefined;
 var cookieList = undefined;
 var myQuoteId = undefined;
 
+function assertErrorField( errorField, errorName, errorProblem, onFinish )
+{
+    assert.equal( errorField.name , errorName );
+    assert.equal( errorField.problem , errorProblem );
+    onFinish();
+}
+
 function assertAdminError( errorObj, onFinish )
 {
     assert.ok( errorObj.error );
     assert.ok( errorObj.errors );
     assert.equal( errorObj.errors.length, 1 );
-    assert.equal( errorObj.errors[ 0 ].name , "user" );
-    assert.equal( errorObj.errors[ 0 ].problem , "not admin" );
-    onFinish();
+    assertErrorField( errorObj.errors[ 0 ] , "user" , "not admin", onFinish );
+}
+
+function assertNotUserError( errorObj, onFinish )
+{
+    assert.ok( errorObj.error );
+    assert.ok( errorObj.errors );
+    assert.equal( errorObj.errors.length, 1 );
+    assertErrorField( errorObj.errors[ 0 ] , "user" , "not logged in", onFinish );
 }
 
 function sendPostRequest( urlPath, postData, onFinish )
@@ -396,7 +409,38 @@ describe('TestEndpoints', function()
         });
     });
 
-    //TODO: ERROR testing for functions that require authenticated user such as newQuote...
+    //test that /newQuote returns an error if not logged in
+    it( 'Test Error NewQuote Not User' , function( done )
+    {
+        var quoteBody = "Testing...";
+        var quoteAuthor = "Tester";
+        var newQuoteForm = { "author" : quoteAuthor , body : quoteBody };
+        sendPostRequest( "/newQuote" , querystring.stringify( newQuoteForm ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            assertNotUserError( JSON.parse( data ), done );
+        });        
+    });
+
+    //test that /upvoteQuote returns an error if not logged in
+    it( 'Test Error UpvoteQuote Not User' , function( done )
+    {
+        sendGetRequest( "/upvoteQuote?qid=" + myQuoteId , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            assertNotUserError( JSON.parse( data ), done );
+        });        
+    });
+
+    //test that /downvoteQuote returns an error if not logged in
+    it( 'Test Error DownvoteQuote Not User' , function( done )
+    {
+        sendGetRequest( "/downvoteQuote?qid=" + myQuoteId , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            assertNotUserError( JSON.parse( data ), done );
+        });        
+    });
 
     //test that /login endpoint returns correct username/role in response for admin user
     it( 'Test Login Admin' , function( done )
@@ -467,6 +511,18 @@ describe('TestEndpoints', function()
                 assertQuotesEqual( quoteData, quoteJson );
                 done();
             }); 
+        });
+    });
+
+    //TODO: ERROR testing for invalid id parameters to admin endpoints(still logged in as admin)
+
+    //test that /logout endpoint returns 200 status
+    it( 'Test Logout Admin' , function( done )
+    {
+        sendGetRequest( "/logout" , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            done();
         });
     });
 

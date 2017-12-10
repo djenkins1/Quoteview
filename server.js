@@ -241,7 +241,7 @@ function postUpvoteQuote( queryObj, response, sessionObj, onFinish )
     //if the user is not logged in then output error
     if ( sessionObj.data.user == undefined )
     {
-        outputErrorAsJson( {"error": true , "errors": [{"name":"user","problem":"Must be logged in to vote on quote." }]}, queryObj, response, sessionObj, onFinish );
+        outputErrorAsJson( [{"name":"user","problem":"not logged in" }], queryObj, response, sessionObj, onFinish );
         return;           
     }
 
@@ -249,7 +249,7 @@ function postUpvoteQuote( queryObj, response, sessionObj, onFinish )
     {
         if ( result.affectedRows == 0 )
         {
-            outputErrorAsJson( {"error": true , "errors": [{"name":"qid","problem":"invalid quote" }]}, queryObj, response, sessionObj, onFinish );
+            outputErrorAsJson( [{"name":"qid","problem":"invalid quote" }], queryObj, response, sessionObj, onFinish );
             return;         
         }
 
@@ -277,7 +277,7 @@ function postDownvoteQuote( queryObj, response, sessionObj, onFinish )
     //if the user is not logged in then output error
     if ( sessionObj.data.user == undefined )
     {
-        outputErrorAsJson( {"error": true , "errors": [{"name":"user","problem":"Must be logged in to vote on quote." }]}, queryObj, response, sessionObj, onFinish );
+        outputErrorAsJson( [{"name":"user","problem":"not logged in" }], queryObj, response, sessionObj, onFinish );
         return;           
     }
 
@@ -285,7 +285,7 @@ function postDownvoteQuote( queryObj, response, sessionObj, onFinish )
     {
         if ( result.affectedRows == 0 )
         {
-            outputErrorAsJson( {"error": true , "errors": [{"name":"qid","problem":"invalid quote" }]}, queryObj, response , sessionObj, onFinish );
+            outputErrorAsJson( [{"name":"qid","problem":"invalid quote" }], queryObj, response, sessionObj, onFinish );
             return;          
         }
 
