@@ -14,12 +14,14 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //Need unit testing of endpoints for server
 //  error testing
 //      test invalid ids for users/quotes(upvoteQuote(qid),downvoteQuote(qid),newQuote(creatorId),quotes(creatorId))
-//      test length requirements for strings such as body/author(newQuote,newUser,login)
-//      test username not taken for newUser
-//      test username/password incorrect match for login
-//      test not being logged in for /userData
+//      test length requirements for strings such as body/author(newQuote)
 //      test invalid ids on administrator endpoints(flagQuote(qid),unflagQuote(qid),flagged(creatorId))
-//      do not do error testing for: logout
+//      (AFTER USER LOGOUT)test username already taken for newUser
+//      (AFTER USER LOGOUT)test not being logged in for /userData
+//      (AFTER USER LOGOUT)test length requirements for strings username/password(newUser,login)
+//      (AFTER USER LOGOUT)test username/password incorrect match for login
+//      need to fix: /logout should return error if not logged in
+//          then do error testing for this behavior
 //
 //FUTURE:
 //Search quotes by particular text string in author/body
