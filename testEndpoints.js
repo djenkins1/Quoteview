@@ -401,6 +401,42 @@ describe('TestEndpoints', function()
         });
     });   
 
+    //test that /upvoteQuote endpoint returns error if quote id is valid length/type but not actually in database
+    it( 'Test Error UpvoteQuote Nonexistent ID' , function( done )
+    {
+        sendGetRequest( "/upvoteQuote?qid=0123456789AB" , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assertErrorField( errorObj.errors[ 0 ], "qid", "invalid quote", done );
+        });
+    });
+
+    //test that /downvoteQuote endpoint returns error if quote id is valid length/type but not actually in database
+    it( 'Test Error DownvoteQuote Nonexistent ID' , function( done )
+    {
+        sendGetRequest( "/downvoteQuote?qid=0123456789AB" , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assertErrorField( errorObj.errors[ 0 ], "qid", "invalid quote", done );
+        });
+    });
+
+    //test that /quotes endpoint returns empty array if creator id given is valid length/type but not actually in database
+    it( 'Test Quotes Nonexistent Creator ID' , function( done )
+    {
+        sendGetRequest( "/quotes?creator=0123456789AB" , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var dataJSON = JSON.parse( data );
+            assert.equal( dataJSON.length, 0 );
+            done();
+        });
+    }); 
+
     //test that /flagged endpoint returns error if the user is not an admin
     it( 'Test Error Flagged As User' , function( done )
     {
@@ -659,6 +695,44 @@ describe('TestEndpoints', function()
             assertErrorField( errorObj.errors[ 0 ], "creator", "wrong type", done );
         });
     });   
+
+    //test that /flagQuote endpoint returns error if quote id is valid length/type but not actually in database
+    it( 'Test Error FlagQuote Nonexistent ID' , function( done )
+    {
+        var quoteObj = { "qid" : "0123456789AB" };
+        sendPostRequest( "/flagQuote" , querystring.stringify( quoteObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assertErrorField( errorObj.errors[ 0 ], "qid", "invalid quote", done );
+        });
+    });
+
+    //test that /unflagQuote endpoint returns error if quote id is valid length/type but not actually in database
+    it( 'Test Error UnflagQuote Nonexistent ID' , function( done )
+    {
+        var quoteObj = { "qid" : "0123456789AB" };
+        sendPostRequest( "/unflagQuote" , querystring.stringify( quoteObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assertErrorField( errorObj.errors[ 0 ], "qid", "invalid quote", done );
+        });
+    });
+
+    //test that /flagged endpoint returns empty array if creator id given is valid length/type but not actually in database
+    it( 'Test Flagged Nonexistent Creator ID' , function( done )
+    {
+        sendGetRequest( "/flagged?creator=0123456789AB" , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var dataJSON = JSON.parse( data );
+            assert.equal( dataJSON.length, 0 );
+            done();
+        });
+    }); 
 
     //test that /logout endpoint returns 200 status
     it( 'Test Logout Admin' , function( done )
