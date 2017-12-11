@@ -367,10 +367,10 @@ function setupHandlers()
     //setup the observer for getting all quotes
     urlHandler.registerObserver( "GET" , "/quotes" , [ urlHandler.createParameter( "creator" , "ObjectId" , false , 1 , 256 ) ] , returnAllQuotes, outputErrorAsJson );
     urlHandler.registerObserver( "POST" , "/newQuote" , [ urlHandler.createParameter( "author" , "string" , true, 5, 60 ) , urlHandler.createParameter( "body" , "string" , true, 5, 3000 ) ], postQuote, outputErrorAsJson );
-    urlHandler.registerObserver( "POST" , "/upvoteQuote" , [ urlHandler.createParameter( "qid" , "string" , true , 1 , 256 ) ], postUpvoteQuote, outputErrorAsJson );
-    urlHandler.registerObserver( "POST" , "/downvoteQuote" , [ urlHandler.createParameter( "qid" , "string" , true , 1, 256 ) ], postDownvoteQuote, outputErrorAsJson );
-    urlHandler.registerObserver( "POST" , "/flagQuote" , [ urlHandler.createParameter( "qid" , "string" , true , 1, 256 ) ] , postFlagQuote, outputErrorAsJson );
-    urlHandler.registerObserver( "POST" , "/unflagQuote" , [ urlHandler.createParameter( "qid" , "string" , true , 1, 256 ) ] , postUnflagQuote, outputErrorAsJson );
+    urlHandler.registerObserver( "POST" , "/upvoteQuote" , [ urlHandler.createParameter( "qid" , "ObjectId" , true , 1 , 256 ) ], postUpvoteQuote, outputErrorAsJson );
+    urlHandler.registerObserver( "POST" , "/downvoteQuote" , [ urlHandler.createParameter( "qid" , "ObjectId" , true , 1, 256 ) ], postDownvoteQuote, outputErrorAsJson );
+    urlHandler.registerObserver( "POST" , "/flagQuote" , [ urlHandler.createParameter( "qid" , "ObjectId" , true , 1, 256 ) ] , postFlagQuote, outputErrorAsJson );
+    urlHandler.registerObserver( "POST" , "/unflagQuote" , [ urlHandler.createParameter( "qid" , "ObjectId" , true , 1, 256 ) ] , postUnflagQuote, outputErrorAsJson );
 
     var userSchema = urlHandler.createParameter( "username" , "string" , true, 5, 100 );
     userSchema.finalValidate = urlHandler.validateUsername;

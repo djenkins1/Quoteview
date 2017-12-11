@@ -17,19 +17,22 @@ function assertErrorField( errorField, errorName, errorProblem, onFinish )
     onFinish();
 }
 
+function assertErrorJSON( errorJSON )
+{
+    assert.ok( errorJSON.error );
+    assert.ok( errorJSON.errors );
+    assert.equal( errorJSON.errors.length, 1 );
+}
+
 function assertAdminError( errorObj, onFinish )
 {
-    assert.ok( errorObj.error );
-    assert.ok( errorObj.errors );
-    assert.equal( errorObj.errors.length, 1 );
+    assertErrorJSON( errorObj );
     assertErrorField( errorObj.errors[ 0 ] , "user" , "not admin", onFinish );
 }
 
 function assertNotUserError( errorObj, onFinish )
 {
-    assert.ok( errorObj.error );
-    assert.ok( errorObj.errors );
-    assert.equal( errorObj.errors.length, 1 );
+    assertErrorJSON( errorObj );
     assertErrorField( errorObj.errors[ 0 ] , "user" , "not logged in", onFinish );
 }
 
@@ -363,6 +366,42 @@ describe('TestEndpoints', function()
     });
 
     //TODO: test more errors as normal user before logout
+
+    //test that /upvoteQuote endpoint returns error if quote id is invalid
+    it( 'Test Error UpvoteQuote Invalid ID' , function( done )
+    {
+        sendGetRequest( "/upvoteQuote?qid=BADQUOTES" , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assertErrorField( errorObj.errors[ 0 ], "qid", "wrong type", done );
+        });
+    });
+
+    //test that /downvoteQuote endpoint returns error if quote id is invalid
+    it( 'Test Error DownvoteQuote Invalid ID' , function( done )
+    {
+        sendGetRequest( "/downvoteQuote?qid=ABADQUOTEZ" , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assertErrorField( errorObj.errors[ 0 ], "qid", "wrong type", done );
+        });
+    });
+
+    //test that /quotes endpoint returns error if creator id given is invalid
+    it( 'Test Error Quotes Invalid Creator ID' , function( done )
+    {
+        sendGetRequest( "/quotes?creator=ABADQUOTEZ" , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assertErrorField( errorObj.errors[ 0 ], "creator", "wrong type", done );
+        });
+    });   
 
     //test that /flagged endpoint returns error if the user is not an admin
     it( 'Test Error Flagged As User' , function( done )

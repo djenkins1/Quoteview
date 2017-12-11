@@ -13,9 +13,13 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //PRIORITY
 //Need unit testing of endpoints for server
 //  error testing
-//      test invalid ids for users/quotes(upvoteQuote(qid),downvoteQuote(qid),newQuote(creatorId),quotes(creatorId))
 //      test length requirements for strings such as body/author(newQuote)
 //      test invalid ids on administrator endpoints(flagQuote(qid),unflagQuote(qid),flagged(creatorId))
+//      test nonexistent ids on normal endpoints(upvoteQuote(qid),downvoteQuote(qid),quotes(creatorId))
+//          IDs should match hex format for an ObjectId but do not actually correspond to a specific item in the database
+//      test nonexistent ids on admin endpoints(flagQuote(qid),unflagQuote(qid),flagged(creatorId))
+//          IDs should match hex format for an ObjectId but do not actually correspond to a specific item in the database
+//
 //      (AFTER USER LOGOUT)test username already taken for newUser
 //      (AFTER USER LOGOUT)test not being logged in for /userData
 //      (AFTER USER LOGOUT)test length requirements for strings username/password(newUser,login)
