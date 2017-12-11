@@ -622,7 +622,43 @@ describe('TestEndpoints', function()
         });
     });
 
-    //TODO: ERROR testing for invalid id parameters to admin endpoints(still logged in as admin)
+    //test that /unflagQuote endpoint returns error if quote id is invalid
+    it( 'Test Error UnflagQuote Invalid ID' , function( done )
+    {
+        var quoteObj = { "qid" : "ABADQUOTE" };
+        sendPostRequest( "/unflagQuote" , querystring.stringify( quoteObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assertErrorField( errorObj.errors[ 0 ], "qid", "wrong type", done );
+        });
+    });
+
+    //test that /flagQuote endpoint returns error if quote id is invalid
+    it( 'Test Error FlagQuote Invalid ID' , function( done )
+    {
+        var quoteObj = { "qid" : "ABADQUOTE" };
+        sendPostRequest( "/flagQuote" , querystring.stringify( quoteObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assertErrorField( errorObj.errors[ 0 ], "qid", "wrong type", done );
+        });
+    });
+
+    //test that /flagged endpoint returns error if creator id given is invalid
+    it( 'Test Error Flagged Invalid Creator ID' , function( done )
+    {
+        sendGetRequest( "/flagged?creator=ABADQUOTEZ" , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assertErrorField( errorObj.errors[ 0 ], "creator", "wrong type", done );
+        });
+    });   
 
     //test that /logout endpoint returns 200 status
     it( 'Test Logout Admin' , function( done )
