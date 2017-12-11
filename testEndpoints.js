@@ -21,7 +21,7 @@ function assertErrorJSON( errorJSON )
 {
     assert.ok( errorJSON.error );
     assert.ok( errorJSON.errors );
-    assert.equal( errorJSON.errors.length, 1 );
+    assert.ok( errorJSON.errors.length );
 }
 
 function assertAdminError( errorObj, onFinish )
@@ -365,8 +365,6 @@ describe('TestEndpoints', function()
         });
     });
 
-    //TODO: test more errors as normal user before logout
-
     //test that /upvoteQuote endpoint returns error if quote id is invalid
     it( 'Test Error UpvoteQuote Invalid ID' , function( done )
     {
@@ -412,6 +410,77 @@ describe('TestEndpoints', function()
             var errorObj = JSON.parse( data );
             assertAdminError( errorObj, done );
         });
+    });
+
+    //test that /newQuote endpoint returns error if the author field does not have enough characters
+    it( 'Test Error NewQuote MinLength Author' , function( done )
+    {
+        var quoteBody = "Long Enough";
+        var quoteAuthor = "1234";
+        var newQuoteForm = { "author" : quoteAuthor , body : quoteBody };
+        sendPostRequest( "/newQuote" , querystring.stringify( newQuoteForm ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assert.equal( errorObj.errors[ 0 ].name , "author" );
+            assert.ok( errorObj.errors[ 0 ].problem );
+            done();
+        }); 
+    });
+
+    //test that /newQuote endpoint returns error if the author field has too many characters
+    it( 'Test Error NewQuote MaxLength Author' , function( done )
+    {
+        var quoteBody = "Long Enough";
+        var quoteAuthor = "This String Is Way Too Long And should cause an error for this endpoint";
+        var newQuoteForm = { "author" : quoteAuthor , body : quoteBody };
+        sendPostRequest( "/newQuote" , querystring.stringify( newQuoteForm ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assert.equal( errorObj.errors[ 0 ].name , "author" );
+            assert.ok( errorObj.errors[ 0 ].problem );
+            done();
+        }); 
+    });
+
+    //test that /newQuote endpoint returns error if the body field has too many characters
+    it( 'Test Error NewQuote MaxLength Body' , function( done )
+    {
+        //generate 3001 characters for the body so that it is too large and endpoint complains
+        var crypto = require("crypto");
+        var quoteBody = crypto.randomBytes( 3001 ).toString('hex');
+
+        var quoteAuthor = "Author Fine";
+        var newQuoteForm = { "author" : quoteAuthor , body : quoteBody };
+        sendPostRequest( "/newQuote" , querystring.stringify( newQuoteForm ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assert.equal( errorObj.errors[ 0 ].name , "body" );
+            assert.ok( errorObj.errors[ 0 ].problem );
+            done();
+        }); 
+    });
+
+    //test that /newQuote endpoint returns error if the body field has too few characters
+    it( 'Test Error NewQuote MinLength Body' , function( done )
+    {
+        var quoteBody = "1234";
+        var quoteAuthor = "Author Fine";
+        var newQuoteForm = { "author" : quoteAuthor , body : quoteBody };
+        sendPostRequest( "/newQuote" , querystring.stringify( newQuoteForm ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assert.equal( errorObj.errors[ 0 ].name , "body" );
+            assert.ok( errorObj.errors[ 0 ].problem );
+            done();
+        }); 
     });
 
     //test that /flagQuote endpoint returns error if the user is not an admin
