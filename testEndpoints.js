@@ -544,11 +544,147 @@ describe('TestEndpoints', function()
     });
 
     //test that /logout endpoint returns 200 status
-    it( 'Test Logout 2' , function( done )
+    it( 'Test Logout As User' , function( done )
     {
         sendGetRequest( "/logout" , function( res, data )
         {
             assert.equal( res.statusCode , 200 );
+            done();
+        });
+    });
+
+    //test that /newUser endpoint returns error if the username field has too many characters
+    it( 'Test Error Signup MaxLength Username' , function( done )
+    {
+        //generate 101 characters for the username so that it is too large and endpoint complains
+        var crypto = require("crypto");
+        var userNameGen = crypto.randomBytes( 101 ).toString('hex');
+
+        var userObj = { "username" : userNameGen , "password" : "longEnough" };
+        sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assert.equal( errorObj.errors[ 0 ].name , "username" );
+            assert.ok( errorObj.errors[ 0 ].problem );
+            done();
+        });
+    });
+
+    //test that /newUser endpoint returns error if the username field has too few characters
+    it( 'Test Error Signup MinLength Username' , function( done )
+    {
+        var userObj = { "username" : "1234" , "password" : "longEnough" };
+        sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assert.equal( errorObj.errors[ 0 ].name , "username" );
+            assert.ok( errorObj.errors[ 0 ].problem );
+            done();
+        });
+    });
+
+    //test that /newUser endpoint returns error if the password field has too many characters
+    it( 'Test Error Signup MaxLength Password' , function( done )
+    {
+        //generate 101 characters for the password so that it is too large and endpoint complains
+        var crypto = require("crypto");
+        var passwordGen = crypto.randomBytes( 101 ).toString('hex');
+
+        var userObj = { "username" : "longEnough" , "password" : passwordGen };
+        sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assert.equal( errorObj.errors[ 0 ].name , "password" );
+            assert.ok( errorObj.errors[ 0 ].problem );
+            done();
+        });
+    });
+
+    //test that /newUser endpoint returns error if the password field has too few characters
+    it( 'Test Error Signup MinLength Password' , function( done )
+    {
+        var userObj = { "username" : "longEnough" , "password" : "1234" };
+        sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assert.equal( errorObj.errors[ 0 ].name , "password" );
+            assert.ok( errorObj.errors[ 0 ].problem );
+            done();
+        });
+    });
+
+    //test that /login endpoint returns error if the username field has too many characters
+    it( 'Test Error Login MaxLength Username' , function( done )
+    {
+        //generate 101 characters for the username so that it is too large and endpoint complains
+        var crypto = require("crypto");
+        var userNameGen = crypto.randomBytes( 101 ).toString('hex');
+
+        var userObj = { "username" : userNameGen , "password" : "longEnough" };
+        sendPostRequest( "/login" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assert.equal( errorObj.errors[ 0 ].name , "username" );
+            assert.ok( errorObj.errors[ 0 ].problem );
+            done();
+        });
+    });
+
+    //test that /login endpoint returns error if the username field has too few characters
+    it( 'Test Error Login MinLength Username' , function( done )
+    {
+        var userObj = { "username" : "1234" , "password" : "longEnough" };
+        sendPostRequest( "/login" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assert.equal( errorObj.errors[ 0 ].name , "username" );
+            assert.ok( errorObj.errors[ 0 ].problem );
+            done();
+        });
+    });
+
+    //test that /login endpoint returns error if the password field has too many characters
+    it( 'Test Error Login MaxLength Password' , function( done )
+    {
+        //generate 101 characters for the password so that it is too large and endpoint complains
+        var crypto = require("crypto");
+        var passwordGen = crypto.randomBytes( 101 ).toString('hex');
+
+        var userObj = { "username" : "longEnough" , "password" : passwordGen };
+        sendPostRequest( "/login" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assert.equal( errorObj.errors[ 0 ].name , "password" );
+            assert.ok( errorObj.errors[ 0 ].problem );
+            done();
+        });
+    });
+
+    //test that /login endpoint returns error if the password field has too few characters
+    it( 'Test Error Login MinLength Password' , function( done )
+    {
+        var userObj = { "username" : "longEnough" , "password" : "1234" };
+        sendPostRequest( "/login" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assert.equal( errorObj.errors[ 0 ].name , "password" );
+            assert.ok( errorObj.errors[ 0 ].problem );
             done();
         });
     });

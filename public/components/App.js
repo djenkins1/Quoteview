@@ -15,8 +15,11 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //  error testing
 //      (AFTER USER LOGOUT)test username already taken for newUser
 //      (AFTER USER LOGOUT)test not being logged in for /userData
-//      (AFTER USER LOGOUT)test length requirements for strings username/password(newUser,login)
 //      (AFTER USER LOGOUT)test username/password incorrect match for login
+//      test missing parameters for each endpoint
+//          (user)newQuote(body,author),upvoteQuote(qid),downvoteQuote(qid)
+//          (admin)flagQuote(qid),unflagQuote(qid),
+//          (not user)newUser(username,password),login(username,password),
 //
 //FUTURE:
 //Search quotes by particular text string in author/body
