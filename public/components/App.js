@@ -11,20 +11,18 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //TODO BOARD
 //----------------------------
 //PRIORITY
+//Add email field to signup form
+//  could also add confirm password field
+//  would also need to generalize Form fields onChange
 //
 //FUTURE:
+// my account page where password can be changed
 //Search quotes by particular text string in author/body
 //  see text search mongodb bookmark
 //  would need to add search box to navbar
 //      having problems with navbar though
 //  OR: search modal with link on navbar that allows searching by title/author/created by...
-//Add email field to signup form
-//  could also add confirm password field
-//  would also need to generalize Form fields onChange
 //if there is a problem with logout then error message must be shown to user somehow
-//update readme to include Mocha and unit testing info
-//  to run database unit tests: mocha -t 100000 testDB.js 
-// my account page where password can be changed
 //add more aria compatibility/concerns
 //
 //POSSIBLE:
