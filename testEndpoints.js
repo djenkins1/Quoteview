@@ -194,7 +194,7 @@ describe('TestEndpoints', function()
     });
 
     //test that /quotes endpoint returns the same thing as dataAPI.getAllQuotes
-    it('Test All Quotes', function (done) 
+    it('Test All Quotes Good', function (done) 
     {
         sendGetRequest( "/quotes" , function( res, data )
         {
@@ -215,7 +215,7 @@ describe('TestEndpoints', function()
     });
 
     //test that /quotes endpoint returns the same thing as dataAPI.getAllQuotes
-    it('Test Creator Quotes', function (done) 
+    it('Test Creator Quotes Good', function (done) 
     {
         sendGetRequest( "/quotes?creator=" + normalUserId , function( res, data )
         {
@@ -236,7 +236,7 @@ describe('TestEndpoints', function()
     });
 
     //test that /newUser endpoint returns correct username in response
-    it( 'Test Signup' , function( done )
+    it( 'Test Signup Good' , function( done )
     {
         var userObj = { "username" : "newusername" , "password" : "newusername" };
         sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
@@ -251,7 +251,7 @@ describe('TestEndpoints', function()
     });
 
     //test that /logout endpoint returns 200 status
-    it( 'Test Logout' , function( done )
+    it( 'Test Logout Good' , function( done )
     {
         sendGetRequest( "/logout" , function( res, data )
         {
@@ -261,7 +261,7 @@ describe('TestEndpoints', function()
     });
 
     //test that /login endpoint returns correct username in response
-    it( 'Test Login' , function( done )
+    it( 'Test Login Good' , function( done )
     {
         var userObj = { "username" : normalUsername , "password" : normalUsername };
         sendPostRequest( "/login" , querystring.stringify( userObj ), function( res, data )
@@ -276,7 +276,7 @@ describe('TestEndpoints', function()
     });
 
     //test that /userData returns correct data in response when logged in
-    it( 'Test UserData' , function( done )
+    it( 'Test UserData Good' , function( done )
     {
         sendGetRequest( "/userData" , function( res, data )
         {
@@ -292,7 +292,7 @@ describe('TestEndpoints', function()
     });
 
     //test that /newQuote actually creates a quote and it matches what is in the database after creation
-    it( 'Test newQuote good' , function( done )
+    it( 'Test NewQuote Good' , function( done )
     {
         var quoteBody = "Testing...";
         var quoteAuthor = "Tester";
@@ -318,7 +318,7 @@ describe('TestEndpoints', function()
     });
 
     //test that /downvoteQuote actually results in the database downvoting the quote
-    it( 'Test downvoteQuote good' , function( done )
+    it( 'Test DownvoteQuote Good' , function( done )
     {
         sendGetRequest( "/downvoteQuote?qid=" + myQuoteId , function( res, data )
         {
@@ -342,7 +342,7 @@ describe('TestEndpoints', function()
     });
 
     //test that /upvoteQuote actually results in the database upvoting the quote
-    it( 'Test upvoteQuote good' , function( done )
+    it( 'Test UpvoteQuote Good' , function( done )
     {
         sendGetRequest( "/upvoteQuote?qid=" + myQuoteId , function( res, data )
         {
@@ -426,7 +426,7 @@ describe('TestEndpoints', function()
     });
 
     //test that /quotes endpoint returns empty array if creator id given is valid length/type but not actually in database
-    it( 'Test Quotes Nonexistent Creator ID' , function( done )
+    it( 'Test Error Quotes Nonexistent Creator ID' , function( done )
     {
         sendGetRequest( "/quotes?creator=0123456789AB" , function( res, data )
         {
@@ -543,8 +543,68 @@ describe('TestEndpoints', function()
         });
     });
 
+    //test that /newQuote endpoint returns error if missing author parameter
+    it( 'Test Error NewQuote Missing Author', function( done )
+    {
+        var quoteBody = "Long Enough";
+        var newQuoteForm = { body : quoteBody };
+        sendPostRequest( "/newQuote" , querystring.stringify( newQuoteForm ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assert.equal( errorObj.errors[ 0 ].name , "author" );
+            assert.ok( errorObj.errors[ 0 ].problem );
+            done();
+        }); 
+    });
+
+    //test that /newQuote endpoint returns error if missing body parameter
+    it( 'Test Error NewQuote Missing Body', function( done )
+    {
+        var quoteAuthor = "Long Enough";
+        var newQuoteForm = { author : quoteAuthor };
+        sendPostRequest( "/newQuote" , querystring.stringify( newQuoteForm ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assert.equal( errorObj.errors[ 0 ].name , "body" );
+            assert.ok( errorObj.errors[ 0 ].problem );
+            done();
+        }); 
+    });
+
+    //test that /upvoteQuote endpoint returns error if qid parameter is missing
+    it( 'Test Error UpvoteQuote Missing qid' , function( done )
+    {
+        sendGetRequest( "/upvoteQuote" , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assert.equal( errorObj.errors[ 0 ].name , "qid" );
+            assert.ok( errorObj.errors[ 0 ].problem );
+            done();
+        });
+    });
+
+    //test that /downvoteQuote endpoint returns error if qid parameter is missing
+    it( 'Test Error DownvoteQuote Missing qid' , function( done )
+    {
+        sendGetRequest( "/downvoteQuote" , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assert.equal( errorObj.errors[ 0 ].name , "qid" );
+            assert.ok( errorObj.errors[ 0 ].problem );
+            done();
+        });
+    });
+
     //test that /logout endpoint returns 200 status
-    it( 'Test Logout As User' , function( done )
+    it( 'Test Logout As User Good' , function( done )
     {
         sendGetRequest( "/logout" , function( res, data )
         {
@@ -759,7 +819,7 @@ describe('TestEndpoints', function()
     });
 
     //test that /login endpoint returns error when wrong password is given for a correct username
-    it( 'Test Login Error Wrong Password' , function( done )
+    it( 'Test Error Login Wrong Password' , function( done )
     {
         var userObj = { "username" : adminUsername , "password" : adminUsername + "0123" };
         sendPostRequest( "/login" , querystring.stringify( userObj ), function( res, data )
@@ -772,7 +832,7 @@ describe('TestEndpoints', function()
     });    
 
     //test that /login endpoint returns correct username/role in response for admin user
-    it( 'Test Login Admin' , function( done )
+    it( 'Test Login Admin Good' , function( done )
     {
         var userObj = { "username" : adminUsername , "password" : adminUsername };
         sendPostRequest( "/login" , querystring.stringify( userObj ), function( res, data )
@@ -789,7 +849,7 @@ describe('TestEndpoints', function()
     });
 
     //test that /flagQuote endpoint actually results in the quote being flagged as true
-    it( 'Test FlagQuote' , function( done )
+    it( 'Test FlagQuote Good' , function( done )
     {
         var quoteObj = { "qid" : myQuoteId };
         sendPostRequest( "/flagQuote" , querystring.stringify( quoteObj ), function( res, data )
@@ -809,7 +869,7 @@ describe('TestEndpoints', function()
     });
 
     //test that /flagged endpoint actually returns flagged quotes
-    it( 'Test Flagged' , function( done )
+    it( 'Test Flagged Good' , function( done )
     {
         sendGetRequest( "/flagged" , function( res, data )
         {
@@ -824,7 +884,7 @@ describe('TestEndpoints', function()
     });
 
     //test that /unflagQuote endpoint actually results in the quote being flagged false
-    it( 'Test UnflagQuote' , function( done )
+    it( 'Test UnflagQuote Good' , function( done )
     {
         var quoteObj = { "qid" : myQuoteId };
         sendPostRequest( "/unflagQuote" , querystring.stringify( quoteObj ), function( res, data )
@@ -907,8 +967,34 @@ describe('TestEndpoints', function()
         });
     });
 
+    //test that /unflagQuote endpoint returns error if qid parameter is missing
+    it( 'Test Error UnflagQuote Nonexistent ID' , function( done )
+    {
+        var quoteObj = {};
+        sendPostRequest( "/unflagQuote" , querystring.stringify( quoteObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assertErrorField( errorObj.errors[ 0 ], "qid", "missing", done );
+        });
+    });
+
+    //test that /flagQuote endpoint returns error if qid parameter is missing
+    it( 'Test Error FlagQuote Nonexistent ID' , function( done )
+    {
+        var quoteObj = {};
+        sendPostRequest( "/flagQuote" , querystring.stringify( quoteObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assertErrorField( errorObj.errors[ 0 ], "qid", "missing", done );
+        });
+    });
+
     //test that /flagged endpoint returns empty array if creator id given is valid length/type but not actually in database
-    it( 'Test Flagged Nonexistent Creator ID' , function( done )
+    it( 'Test Error Flagged Nonexistent Creator ID' , function( done )
     {
         sendGetRequest( "/flagged?creator=0123456789AB" , function( res, data )
         {
@@ -920,7 +1006,7 @@ describe('TestEndpoints', function()
     }); 
 
     //test that /logout endpoint returns 200 status
-    it( 'Test Logout Admin' , function( done )
+    it( 'Test Logout Admin Good' , function( done )
     {
         sendGetRequest( "/logout" , function( res, data )
         {

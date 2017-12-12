@@ -14,9 +14,7 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //Need unit testing of endpoints for server
 //  error testing
 //      test missing parameters for each endpoint
-//          (user)newQuote(body,author),upvoteQuote(qid),downvoteQuote(qid)
-//          (admin)flagQuote(qid),unflagQuote(qid),
-//          (not user)newUser(username,password),login(username,password),
+//          (not user)newUser(username,password),login(username,password)
 //
 //FUTURE:
 //Search quotes by particular text string in author/body
