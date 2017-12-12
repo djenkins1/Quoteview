@@ -144,6 +144,7 @@ function createRandomQuote( userId )
     });
 }
 
+//creates multiple quotes and waits for database to finish for all of them before calling onFinish
 function setupQuotes( onFinish )
 {
     var promises = [];
@@ -772,6 +773,58 @@ describe('TestEndpoints', function()
             var errorObj = JSON.parse( data );
             assertErrorJSON( errorObj );
             assertErrorField( errorObj.errors[ 0 ], "user", "already taken", done );
+        });
+    });
+
+    //test that /newUser endpoint returns error if the username parameter is missing
+    it( 'Test Error NewUser Missing Username' , function( done )
+    {
+        var userObj = { "password" : "1234567890" };
+        sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assertErrorField( errorObj.errors[ 0 ], "username", "missing", done );
+        });
+    });
+
+    //test that /newUser endpoint returns error if the password parameter is missing
+    it( 'Test Error NewUser Missing Password' , function( done )
+    {
+        var userObj = { "username" : "1234567890" };
+        sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assertErrorField( errorObj.errors[ 0 ], "password", "missing", done );
+        });
+    });
+
+    //test that /login endpoint returns error if the username parameter is missing
+    it( 'Test Error Login Missing Username' , function( done )
+    {
+        var userObj = { "password" : "1234567890" };
+        sendPostRequest( "/login" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assertErrorField( errorObj.errors[ 0 ], "username", "missing", done );
+        });
+    });
+
+    //test that /login endpoint returns error if the password parameter is missing
+    it( 'Test Error Login Missing Password' , function( done )
+    {
+        var userObj = { "username" : "1234567890" };
+        sendPostRequest( "/login" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assertErrorField( errorObj.errors[ 0 ], "password", "missing", done );
         });
     });
 

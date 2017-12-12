@@ -11,10 +11,6 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //TODO BOARD
 //----------------------------
 //PRIORITY
-//Need unit testing of endpoints for server
-//  error testing
-//      test missing parameters for each endpoint
-//          (not user)newUser(username,password),login(username,password)
 //
 //FUTURE:
 //Search quotes by particular text string in author/body
