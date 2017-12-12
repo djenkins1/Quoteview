@@ -689,6 +689,32 @@ describe('TestEndpoints', function()
         });
     });
 
+    //test that /newUser endpoint returns error if the username is already taken
+    it( 'Test Error NewUser Username Taken' , function( done )
+    {
+        var userObj = { "username" : normalUsername , "password" : "1234567890" };
+        sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assertErrorField( errorObj.errors[ 0 ], "user", "already taken", done );
+        });
+    });
+
+    //test that /newUser endpoint returns error if the username is already taken(but with uppercase username)
+    it( 'Test Error NewUser Username Case Sensitive' , function( done )
+    {
+        var userObj = { "username" : normalUsername.toUpperCase() , "password" : "1234567890" };
+        sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assertErrorField( errorObj.errors[ 0 ], "user", "already taken", done );
+        });
+    });
+
     //test that /newQuote returns an error if not logged in
     it( 'Test Error NewQuote Not User' , function( done )
     {
@@ -721,6 +747,29 @@ describe('TestEndpoints', function()
             assertNotUserError( JSON.parse( data ), done );
         });        
     });
+
+    //test that /userData returns error when not logged in
+    it( 'Test Error UserData Not User' , function( done )
+    {
+        sendGetRequest( "/userData" , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            assertNotUserError( JSON.parse( data ), done );
+        });
+    });
+
+    //test that /login endpoint returns error when wrong password is given for a correct username
+    it( 'Test Login Error Wrong Password' , function( done )
+    {
+        var userObj = { "username" : adminUsername , "password" : adminUsername + "0123" };
+        sendPostRequest( "/login" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assertErrorField( errorObj.errors[ 0 ], "user", "invalid combination", done );
+        });
+    });    
 
     //test that /login endpoint returns correct username/role in response for admin user
     it( 'Test Login Admin' , function( done )
