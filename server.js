@@ -86,6 +86,13 @@ function respondServerError( queryObj, response, sessionObj, onFinish )
 //logout the user and invalidate the session
 function logoutUser( queryObj, response, sessionObj, onFinish )
 {
+    if ( sessionObj.data.user === undefined )
+    {
+        var errorList = [ { "name" : "user" , "problem" : "not logged in" } ];
+        outputErrorAsJson( errorList, queryObj, response, sessionObj, onFinish );
+        return;
+    }
+
     sessionObj.deleted = true;
     response.writeHead( 200, {'Content-Type': 'text/json'});
     var resultObj = { "status" : "logged out" };
@@ -96,7 +103,7 @@ function logoutUser( queryObj, response, sessionObj, onFinish )
 //endpoint for seeing which user is logged in on this session
 function loggedInAs( queryObj, response, sessionObj, onFinish )
 {
-    if ( sessionObj.data.user == undefined )
+    if ( sessionObj.data.user === undefined )
     {
         var errorList = [ { "name" : "user" , "problem" : "not logged in" } ];
         outputErrorAsJson( errorList, queryObj, response, sessionObj, onFinish );

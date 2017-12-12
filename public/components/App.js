@@ -17,8 +17,6 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //      (AFTER USER LOGOUT)test not being logged in for /userData
 //      (AFTER USER LOGOUT)test length requirements for strings username/password(newUser,login)
 //      (AFTER USER LOGOUT)test username/password incorrect match for login
-//      need to fix: /logout should return error if not logged in
-//          then do error testing for this behavior
 //
 //FUTURE:
 //Search quotes by particular text string in author/body

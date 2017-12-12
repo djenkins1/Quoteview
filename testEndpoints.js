@@ -744,6 +744,17 @@ describe('TestEndpoints', function()
         });
     });
 
+    //test that /logout endpoint returns error if not logged in
+    it( 'Test Error Logout Not User' , function( done )
+    {
+        sendGetRequest( "/logout" , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertNotUserError( errorObj , done );
+        });
+    });
+
     //after() is run after all tests have completed.
     //close down the database connection
     after( function( done ) 
