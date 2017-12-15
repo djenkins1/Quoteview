@@ -181,10 +181,10 @@ describe('TestEndpoints', function()
         {
             dataAPI.setupDatabase( function()
             {
-                dataAPI.createUserWithRole( adminUsername, adminUsername, Constants.ROLE_USER_ADMIN, function( result )
+                dataAPI.createUserWithRole( adminUsername + "@email.com" , adminUsername, adminUsername, Constants.ROLE_USER_ADMIN, function( result )
                 {
                     adminId = result.insertId;
-                    dataAPI.createUser( normalUsername, normalUsername, function( res2 )
+                    dataAPI.createUser( normalUsername + "@email.com" , normalUsername, normalUsername, function( res2 )
                     {
                         normalUserId = res2.insertId;
                         setupQuotes( done );
@@ -239,7 +239,8 @@ describe('TestEndpoints', function()
     //test that /newUser endpoint returns correct username in response
     it( 'Test Signup Good' , function( done )
     {
-        var userObj = { "username" : "newusername" , "password" : "newusername" };
+        var myNewUsername = "newusername";
+        var userObj = { "email" : myNewUsername + "@email.com" , "username" : myNewUsername , "password" : myNewUsername };
         sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
         {
             assert.equal( res.statusCode , 200 );
@@ -619,9 +620,10 @@ describe('TestEndpoints', function()
     {
         //generate 101 characters for the username so that it is too large and endpoint complains
         var crypto = require("crypto");
-        var userNameGen = crypto.randomBytes( 101 ).toString('hex');
-
-        var userObj = { "username" : userNameGen , "password" : "longEnough" };
+        var userObj = {};
+        userObj.password = "longEnough";
+        userObj.email = userObj.password + "@emailone.com";
+        userObj.username = crypto.randomBytes( 101 ).toString('hex');
         sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
         {
             assert.equal( res.statusCode , 200 );
@@ -636,7 +638,8 @@ describe('TestEndpoints', function()
     //test that /newUser endpoint returns error if the username field has too few characters
     it( 'Test Error Signup MinLength Username' , function( done )
     {
-        var userObj = { "username" : "1234" , "password" : "longEnough" };
+        var email = "1234@email.com";
+        var userObj = { "email" : email, "username" : "1234" , "password" : "longEnough" };
         sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
         {
             assert.equal( res.statusCode , 200 );
@@ -653,9 +656,11 @@ describe('TestEndpoints', function()
     {
         //generate 101 characters for the password so that it is too large and endpoint complains
         var crypto = require("crypto");
-        var passwordGen = crypto.randomBytes( 101 ).toString('hex');
+        var userObj = {};
+        userObj.username = "longEnough";
+        userObj.email = userObj.username + "@emailone.com";
+        userObj.password = crypto.randomBytes( 101 ).toString('hex');
 
-        var userObj = { "username" : "longEnough" , "password" : passwordGen };
         sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
         {
             assert.equal( res.statusCode , 200 );
@@ -670,7 +675,7 @@ describe('TestEndpoints', function()
     //test that /newUser endpoint returns error if the password field has too few characters
     it( 'Test Error Signup MinLength Password' , function( done )
     {
-        var userObj = { "username" : "longEnough" , "password" : "1234" };
+        var userObj = { "email" : "longEnough@emailone.com" , "username" : "longEnough" , "password" : "1234" };
         sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
         {
             assert.equal( res.statusCode , 200 );
@@ -689,7 +694,7 @@ describe('TestEndpoints', function()
         var crypto = require("crypto");
         var userNameGen = crypto.randomBytes( 101 ).toString('hex');
 
-        var userObj = { "username" : userNameGen , "password" : "longEnough" };
+        var userObj = { "email" : "longEnough@emailone.com" ,"username" : userNameGen , "password" : "longEnough" };
         sendPostRequest( "/login" , querystring.stringify( userObj ), function( res, data )
         {
             assert.equal( res.statusCode , 200 );
@@ -704,7 +709,7 @@ describe('TestEndpoints', function()
     //test that /login endpoint returns error if the username field has too few characters
     it( 'Test Error Login MinLength Username' , function( done )
     {
-        var userObj = { "username" : "1234" , "password" : "longEnough" };
+        var userObj = { "email" : "asdf12345@emailone.com" , "username" : "1234" , "password" : "longEnough" };
         sendPostRequest( "/login" , querystring.stringify( userObj ), function( res, data )
         {
             assert.equal( res.statusCode , 200 );
@@ -753,7 +758,7 @@ describe('TestEndpoints', function()
     //test that /newUser endpoint returns error if the username is already taken
     it( 'Test Error NewUser Username Taken' , function( done )
     {
-        var userObj = { "username" : normalUsername , "password" : "1234567890" };
+        var userObj = { "email" : "longEnough@emailone.com" ,"username" : normalUsername , "password" : "1234567890" };
         sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
         {
             assert.equal( res.statusCode , 200 );
@@ -763,10 +768,23 @@ describe('TestEndpoints', function()
         });
     });
 
+    //test that /newUser endpoint returns error if the email address is already taken
+    it( 'Test Error NewUser Email Taken' , function( done )
+    {
+        var userObj = { "email" : normalUsername + "@email.com" ,"username" : "notTakenYet" , "password" : "1234567890" };
+        sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assertErrorField( errorObj.errors[ 0 ], "email", "already taken", done );
+        });
+    });
+
     //test that /newUser endpoint returns error if the username is already taken(but with uppercase username)
     it( 'Test Error NewUser Username Case Sensitive' , function( done )
     {
-        var userObj = { "username" : normalUsername.toUpperCase() , "password" : "1234567890" };
+        var userObj = { "email" : "longEnough@emailone.com" ,"username" : normalUsername.toUpperCase() , "password" : "1234567890" };
         sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
         {
             assert.equal( res.statusCode , 200 );
@@ -779,7 +797,7 @@ describe('TestEndpoints', function()
     //test that /newUser endpoint returns error if the username parameter is missing
     it( 'Test Error NewUser Missing Username' , function( done )
     {
-        var userObj = { "password" : "1234567890" };
+        var userObj = { "email" : "longEnough@emailone.com" , "password" : "1234567890" };
         sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
         {
             assert.equal( res.statusCode , 200 );
@@ -792,7 +810,7 @@ describe('TestEndpoints', function()
     //test that /newUser endpoint returns error if the password parameter is missing
     it( 'Test Error NewUser Missing Password' , function( done )
     {
-        var userObj = { "username" : "1234567890" };
+        var userObj = { "email" : "longEnough@emailone.com" , "username" : "1234567890" };
         sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
         {
             assert.equal( res.statusCode , 200 );

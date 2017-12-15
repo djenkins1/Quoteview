@@ -123,7 +123,7 @@ function loggedInAs( queryObj, response, sessionObj, onFinish )
 function testCreateUser( queryObj, response, sessionObj, onFinish )
 {
     //if either of the two required parameters are undefined then something went wrong with server code
-    if ( queryObj.username == undefined || queryObj.password == undefined )
+    if ( queryObj.username === undefined || queryObj.password === undefined || queryObj.email === undefined )
     {
         console.log( "Problem testCreateUser, required parameters undefined" );
         respondServerError( queryObj, response, sessionObj, onFinish );
@@ -138,25 +138,35 @@ function testCreateUser( queryObj, response, sessionObj, onFinish )
         return;
     }
 
-    dataAPI.isUsernameTaken( queryObj.username , function( result )
+    dataAPI.isUsernameTaken( queryObj.username , function( userTaken )
     {
-        if ( result )
+        if ( userTaken )
         {
             var errorList = [ { "name" : "user" , "problem" : "already taken" } ];
             outputErrorAsJson( errorList, queryObj, response, sessionObj, onFinish );
             return;
         }
 
-        //create a user and log in as them,then redirect to index
-        dataAPI.createUser( queryObj.username, queryObj.password, function( result ) 
+        dataAPI.isEmailTaken( queryObj.email , function( emailTaken )
         {
-            sessionObj.data.user = result.insertId;
-            sessionObj.data.username = queryObj.username;
-            sessionObj.data.role = Constants.ROLE_USER_DEFAULT;
-            response.writeHead(200, {'Content-Type': 'text/json'});
-            var userObj = { "userId" : result.insertId , "username" : queryObj.username, "role" : Constants.ROLE_USER_DEFAULT };
-            response.write( JSON.stringify( userObj ) );
-            onFinish( sessionObj ); 
+            if ( emailTaken )
+            {
+                var errorList = [ { "name" : "email" , "problem" : "already taken" } ];
+                outputErrorAsJson( errorList, queryObj, response, sessionObj, onFinish );
+                return;
+            }
+
+            //create a user and log in as them,then redirect to index
+            dataAPI.createUser( queryObj.email, queryObj.username, queryObj.password, function( result ) 
+            {
+                sessionObj.data.user = result.insertId;
+                sessionObj.data.username = queryObj.username;
+                sessionObj.data.role = Constants.ROLE_USER_DEFAULT;
+                response.writeHead(200, {'Content-Type': 'text/json'});
+                var userObj = { "userId" : result.insertId , "username" : queryObj.username, "role" : Constants.ROLE_USER_DEFAULT };
+                response.write( JSON.stringify( userObj ) );
+                onFinish( sessionObj ); 
+            });
         });
     });
 }
@@ -381,7 +391,13 @@ function setupHandlers()
 
     var userSchema = urlHandler.createParameter( "username" , "string" , true, 5, 100 );
     userSchema.finalValidate = urlHandler.validateUsername;
-    urlHandler.registerObserver( "POST" , "/newUser" , [ userSchema , urlHandler.createParameter( "password" , "string" , true, 5, 100 ) ], testCreateUser , outputErrorAsJson );
+    urlHandler.registerObserver( "POST" , "/newUser" , 
+        [ 
+            userSchema , 
+            urlHandler.createParameter( "password" , "string" , true, 5, 100 ) ,
+            urlHandler.createParameter( "email" , "email" , true, 5, 300 )
+        ]
+        , testCreateUser , outputErrorAsJson );
     urlHandler.registerObserver( "POST" , "/login" , [ userSchema , urlHandler.createParameter( "password" , "string" , true, 5, 100 ) ],  loginUser, outputErrorAsJson );
     urlHandler.registerObserver( "GET" , "/userData" , [] , loggedInAs, outputErrorAsJson );
     urlHandler.registerObserver( "GET" , "/logout" , [] , logoutUser , outputErrorAsJson );

@@ -158,6 +158,11 @@ function checkType( value, type )
         return validator.isFloat( value );
     }
 
+    if ( type == "email" )
+    {
+        return validator.isEmail( value );
+    }
+
     if ( type == "ObjectId" )
     {
         let objectID = require('mongodb').ObjectID;
@@ -182,7 +187,7 @@ returns:
 */
 function checkLength( value, type, minSize, maxSize )
 {
-    if ( type == "string" || type == "ObjectId" )
+    if ( type == "string" || type == "ObjectId" || type == "email" )
     {
         return ( value.length >= minSize && value.length <= maxSize );
     }
