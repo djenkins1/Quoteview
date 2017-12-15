@@ -300,6 +300,7 @@ function: createUserWithRole
 info:
     This function uses the database to create a row in the users table.
 parameters:
+    email, string,the email address for the new user
     username, string, the username for the new user
     password, string, the password for the new user
     role, string, the role for the new user
@@ -307,13 +308,13 @@ parameters:
 returns:
     nothing
 */
-function createUserWithRole( username, password, role, onFinish )
+function createUserWithRole( email, username, password, role, onFinish )
 {
     bcrypt.hash( password, SALT_ROUNDS, function(err, hash) 
     {
         getDefaultConn( function( db )
         {
-            var toInsert = { "username" : username.toLowerCase(), "password" : hash, "role" : role };
+            var toInsert = { "email" : email.toLowerCase(), "username" : username.toLowerCase(), "password" : hash, "role" : role };
             db.collection( USER_TABLE ).insertOne( toInsert, function(err, result ) 
             {
                 if (err) throw err;
@@ -331,15 +332,16 @@ function: createUser
 info:
     This function uses the database to create a row in the users table.
 parameters:
+    email, string,the email address for the new user
     username, string, the username for the new user
     password, string, the password for the new user
     onFinish, function, the function to be called when the user has been created
 returns:
     nothing
 */
-function createUser( username, password, onFinish )
+function createUser( email, username, password, onFinish )
 {
-    createUserWithRole( username, password, Constants.ROLE_USER_DEFAULT, onFinish );
+    createUserWithRole( email, username, password, Constants.ROLE_USER_DEFAULT, onFinish );
 }
 
 /*
@@ -362,6 +364,34 @@ function isUsernameTaken( username, onFinish )
 
             var isTaken = false;
             if ( result && result.username )
+            {
+                isTaken = true;
+            }
+            onFinish( isTaken );
+        });
+    });
+}
+
+/*
+function: isEmailTaken
+info:
+    This function calls onFinish with the results of whether the email address given already exists for any user.
+parameters:
+    email, string, the email address to check
+    onFinish, function, the function called when the database query is finished
+returns:
+    nothing
+*/
+function isEmailTaken( email, onFinish )
+{
+    getDefaultConn( function( db )
+    {
+        db.collection( USER_TABLE ).findOne( { "email" : email.toLowerCase() } , function( err, result ) 
+        {
+            if ( err ) throw err;
+
+            var isTaken = false;
+            if ( result && result.email )
             {
                 isTaken = true;
             }
@@ -507,7 +537,13 @@ function setupDatabase( onFinish )
                             if ( err ) throw err;
 
                             console.log( "Index created for score on " + QUOTE_TABLE );
-                            onFinish();
+                            db.collection( USER_TABLE ).createIndex( "email" , function( err, res )
+                            {
+                                if ( err ) throw err;
+
+                                console.log( "Index created for email on " + USER_TABLE );
+                                onFinish();
+                            });
                         });
                     });
                 });
@@ -613,4 +649,5 @@ exports.flagQuote = flagQuote;
 exports.unflagQuote = unflagQuote;
 exports.getQuotesByFlag = getQuotesByFlag;
 exports.createUserWithRole = createUserWithRole;
+exports.isEmailTaken = isEmailTaken;
 

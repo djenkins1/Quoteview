@@ -21,7 +21,6 @@ describe('TestDatabase', function()
     });
 
     //The beforeEach() callback gets run before each test in the suite.
-    //TODO: could clean and setup database in between test runs for safer testing
     beforeEach( function( done )
     {
         done();
@@ -38,10 +37,21 @@ describe('TestDatabase', function()
         } );
     });
 
+    //test that isEmailTaken returns false for a email address that has not been taken yet.
+    it( 'test email not taken', function( done )
+    {
+        const otherUsername = "dilan";
+        dataAPI.isEmailTaken( otherUsername + "@email.com", function( isTaken )
+        {
+            assert.equal( isTaken, false );
+            done();
+        } );
+    });
+
     //test that createUser returns a user object
     it( 'test create user normal' , function( done )
     {
-        dataAPI.createUser( myUsername, myUsername, function( resultObj )
+        dataAPI.createUser( myUsername + "@email.com" , myUsername, myUsername, function( resultObj )
         {
             assert.ok( resultObj.insertId );
             myUserId = resultObj.insertId;
@@ -50,7 +60,6 @@ describe('TestDatabase', function()
     });
 
     //test that isUsernameTaken returns true for the username of the newly created user 
-    //TODO: once the database is cleaned between test cases this test will need to create a user first before its own assertions
     it( 'test username already taken' , function( done )
     {
         dataAPI.isUsernameTaken( myUsername, function( isTaken )
@@ -60,8 +69,17 @@ describe('TestDatabase', function()
         });
     });
 
+    //test that isEmailTaken returns true for the email address of the newly created user
+    it( 'test email already taken', function( done )
+    {
+        dataAPI.isEmailTaken( myUsername + "@email.com", function( isTaken )
+        {
+            assert.equal( isTaken, true );
+            done();
+        } );
+    });
+
     //test that verifyUserCredentials returns false for a user with the wrong password
-    //TODO: once the database is cleaned between test cases this test will need to create a user before its own assertions
     it( 'test bad password verifyUserCredentials' , function( done )
     {
         dataAPI.verifyUserCredentials( myUsername, "BAD PASS" , function( isValid, resultUser )
@@ -227,7 +245,7 @@ describe('TestDatabase', function()
     it( 'test good getAllQuotes' , function( done )
     {
         const otherUsername = "badmoon";
-        dataAPI.createUser( otherUsername, otherUsername, function( userResult )
+        dataAPI.createUser( otherUsername + "@email.com" , otherUsername, otherUsername, function( userResult )
         {
             assert.ok( userResult.insertId );
             var otherUserId = userResult.insertId;
@@ -284,7 +302,7 @@ describe('TestDatabase', function()
 
     it( 'test good admin createUserWithRole' , function( done )
     {
-        dataAPI.createUserWithRole( adminUser, adminUser, Constants.ROLE_USER_ADMIN , function( resultObj )
+        dataAPI.createUserWithRole( adminUser + "@email.com", adminUser, adminUser, Constants.ROLE_USER_ADMIN , function( resultObj )
         {
             assert.ok( resultObj.insertId );
             let adminId = resultObj.insertId;
@@ -295,6 +313,7 @@ describe('TestDatabase', function()
             });
         });
     });
+
 
     //after() is run after all tests have completed.
     //close down the database connection
