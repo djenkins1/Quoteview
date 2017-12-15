@@ -14,6 +14,8 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //Add email field to signup form
 //  could also add confirm password field
 //  would also need to generalize Form fields onChange
+//  TODO: migrate NewQuoteForm and Modal to InputForm and InputModal
+//Problem: My Quotes changes to Quotes by ??? when the user has no quotes and logs out
 //
 //FUTURE:
 // my account page where password can be changed
@@ -24,6 +26,7 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //  OR: search modal with link on navbar that allows searching by title/author/created by...
 //if there is a problem with logout then error message must be shown to user somehow
 //add more aria compatibility/concerns
+//unit testing of front end?
 //
 //POSSIBLE:
 //flagged quotes should disappear from AdminQuotes page if they are unflagged in update

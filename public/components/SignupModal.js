@@ -1,34 +1,22 @@
 import React from "react";
 import BaseModal from "./BaseModal";
 import SignupForm from "./SignupForm";
+import InputModal from "./InputModal";
 
-export default class SignupModal extends React.Component
+export default class SignupModal extends InputModal
 {
     constructor( props )
     {
         super( props );
-        this.state = { "errors" : [] };
-        this.inputData = {"username" : "" , "password" : "" };
-    }
-
-    //whenever the username input is changed,update this component's username in the inputData field
-    updateUserField( userName )
-    {
-        this.inputData.username = userName;
-    }
-
-    //whenever the password input is changed,update this component's password in the inputData field
-    updatePassField( passWord )
-    {
-        this.inputData.password = passWord;
+        this.inputData.username = "";
+        this.inputData.password = "";
     }
 
     render()
     {
         return (
             <BaseModal modalTitle='Sign Up' 
-                modalBody={<SignupForm userChange={this.updateUserField.bind(this)} 
-                    passChange={this.updatePassField.bind( this )} submitFunc={this.signup.bind(this)} />}
+                modalBody={<SignupForm onFieldChange={this.updateField.bind( this )} submitFunc={this.signup.bind(this)} />}
                 yesText='Sign Up' noText='Cancel' 
                 yesFunc={this.signup.bind( this )} 
                 noFunc={this.props.clearModal} errors={this.state.errors}/>
