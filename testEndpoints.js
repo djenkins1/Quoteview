@@ -236,11 +236,27 @@ describe('TestEndpoints', function()
         });
     });
 
+    //test that /newUser endpoint returns error if confirmpass does not match password given
+    it( 'Test Error NewUser Confirmpass Mismatch' , function( done )
+    {
+        var myNewUsername = "newusername";
+        var userObj = { "email" : myNewUsername + "@email.com" , "username" : myNewUsername , "password" : myNewUsername };
+        userObj.confirmpass = userObj.password + "extra";
+        sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assertErrorField( errorObj.errors[ 0 ], "password", "does not match confirm", done );
+        });
+    });
+
     //test that /newUser endpoint returns correct username in response
     it( 'Test Signup Good' , function( done )
     {
         var myNewUsername = "newusername";
         var userObj = { "email" : myNewUsername + "@email.com" , "username" : myNewUsername , "password" : myNewUsername };
+        userObj.confirmpass = userObj.password;
         sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
         {
             assert.equal( res.statusCode , 200 );
@@ -624,6 +640,7 @@ describe('TestEndpoints', function()
         userObj.password = "longEnough";
         userObj.email = userObj.password + "@emailone.com";
         userObj.username = crypto.randomBytes( 101 ).toString('hex');
+        userObj.confirmpass = userObj.password;
         sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
         {
             assert.equal( res.statusCode , 200 );
@@ -640,6 +657,7 @@ describe('TestEndpoints', function()
     {
         var email = "1234@email.com";
         var userObj = { "email" : email, "username" : "1234" , "password" : "longEnough" };
+        userObj.confirmpass = userObj.password;
         sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
         {
             assert.equal( res.statusCode , 200 );
@@ -660,7 +678,7 @@ describe('TestEndpoints', function()
         userObj.username = "longEnough";
         userObj.email = userObj.username + "@emailone.com";
         userObj.password = crypto.randomBytes( 101 ).toString('hex');
-
+        userObj.confirmpass = userObj.password;
         sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
         {
             assert.equal( res.statusCode , 200 );
@@ -676,6 +694,7 @@ describe('TestEndpoints', function()
     it( 'Test Error Signup MinLength Password' , function( done )
     {
         var userObj = { "email" : "longEnough@emailone.com" , "username" : "longEnough" , "password" : "1234" };
+        userObj.confirmpass = userObj.password;
         sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
         {
             assert.equal( res.statusCode , 200 );
@@ -691,6 +710,7 @@ describe('TestEndpoints', function()
     it( 'Test Error Signup MinLength Email' , function( done )
     {
         var userObj = { "email" : "a@bc" , "username" : "longEnough" , "password" : "123456" };
+        userObj.confirmpass = userObj.password;
         sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
         {
             assert.equal( res.statusCode , 200 );
@@ -711,6 +731,7 @@ describe('TestEndpoints', function()
         userObj.username = "longEnough";
         userObj.password = "123456";
         userObj.email = crypto.randomBytes( 301 ).toString('hex') + "@email.com";
+        userObj.confirmpass = userObj.password;
 
         sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
         {
@@ -723,6 +744,49 @@ describe('TestEndpoints', function()
         });
     });
 
+    //test that /newUser endpoint returns error if the confirmpass field has too many characters
+    it( 'Test Error Signup MaxLength Confirmpass' , function( done )
+    {
+        //generate 101 characters for the confirmpass so that it is too large and endpoint complains
+        var crypto = require("crypto");
+        var userObj = {};
+        userObj.username = "longEnough";
+        userObj.password = "123456";
+        userObj.confirmpass = crypto.randomBytes( 101 ).toString('hex');
+        userObj.email = "longEnough@emailtwo.com";
+
+        sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assert.equal( errorObj.errors[ 0 ].name , "confirmpass" );
+            assert.ok( errorObj.errors[ 0 ].problem );
+            done();
+        });
+    });
+
+    //test that /newUser endpoint returns error if the confirmpass field has too few characters
+    it( 'Test Error Signup MinLength Confirmpass' , function( done )
+    {
+        //generate 101 characters for the confirmpass so that it is too large and endpoint complains
+        var userObj = {};
+        userObj.username = "longEnough";
+        userObj.password = "123456";
+        userObj.confirmpass = "1234";
+        userObj.email = "longEnough@emailtwo.com";
+
+        sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assert.equal( errorObj.errors[ 0 ].name , "confirmpass" );
+            assert.ok( errorObj.errors[ 0 ].problem );
+            done();
+        });
+    });
+
     //test that /newUser endpoint returns error if the email field is not in correct format
     it( 'Test Error Signup Not An Email' , function( done )
     {
@@ -730,6 +794,7 @@ describe('TestEndpoints', function()
         userObj.username = "longEnough";
         userObj.password = "123456";
         userObj.email = "notEmail";
+        userObj.confirmpass = userObj.password;
 
         sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
         {
@@ -814,6 +879,7 @@ describe('TestEndpoints', function()
     it( 'Test Error NewUser Username Taken' , function( done )
     {
         var userObj = { "email" : "longEnough@emailone.com" ,"username" : normalUsername , "password" : "1234567890" };
+        userObj.confirmpass = userObj.password;
         sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
         {
             assert.equal( res.statusCode , 200 );
@@ -827,6 +893,7 @@ describe('TestEndpoints', function()
     it( 'Test Error NewUser Email Taken' , function( done )
     {
         var userObj = { "email" : normalUsername + "@email.com" ,"username" : "notTakenYet" , "password" : "1234567890" };
+        userObj.confirmpass = userObj.password;
         sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
         {
             assert.equal( res.statusCode , 200 );
@@ -840,6 +907,7 @@ describe('TestEndpoints', function()
     it( 'Test Error NewUser Username Case Sensitive' , function( done )
     {
         var userObj = { "email" : "longEnough@emailone.com" ,"username" : normalUsername.toUpperCase() , "password" : "1234567890" };
+        userObj.confirmpass = userObj.password;
         sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
         {
             assert.equal( res.statusCode , 200 );
@@ -853,6 +921,7 @@ describe('TestEndpoints', function()
     it( 'Test Error NewUser Missing Username' , function( done )
     {
         var userObj = { "email" : "longEnough@emailone.com" , "password" : "1234567890" };
+        userObj.confirmpass = userObj.password;
         sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
         {
             assert.equal( res.statusCode , 200 );
@@ -866,6 +935,7 @@ describe('TestEndpoints', function()
     it( 'Test Error NewUser Missing Password' , function( done )
     {
         var userObj = { "email" : "longEnough@emailone.com" , "username" : "1234567890" };
+        userObj.confirmpass = "123456";
         sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
         {
             assert.equal( res.statusCode , 200 );
@@ -875,10 +945,25 @@ describe('TestEndpoints', function()
         });
     });
 
+    //test that /newUser endpoint returns error if the confirmpass parameter is missing
+    it( 'Test Error NewUser Missing Confirmpass' , function( done )
+    {
+        var userObj = { "email" : "longEnough@emailone.com" , "username" : "1234567890" };
+        userObj.password = "longEnough";
+        sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assertErrorField( errorObj.errors[ 0 ], "confirmpass", "missing", done );
+        });
+    });
+
     //test that /newUser endpoint returns error if the email parameter is missing
     it( 'Test Error NewUser Missing Email' , function( done )
     {
         var userObj = { "username" : "1234567890" , "password" : "1234567890" };
+        userObj.confirmpass = userObj.password;
         sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
         {
             assert.equal( res.statusCode , 200 );

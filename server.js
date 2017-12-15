@@ -123,7 +123,8 @@ function loggedInAs( queryObj, response, sessionObj, onFinish )
 function testCreateUser( queryObj, response, sessionObj, onFinish )
 {
     //if either of the two required parameters are undefined then something went wrong with server code
-    if ( queryObj.username === undefined || queryObj.password === undefined || queryObj.email === undefined )
+    if ( queryObj.username === undefined || queryObj.password === undefined 
+        || queryObj.email === undefined || queryObj.confirmpass === undefined )
     {
         console.log( "Problem testCreateUser, required parameters undefined" );
         respondServerError( queryObj, response, sessionObj, onFinish );
@@ -134,6 +135,13 @@ function testCreateUser( queryObj, response, sessionObj, onFinish )
     if ( sessionObj.data.user )
     {
         var errorList = [ { "name" : "user" , "problem" : "already logged in" } ];
+        outputErrorAsJson( errorList, queryObj, response, sessionObj, onFinish );
+        return;
+    }
+
+    if ( queryObj.password !== queryObj.confirmpass )
+    {
+        var errorList = [ { "name" : "password" , "problem" : "does not match confirm" } ];
         outputErrorAsJson( errorList, queryObj, response, sessionObj, onFinish );
         return;
     }
@@ -395,7 +403,8 @@ function setupHandlers()
         [ 
             userSchema , 
             urlHandler.createParameter( "password" , "string" , true, 5, 100 ) ,
-            urlHandler.createParameter( "email" , "email" , true, 5, 300 )
+            urlHandler.createParameter( "confirmpass" , "string" , true, 5, 100 ) ,
+            urlHandler.createParameter( "email" , "email" , true, 5, 254 )
         ]
         , testCreateUser , outputErrorAsJson );
     urlHandler.registerObserver( "POST" , "/login" , [ userSchema , urlHandler.createParameter( "password" , "string" , true, 5, 100 ) ],  loginUser, outputErrorAsJson );

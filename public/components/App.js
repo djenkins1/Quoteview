@@ -14,7 +14,8 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //add confirm password field to signup backend
 //  needs to verify that both passwords match
 //migrate NewQuoteForm and Modal to InputForm and InputModal
-//Problem: My Quotes changes to Quotes by ??? when the user has no quotes and logs out
+//Problem: My Quotes changes to Quotes by ??? when the user logs out
+//  both when the user has quotes and when they do not
 //
 //FUTURE:
 // my account page where password can be changed
