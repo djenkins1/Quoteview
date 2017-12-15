@@ -10,6 +10,7 @@ export default class SignupModal extends InputModal
         super( props );
         this.inputData.username = "";
         this.inputData.password = "";
+        this.inputData.email = "";
     }
 
     render()

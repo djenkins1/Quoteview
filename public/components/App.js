@@ -12,9 +12,8 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //----------------------------
 //PRIORITY
 //Add email field to signup form
-//  could also add confirm password field
-//  would also need to generalize Form fields onChange
-//  TODO: migrate NewQuoteForm and Modal to InputForm and InputModal
+//add confirm password field
+//migrate NewQuoteForm and Modal to InputForm and InputModal
 //Problem: My Quotes changes to Quotes by ??? when the user has no quotes and logs out
 //
 //FUTURE:

@@ -1,18 +1,12 @@
 import React from "react";
 import InputForm from "./InputForm";
 
-export default class SignupForm extends InputForm
+export default class LoginForm extends InputForm
 {
     render()
     {
         return (
             <form action='/newUser' method='post' >
-                <input size='30' 
-                    onKeyPress={this.handleEnterPress.bind( this )}
-                    onChange={this.handleFieldChange.bind(this)} 
-                    type='email' name='email' placeholder='Email' 
-                    className="form-control" maxLength="300" required/>
-                <br />
                 <input size='30' 
                     onKeyPress={this.handleEnterPress.bind( this )}
                     onChange={this.handleFieldChange.bind(this)} 
@@ -24,12 +18,6 @@ export default class SignupForm extends InputForm
                     onChange={this.handleFieldChange.bind( this )} 
                     onKeyPress={this.handleEnterPress.bind( this )}
                     placeholder='Password' className="form-control" maxLength="100" required/>
-                <br />
-                <input 
-                    size='30' type='password' name='confirmpass' 
-                    onChange={this.handleFieldChange.bind( this )} 
-                    onKeyPress={this.handleEnterPress.bind( this )}
-                    placeholder='Confirm Password' className="form-control" maxLength="100" required/>
                 <br />
             </form>
         );

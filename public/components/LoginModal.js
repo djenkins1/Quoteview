@@ -1,6 +1,6 @@
 import React from "react";
 import BaseModal from "./BaseModal";
-import SignupForm from "./SignupForm";
+import LoginForm from "./LoginForm";
 import InputModal from "./InputModal";
 
 export default class LoginModal extends InputModal
@@ -14,10 +14,9 @@ export default class LoginModal extends InputModal
 
     render()
     {
-        //TODO: uses SignupForm for now,in future could build and use seperate LoginForm instead
         return (
             <BaseModal modalTitle='Login'
-                modalBody={<SignupForm onFieldChange={this.updateField.bind( this )} submitFunc={this.login.bind(this)} />}
+                modalBody={<LoginForm onFieldChange={this.updateField.bind( this )} submitFunc={this.login.bind(this)} />}
                 yesText='Login' noText='Cancel' 
                 yesFunc={this.login.bind( this )} 
                 noFunc={this.props.clearModal} errors={this.state.errors}/>
