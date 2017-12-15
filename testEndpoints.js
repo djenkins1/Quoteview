@@ -687,6 +687,61 @@ describe('TestEndpoints', function()
         });
     });
 
+    //test that /newUser endpoint returns error if the email field has too few characters
+    it( 'Test Error Signup MinLength Email' , function( done )
+    {
+        var userObj = { "email" : "a@bc" , "username" : "longEnough" , "password" : "123456" };
+        sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assert.equal( errorObj.errors[ 0 ].name , "email" );
+            assert.ok( errorObj.errors[ 0 ].problem );
+            done();
+        });
+    });
+
+    //test that /newUser endpoint returns error if the email field has too many characters
+    it( 'Test Error Signup MaxLength Email' , function( done )
+    {
+        //generate 301 characters for the email so that it is too large and endpoint complains
+        var crypto = require("crypto");
+        var userObj = {};
+        userObj.username = "longEnough";
+        userObj.password = "123456";
+        userObj.email = crypto.randomBytes( 301 ).toString('hex') + "@email.com";
+
+        sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assert.equal( errorObj.errors[ 0 ].name , "email" );
+            assert.ok( errorObj.errors[ 0 ].problem );
+            done();
+        });
+    });
+
+    //test that /newUser endpoint returns error if the email field is not in correct format
+    it( 'Test Error Signup Not An Email' , function( done )
+    {
+        var userObj = {};
+        userObj.username = "longEnough";
+        userObj.password = "123456";
+        userObj.email = "notEmail";
+
+        sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assert.equal( errorObj.errors[ 0 ].name , "email" );
+            assert.ok( errorObj.errors[ 0 ].problem );
+            done();
+        });
+    });
+
     //test that /login endpoint returns error if the username field has too many characters
     it( 'Test Error Login MaxLength Username' , function( done )
     {
@@ -817,6 +872,19 @@ describe('TestEndpoints', function()
             var errorObj = JSON.parse( data );
             assertErrorJSON( errorObj );
             assertErrorField( errorObj.errors[ 0 ], "password", "missing", done );
+        });
+    });
+
+    //test that /newUser endpoint returns error if the email parameter is missing
+    it( 'Test Error NewUser Missing Email' , function( done )
+    {
+        var userObj = { "username" : "1234567890" , "password" : "1234567890" };
+        sendPostRequest( "/newUser" , querystring.stringify( userObj ), function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assertErrorField( errorObj.errors[ 0 ], "email", "missing", done );
         });
     });
 

@@ -11,12 +11,10 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //TODO BOARD
 //----------------------------
 //PRIORITY
-//Add email field to signup backend
 //add confirm password field to signup backend
+//  needs to verify that both passwords match
 //migrate NewQuoteForm and Modal to InputForm and InputModal
 //Problem: My Quotes changes to Quotes by ??? when the user has no quotes and logs out
-//NEED ERROR TEST CASES FOR EMAIL parameter on testEndpoints for endpoint /newUser
-//  email too short,email missing,email too long,email not an email
 //
 //FUTURE:
 // my account page where password can be changed
