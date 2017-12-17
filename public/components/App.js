@@ -12,14 +12,12 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //----------------------------
 //PRIORITY
 //Problem: My Quotes changes to Quotes by ??? when the user logs out and has no quotes
+//Search quotes by particular text string in author/body
+//  see text search mongodb bookmark
+//  OR: search modal with link on navbar that allows searching by title/author/created by...
 //
 //FUTURE:
 // my account page where password can be changed
-//Search quotes by particular text string in author/body
-//  see text search mongodb bookmark
-//  would need to add search box to navbar
-//      having problems with navbar though
-//  OR: search modal with link on navbar that allows searching by title/author/created by...
 //if there is a problem with logout then error message must be shown to user somehow
 //add more aria compatibility/concerns
 //unit testing of front end?

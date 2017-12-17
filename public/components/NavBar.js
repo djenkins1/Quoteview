@@ -28,6 +28,18 @@ export default class NavBar extends React.Component
         }
     }
 
+    searchForm()
+    {
+        return (
+            <form className="form-inline my-2 my-lg-0 ml-auto">
+                <div className="input-group">
+                    <input className="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" />
+                    <button className="btn btn-outline-success my-2 my-sm-0" type="button">Search</button>
+                </div>
+            </form>
+        );
+    }
+
     navLinksIfLoggedIn()
     {
         return (
@@ -37,6 +49,7 @@ export default class NavBar extends React.Component
                 {this.navLinksIfAdmin()}
                 <a className="nav-item nav-link" href="#" onClick={this.handleClickLinkModal.bind( this )} > {Constants.TXT_QUOTE_NEW} </a>
                 <a className="nav-item nav-link" href="#" onClick={this.handleLogout.bind( this )}> {Constants.TXT_NAV_LOGOUT} </a>
+                {this.searchForm()}
             </NavLinks>
         );
     }
@@ -53,6 +66,7 @@ export default class NavBar extends React.Component
                 <NavLink activeClassName="active" exact={true} to="/" className="nav-item nav-link" > {Constants.TXT_QUOTES_ALL} </NavLink>
                 <a onClick={this.handleClickLinkModal.bind( this )} className="nav-item nav-link" href="#"> {Constants.TXT_NAV_SIGNIN} </a>
                 <a onClick={this.handleClickLinkModal.bind( this )} className="nav-item nav-link" href="#"> {Constants.TXT_NAV_SIGNUP} </a>
+                {this.searchForm()}
             </NavLinks>
         );
     }
