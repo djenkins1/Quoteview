@@ -300,6 +300,26 @@ describe('TestDatabase', function()
         });
     });
 
+    //tests that upvoteQuote does not update the score for a flagged quote
+    it( 'test flagged upvoteQuote' , function( done )
+    {
+        dataAPI.upvoteQuote( myQuotes[ 0 ], function( resultObj )
+        {
+            assert.equal( resultObj.affectedRows , 0 );
+            done();
+        });
+    });
+
+    //tests that downvoteQuote does not update the score for a flagged quote
+    it( 'test flagged downvoteQuote' , function( done )
+    {
+        dataAPI.downvoteQuote( myQuotes[ 0 ], function( resultObj )
+        {
+            assert.equal( resultObj.affectedRows , 0 );
+            done();
+        });
+    });
+
     it( 'test good admin createUserWithRole' , function( done )
     {
         dataAPI.createUserWithRole( adminUser + "@email.com", adminUser, adminUser, Constants.ROLE_USER_ADMIN , function( resultObj )

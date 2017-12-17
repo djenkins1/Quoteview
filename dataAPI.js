@@ -199,7 +199,7 @@ function _updateQuoteScore( qid, increment, onFinish )
         valueIncrement = -1;
     }
 
-    var myQuery = { "_id" : qid };
+    var myQuery = { "_id" : qid , "flagged" : false };
     if ( typeof qid === "string" )
     {
         myQuery._id = ObjectId( qid );

@@ -139,6 +139,7 @@ function testCreateUser( queryObj, response, sessionObj, onFinish )
         return;
     }
 
+    //if the passwords do not match, then output an error
     if ( queryObj.password !== queryObj.confirmpass )
     {
         var errorList = [ { "name" : "password" , "problem" : "does not match confirm" } ];

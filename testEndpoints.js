@@ -1107,6 +1107,30 @@ describe('TestEndpoints', function()
         });
     });
 
+    //test that /upvoteQuote endpoint returns error if quote given is flagged
+    it( 'Test Error UpvoteQuote Flagged Quote' , function( done )
+    {
+        sendGetRequest( "/upvoteQuote?qid=" + myQuoteId , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assertErrorField( errorObj.errors[ 0 ], "qid", "invalid quote", done );
+        });
+    });
+
+    //test that /downvoteQuote endpoint returns error if quote given is flagged
+    it( 'Test Error DownvoteQuote Flagged Quote' , function( done )
+    {
+        sendGetRequest( "/downvoteQuote?qid=" + myQuoteId , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assertErrorField( errorObj.errors[ 0 ], "qid", "invalid quote", done );
+        });
+    });
+
     //test that /unflagQuote endpoint actually results in the quote being flagged false
     it( 'Test UnflagQuote Good' , function( done )
     {

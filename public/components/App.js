@@ -11,11 +11,8 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //TODO BOARD
 //----------------------------
 //PRIORITY
-//add confirm password field to signup backend
-//  needs to verify that both passwords match
 //migrate NewQuoteForm and Modal to InputForm and InputModal
-//Problem: My Quotes changes to Quotes by ??? when the user logs out
-//  both when the user has quotes and when they do not
+//Problem: My Quotes changes to Quotes by ??? when the user logs out and has no quotes
 //
 //FUTURE:
 // my account page where password can be changed
@@ -31,7 +28,6 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //POSSIBLE:
 //client side parameter validation for signup form
 //flagged quotes should disappear from AdminQuotes page if they are unflagged in update
-//flagged quotes should not be able to be voted on by anyone(endpoint protection only)
 //ability to edit quotes that were created by the logged in user
 //Convert to using express instead of custom middleware
 //  need to have endpoint unit testing in place before this conversion
