@@ -11,7 +11,6 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //TODO BOARD
 //----------------------------
 //PRIORITY
-//migrate NewQuoteForm and Modal to InputForm and InputModal
 //Problem: My Quotes changes to Quotes by ??? when the user logs out and has no quotes
 //
 //FUTURE:

@@ -1,32 +1,22 @@
 import React from "react";
 import BaseModal from "./BaseModal";
 import NewQuoteForm from "./NewQuoteForm";
+import InputModal from "./InputModal";
 
-export default class NewQuoteModal extends React.Component
+export default class NewQuoteModal extends InputModal
 {
     constructor( props )
     {
         super( props );
-        this.state = { "errors" : [] };
-        this.inputData = {"author" : "" , "body" : "" };
-    }
-
-    updateAuthorField( newAuthor )
-    {
-        this.inputData.author = newAuthor;
-    }
-
-    updateBodyField( newBody )
-    {
-        this.inputData.body = newBody;
+        this.inputData.author = "";
+        this.inputData.body = "";
     }
 
     render()
     {
         return (
             <BaseModal modalTitle='New Quote' 
-                modalBody={<NewQuoteForm changeAuthor={this.updateAuthorField.bind(this)} 
-                    changeBody={this.updateBodyField.bind( this )} />}
+                modalBody={<NewQuoteForm onFieldChange={this.updateField.bind( this )} />}
                 yesText='Create' noText='Cancel' 
                 yesFunc={this.submitQuote.bind( this )} 
                 noFunc={this.props.clearModal} errors={this.state.errors}/>

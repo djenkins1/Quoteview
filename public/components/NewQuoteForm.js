@@ -1,40 +1,20 @@
 import React from "react";
+import InputForm from "./InputForm";
 
-export default class NewQuoteForm extends React.Component
+export default class NewQuoteForm extends InputForm
 {
-    handleAuthorChange( e )
-    {
-        if ( this.props.changeAuthor )
-        {
-            this.props.changeAuthor( e.target.value );
-        }
-        else
-        {
-            console.log( "changeAuthor props function undefined" );
-        }
-    }
-
-    handleBodyChange( e )
-    {
-        if ( this.props.changeBody )
-        {
-            this.props.changeBody( e.target.value );
-        }
-        else
-        {
-            console.log( "changeBody props function undefined" );
-        }
-    }
-
     render()
     {
         return ( 
             <form action='/newQuote' method='post'>
                 <input size='41' type='text' name='author' placeholder='Author' 
-                    className="form-control" onChange={this.handleAuthorChange.bind( this )} maxlength="100" required/>
+                    className="form-control" 
+                    onChange={this.handleFieldChange.bind(this)} 
+                    maxlength="100" required />
                 <br />
                 <textarea rows='8' cols='40' name='body' placeholder='Text' 
-                    className="form-control" onChange={this.handleBodyChange.bind( this )} maxlength="3000" required></textarea>
+                    className="form-control" maxlength="3000" 
+                    onChange={this.handleFieldChange.bind(this)}  required ></textarea>
             </form>
         );
     }
