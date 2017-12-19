@@ -53,19 +53,21 @@ function getDefaultConn( onFinish )
 }
 
 /*
-function: getQuotesByFlag
+function: searchQuotesByFlag
 info:
     This function is a helper function for getting quotes.
     It calls onFinish with the results from the query when finished.
 parameters:
-    onFinish, function, the function to be called when the query is done
-    isFlagged, boolean, optional: if defined then the function only gets quotes with the same flagged value
     creatorId, string/ObjectId, optional: if defined then the function only gets quotes that have creatorId given
+    isFlagged, boolean, optional: if defined then the function only gets quotes with the same flagged value
+    searchStr, string, optional: if defined then the function uses the text index on collection to search for this string
+    onFinish, function, the function to be called when the query is done
 returns:
     nothing
 */
-function getQuotesByFlag( onFinish, isFlagged , creatorId )
+function searchQuotesByFlag( creatorId, isFlagged, searchStr, onFinish )
 {
+    //{ $text: { $search: "java \"coffee shop\"" } }
     var myQuery = {};
     if ( isFlagged !== undefined )
     {
@@ -81,6 +83,11 @@ function getQuotesByFlag( onFinish, isFlagged , creatorId )
         }
     }
 
+    if ( searchStr !== undefined )
+    {
+        myQuery[ "$text" ] = { $search: searchStr };
+    }
+
     getDefaultConn( function( db )
     {
         db.collection( QUOTE_TABLE ).find( myQuery ).sort( { score : -1 } ).toArray( function(err, results ) 
@@ -94,6 +101,23 @@ function getQuotesByFlag( onFinish, isFlagged , creatorId )
         
         });
     });
+}
+
+/*
+function: getQuotesByFlag
+info:
+    This function is a helper function for getting quotes.
+    It calls onFinish with the results from the query when finished.
+parameters:
+    onFinish, function, the function to be called when the query is done
+    isFlagged, boolean, optional: if defined then the function only gets quotes with the same flagged value
+    creatorId, string/ObjectId, optional: if defined then the function only gets quotes that have creatorId given
+returns:
+    nothing
+*/
+function getQuotesByFlag( onFinish, isFlagged , creatorId )
+{
+    searchQuotesByFlag( creatorId, isFlagged, undefined, onFinish );
 }
 
 /*
@@ -559,6 +583,46 @@ function _createIndex( db, tableName, onAttr )
 }
 
 /*
+function: _createTextIndex
+info:
+    This function tells the database to create a text index on the attributes given for the table with name given.
+    A text index can be used to efficiently search for a particular string in a particular field or fields.
+    It returns a promise that resolves when the database has created the index.
+parameters:
+    db, object, the database connection object
+    tableName, string, the name of the collection that the index is for
+    onAttrs, array, array of strings that correspond to the attributes that should be part of the text index.
+returns:
+    a promise object
+*/
+function _createTextIndex( db , tableName, onAttrs )
+{
+    var attrsObj = {};
+    for ( var i = 0; i < onAttrs.length; i++ )
+    {
+        if ( onAttrs[ i ] )
+        {
+            attrsObj[ onAttrs[ i ] ] = "text";
+        }
+    }
+
+    return new Promise( function( resolve, reject) 
+    {
+        db.collection( tableName ).createIndex( attrsObj , function( err, res )
+        {
+            if (err)
+            {
+                reject( err );
+                return;
+            }
+
+            console.log( "Created text index for table: " + tableName );
+            resolve( res );
+        });
+    });    
+}
+
+/*
 function: _setupIndexes
 info:
     This function setups the indexes for the various tables.
@@ -575,6 +639,7 @@ function _setupIndexes( db, onFinish )
     indexPromises.push( _createIndex( db, USER_TABLE, "email" ) );
     indexPromises.push( _createIndex( db, QUOTE_TABLE, "flagged" ) );
     indexPromises.push( _createIndex( db, QUOTE_TABLE, "score" ) );
+    indexPromises.push( _createTextIndex( db, QUOTE_TABLE, [ "author" , "body" , "creatorName" ] ) );
 
     Promise.all( indexPromises ).then( function() 
     {
@@ -714,4 +779,5 @@ exports.unflagQuote = unflagQuote;
 exports.getQuotesByFlag = getQuotesByFlag;
 exports.createUserWithRole = createUserWithRole;
 exports.isEmailTaken = isEmailTaken;
+exports.searchQuotesByFlag = searchQuotesByFlag;
 

@@ -261,6 +261,24 @@ describe('TestDatabase', function()
         });
     });
 
+    it( 'test good searchQuotesByFlag' , function( done )
+    {
+        dataAPI.searchQuotesByFlag( undefined, undefined, "jenkins" , function( results )
+        {
+            assert.ok( results.length );
+            done();
+        });
+    });
+
+    it( 'test bad searchQuotesByFlag' , function( done )
+    {
+        dataAPI.searchQuotesByFlag( undefined, undefined, "NORESULTS" , function( results )
+        {
+            assert.equal( results.length , 0 );
+            done();
+        });
+    });
+
     it( 'test good flagQuote' , function( done )
     {
         dataAPI.flagQuote( myQuotes[ 0 ], function( updateResult )
@@ -333,7 +351,6 @@ describe('TestDatabase', function()
             });
         });
     });
-
 
     //after() is run after all tests have completed.
     //close down the database connection
