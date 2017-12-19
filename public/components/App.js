@@ -11,6 +11,11 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //TODO BOARD
 //----------------------------
 //PRIORITY
+//should be able to search quotes by author/body/creator
+//  have database side working
+//  need to modify/add new endpoint to handle searches
+//  need to get front end working for actually sending search requests and displaying the results
+//  make sure to add test cases to testEndpoints.js
 //Search quotes by particular text string in author/body
 //  see text search mongodb bookmark
 //  OR: search modal with link on navbar that allows searching by title/author/created by...
@@ -18,6 +23,7 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //FUTURE:
 //my account page where password can be changed
 //add more aria compatibility/concerns
+//make sure no chance of sql injection on database
 //
 //POSSIBLE:
 //unit testing of front end?
