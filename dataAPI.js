@@ -500,6 +500,94 @@ function cleanDatabase( onFinish )
 }
 
 /*
+function: _createTable
+info:
+    This function tells the database to create a collection with the given name.
+    It returns a promise that resolves when the database creates the collection.
+parameters:
+    db, object, the database connection
+    tableName, string, the name of the new collection
+returns:
+    promise object
+*/
+function _createTable( db, tableName )
+{
+    return new Promise( function( resolve, reject) 
+    {
+        db.createCollection( tableName, function(err, res) 
+        {
+            if (err)
+            {
+                reject( err );
+                return;
+            }
+
+            console.log( "Created table: " + tableName );
+            resolve( res );
+        });
+    });
+}
+
+/*
+function: _createIndex
+info:
+    This function tells the database to create an index on the table with the given name for the given attribute.
+    It returns a promise that resolves when the database creates the index.
+parameters:
+    db, object, the database connection
+    tableName, string, the name of the collection
+    onAttr, string, the name of the attribute that the index will be on
+returns:
+    promise object
+*/
+function _createIndex( db, tableName, onAttr )
+{
+    return new Promise( function( resolve, reject) 
+    {
+        db.collection( tableName ).createIndex( onAttr , function( err, res )
+        {
+            if (err)
+            {
+                reject( err );
+                return;
+            }
+
+            console.log( "Created index on " + onAttr + " for table: " + tableName );
+            resolve( res );
+        });
+    });
+}
+
+/*
+function: _setupIndexes
+info:
+    This function setups the indexes for the various tables.
+parameters:
+    db, object, the connection to the database
+    onFinish, function, the function that is to be called when the database has finished creating the indexes
+returns:
+    nothing
+*/
+function _setupIndexes( db, onFinish )
+{
+    var indexPromises = [];
+    indexPromises.push( _createIndex( db, USER_TABLE, "username" ) );
+    indexPromises.push( _createIndex( db, USER_TABLE, "email" ) );
+    indexPromises.push( _createIndex( db, QUOTE_TABLE, "flagged" ) );
+    indexPromises.push( _createIndex( db, QUOTE_TABLE, "score" ) );
+
+    Promise.all( indexPromises ).then( function() 
+    {
+        onFinish();
+    }, 
+    function(err) 
+    {
+        // error occurred
+        if ( err ) throw err;
+    });
+}
+
+/*
 function: setupDatabase
 info:
     This function creates the database and sets up each of the collections if they do not exist.
@@ -512,43 +600,19 @@ function setupDatabase( onFinish )
 {
     getDefaultConn( function( db )
     {
-        db.createCollection( USER_TABLE, function(err, res) 
+        var tablePromises = [];
+        tablePromises.push( _createTable( db, USER_TABLE ) );
+        tablePromises.push( _createTable( db, QUOTE_TABLE ) );
+
+        Promise.all( tablePromises ).then( function()
         {
-            if (err) throw err;
-
-            console.log("User table created!");
-            db.createCollection( QUOTE_TABLE , function(err, res) 
-            {
-                if (err) throw err;
-
-                console.log("Quote table created!");
-                db.collection( USER_TABLE ).createIndex( "username" , function( err, res )
-                {
-                    if ( err ) throw err;
-
-                    console.log( "Index created for username on " + USER_TABLE );
-                    db.collection( QUOTE_TABLE ).createIndex( "flagged" , function( err, res )
-                    {
-                        if ( err ) throw err;
-
-                        console.log( "Index created for flagged on " + QUOTE_TABLE );
-                        db.collection( QUOTE_TABLE ).createIndex( "score" , function( err, res )
-                        {
-                            if ( err ) throw err;
-
-                            console.log( "Index created for score on " + QUOTE_TABLE );
-                            db.collection( USER_TABLE ).createIndex( "email" , function( err, res )
-                            {
-                                if ( err ) throw err;
-
-                                console.log( "Index created for email on " + USER_TABLE );
-                                onFinish();
-                            });
-                        });
-                    });
-                });
-            });
-        });    
+            _setupIndexes( db, onFinish );
+        }, 
+        function(err) 
+        {
+            // error occurred
+            if ( err ) throw err;
+        });
     });
 }
 
