@@ -13,12 +13,11 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //PRIORITY
 //should be able to search quotes by author/body/creator
 //  have database side working
-//  need to modify/add new endpoint to handle searches
+//  have new endpoint working to handle searches
+    test cases:
+        min length and max length errors
+        missing parameter errors
 //  need to get front end working for actually sending search requests and displaying the results
-//  make sure to add test cases to testEndpoints.js
-//Search quotes by particular text string in author/body
-//  see text search mongodb bookmark
-//  OR: search modal with link on navbar that allows searching by title/author/created by...
 //
 //FUTURE:
 //my account page where password can be changed

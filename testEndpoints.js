@@ -128,8 +128,8 @@ function assertQuotesEqual( actual , expected )
 function createRandomQuote( userId )
 {
     var quoteObj = {};
-    quoteObj.author = Date.now();
-    quoteObj.body = Date.now();
+    quoteObj.author = "Author " + Date.now();
+    quoteObj.body = "Body testing " + Date.now();
     quoteObj.creatorId = userId;
     return new Promise( function(resolve, reject) 
     {
@@ -233,6 +233,42 @@ describe('TestEndpoints', function()
                 }
                 done();
             });
+        });
+    });
+
+    //test that /qsearch endpoint returns the same thing as dataAPI.getAllQuotes
+    it('Test Search Quotes Good', function (done) 
+    {
+        var searchTerms = "Testing";
+        sendGetRequest( "/qsearch?searchTerms=" + searchTerms , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            //convert data to object using JSON.parse and verify quotes one by one
+            var quotesInData = JSON.parse( data );
+            assert.ok( quotesInData.length );
+            dataAPI.searchQuotesByFlag( undefined, false, searchTerms, function( results )
+            {
+                var allQuotes = JSON.parse( JSON.stringify( results ) );
+                assert.equal( quotesInData.length , allQuotes.length );
+                for ( var i = 0; i < quotesInData.length; i++ )
+                {
+                    assertQuotesEqual( quotesInData[ i ], allQuotes[ i ] );
+                }
+                done();
+            });
+        });
+    });
+
+    //test that /qsearch endpoint returns the same thing as dataAPI.getAllQuotes
+    it('Test Search Quotes No Results', function (done) 
+    {
+        var searchTerms = "NORESULTSHERE";
+        sendGetRequest( "/qsearch?searchTerms=" + searchTerms , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var quotesInData = JSON.parse( data );
+            assert.equal( quotesInData.length , 0 );
+            done();
         });
     });
 

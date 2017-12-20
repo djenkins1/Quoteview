@@ -26,6 +26,24 @@ function outputErrorAsJson( errorList ,queryObj, response, sessionObj, onFinish 
     onFinish( sessionObj );
 }
 
+//responds with the search results for the search terms given
+function returnQuoteSearchResults( queryObj, response, sessionObj, onFinish )
+{
+    if ( queryObj.searchTerms === undefined )
+    {
+        console.log( "Problem returnQuoteSearchResults(): searchTerms undefined" );
+        respondServerError( queryObj, response, sessionObj, onFinish );
+        return;
+    }
+
+    dataAPI.searchQuotesByFlag( undefined, false, queryObj.searchTerms , function( results )
+    {
+        response.writeHead( 200, {'Content-Type': 'text/json'} );
+        response.write( JSON.stringify( results ) );
+        onFinish( sessionObj );
+    });      
+}
+
 //responds with all the quotes in the database
 function returnAllQuotes( queryObj , response, sessionObj, onFinish )
 {
@@ -412,7 +430,7 @@ function setupHandlers()
     urlHandler.registerObserver( "GET" , "/userData" , [] , loggedInAs, outputErrorAsJson );
     urlHandler.registerObserver( "GET" , "/logout" , [] , logoutUser , outputErrorAsJson );
     urlHandler.registerObserver( "GET" , "/flagged" , [ urlHandler.createParameter( "creator" , "ObjectId" , false , 1 , 256 ) ] , returnFlaggedQuotes , outputErrorAsJson );
-    
+    urlHandler.registerObserver( "GET" , "/qsearch" , [ urlHandler.createParameter( "searchTerms" , "string" , true, 5 , 256 ) ] , returnQuoteSearchResults , outputErrorAsJson );    
 }
 
 //grab the command line arguments
