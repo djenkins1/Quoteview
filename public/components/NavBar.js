@@ -1,4 +1,5 @@
 import React from "react";
+import ReactDOM from "react-dom";
 import Constants from "./Constants";
 import { NavLink } from 'react-router-dom';
 import NavLinks from "./NavLinks";
@@ -28,13 +29,21 @@ export default class NavBar extends React.Component
         }
     }
 
+    submitSearch( event )
+    {
+        event.preventDefault();
+        var searchTerms = encodeURIComponent( ReactDOM.findDOMNode( this.refs.searchTerms ).value );
+        window.location.href = "index.html#/search/" + searchTerms;
+        return;
+    }
+
     searchForm()
     {
         return (
-            <form className="form-inline my-2 my-lg-0 ml-auto">
+            <form action='#/search/' onSubmit={this.submitSearch.bind( this )} className="form-inline my-2 my-lg-0 ml-auto" >
                 <div className="input-group">
-                    <input className="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" />
-                    <button className="btn btn-outline-success my-2 my-sm-0" type="button">Search</button>
+                    <input className="form-control mr-sm-2" type="search" ref="searchTerms" name="searchTerms" placeholder="Search" aria-label="Search" />
+                    <button className="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
                 </div>
             </form>
         );

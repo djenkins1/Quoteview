@@ -75,6 +75,13 @@ export default class QuotePage extends React.Component
         //sends ajax get request to server for all the quotes
         $.get( fromQuoteUrl , fromQuoteParams, function( data, status )
         {
+            if ( data && data.error )
+            {
+                console.log( data );
+                self.setState( { requestDone: true } );
+                return;
+            }
+
             if ( data.length == 0 )
             {
                 self.setState( { quotes: [] } );

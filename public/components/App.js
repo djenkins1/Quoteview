@@ -4,6 +4,7 @@ import Layout from "./Layout";
 import MainQuotes from "./MainQuotes";
 import CreatorQuotes from "./CreatorQuotes";
 import AdminQuotes from "./AdminQuotes";
+import SearchQuotes from "./SearchQuotes";
 import { HashRouter, Route , Switch } from "react-router-dom";
 
 /*
@@ -11,10 +12,8 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //TODO BOARD
 //----------------------------
 //PRIORITY
-//should be able to search quotes by author/body/creator
-//  have database side working
-//  have new endpoint working to handle searches
-//  need to get front end working for actually sending search requests and displaying the results
+//searches that do not have any results should communicate this somehow
+//searches that do not meet length requirements should show error on page somehow
 //
 //FUTURE:
 //my account page where password can be changed
@@ -69,6 +68,13 @@ export default class App extends React.Component
                         } />
                        <Route path="/flagged" render={(props)=>
                             <AdminQuotes userName={this.state.userName} 
+                                {...props}
+                                newQuote={this.state.newQuote}
+                                finishedLoginCheck={this.state.finishedLoginCheck} 
+                                finishAddQuote={this.finishAddQuote.bind( this )} />
+                        } />
+                       <Route path="/search/:searchTerms" render={(props)=>
+                            <SearchQuotes userName={this.state.userName} 
                                 {...props}
                                 newQuote={this.state.newQuote}
                                 finishedLoginCheck={this.state.finishedLoginCheck} 
