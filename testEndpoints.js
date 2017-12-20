@@ -259,8 +259,8 @@ describe('TestEndpoints', function()
         });
     });
 
-    //test that /qsearch endpoint returns the same thing as dataAPI.getAllQuotes
-    it('Test Search Quotes No Results', function (done) 
+    //test that /qsearch endpoint returns empty array for search terms that are not found
+    it('Test SearchQuotes No Results', function (done) 
     {
         var searchTerms = "NORESULTSHERE";
         sendGetRequest( "/qsearch?searchTerms=" + searchTerms , function( res, data )
@@ -268,6 +268,53 @@ describe('TestEndpoints', function()
             assert.equal( res.statusCode , 200 );
             var quotesInData = JSON.parse( data );
             assert.equal( quotesInData.length , 0 );
+            done();
+        });
+    });
+
+    //test that /qsearch endpoint returns error if the searchTerm field has too many characters
+    it( 'Test Error SearchQuotes MaxLength SearchTerms' , function( done )
+    {
+        //generate enough characters for the body so that it is too large and endpoint complains
+        var crypto = require("crypto");
+        var searchTerms = crypto.randomBytes( 257 ).toString('hex');
+        sendGetRequest( "/qsearch?searchTerms=" + searchTerms , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assert.equal( errorObj.errors[ 0 ].name , "searchTerms" );
+            assert.ok( errorObj.errors[ 0 ].problem );
+            done();
+        });
+    });
+
+    //test that /qsearch endpoint returns error if the searchTerm field has too many characters
+    it( 'Test Error SearchQuotes MinLength SearchTerms' , function( done )
+    {
+        var searchTerms = "sml";
+        sendGetRequest( "/qsearch?searchTerms=" + searchTerms , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assert.equal( errorObj.errors[ 0 ].name , "searchTerms" );
+            assert.ok( errorObj.errors[ 0 ].problem );
+            done();
+        });
+    });
+
+    //test that /qsearch endpoint returns error if missing searchTerms parameter
+    it( 'Test Error SearchQuotes Missing SearchTerms', function( done )
+    {
+        var searchTerms = "sml";
+        sendGetRequest( "/qsearch" , function( res, data )
+        {
+            assert.equal( res.statusCode , 200 );
+            var errorObj = JSON.parse( data );
+            assertErrorJSON( errorObj );
+            assert.equal( errorObj.errors[ 0 ].name , "searchTerms" );
+            assert.ok( errorObj.errors[ 0 ].problem );
             done();
         });
     });

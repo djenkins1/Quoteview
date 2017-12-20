@@ -14,9 +14,6 @@ import { HashRouter, Route , Switch } from "react-router-dom";
 //should be able to search quotes by author/body/creator
 //  have database side working
 //  have new endpoint working to handle searches
-    test cases:
-        min length and max length errors
-        missing parameter errors
 //  need to get front end working for actually sending search requests and displaying the results
 //
 //FUTURE:

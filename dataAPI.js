@@ -67,7 +67,6 @@ returns:
 */
 function searchQuotesByFlag( creatorId, isFlagged, searchStr, onFinish )
 {
-    //{ $text: { $search: "java \"coffee shop\"" } }
     var myQuery = {};
     if ( isFlagged !== undefined )
     {
